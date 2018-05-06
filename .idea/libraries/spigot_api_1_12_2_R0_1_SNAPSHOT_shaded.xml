@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="spigot-api-1.12.2-R0.1-SNAPSHOT-shaded">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Documents/GR/Minecraft/MC Server/BuildTools/Spigot/Spigot-API/target/spigot-api-1.12.2-R0.1-SNAPSHOT-shaded.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
