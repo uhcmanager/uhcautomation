@@ -31,7 +31,7 @@ public class GameInstance {
         Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "spreadplayers ");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         plugin.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
-        (new BorderCountdown((Main) plugin, minsToShrink, startT)).schedule();
+        (new BorderCountdown((Main) plugin, minsToShrink * 60, startT)).schedule();
         return true;
     }
 
