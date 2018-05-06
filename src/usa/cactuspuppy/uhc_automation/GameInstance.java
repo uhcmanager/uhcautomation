@@ -10,6 +10,7 @@ public class GameInstance {
     private Plugin plugin;
     private int state;
     private long startT;
+    private int minsToShrink;
     private int initSize;
     private int finalSize;
 
@@ -17,6 +18,11 @@ public class GameInstance {
         plugin = p;
         state = 0;
         startT = 0;
+        minsToShrink = 120;
+    }
+
+    public void setGameDuration(int minutes) {
+        minsToShrink = minutes;
     }
 
     public boolean start() {
@@ -25,8 +31,12 @@ public class GameInstance {
         Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "spreadplayers ");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         plugin.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
-        (new BorderCountdown((Main) plugin, calcBorderShrinkTime(), startT)).schedule();
+        (new BorderCountdown((Main) plugin, minsToShrink, startT)).schedule();
         return true;
+    }
+
+    protected void startBorderShrink() {
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "worldborder set " + finalSize + " " + calcBorderShrinkTime());
     }
 
     private int calcBorderShrinkTime() {
