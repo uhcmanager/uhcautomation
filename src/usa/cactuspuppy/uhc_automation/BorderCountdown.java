@@ -26,7 +26,8 @@ public class BorderCountdown implements Runnable {
         }
     }
 
-    public void schedule() {
+    public int schedule() {
         this.assignedID = Bukkit.getScheduler().scheduleSyncRepeatingTask(main, this, 0L, 20L);
+        return assignedID;
     }
 }
