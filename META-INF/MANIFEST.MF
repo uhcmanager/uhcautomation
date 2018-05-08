@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: usa.cactuspuppy.uhc_automation.Main
-
