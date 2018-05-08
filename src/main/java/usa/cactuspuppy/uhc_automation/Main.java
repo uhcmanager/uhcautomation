@@ -35,8 +35,7 @@ public class Main extends JavaPlugin {
         };
         r.runTaskAsynchronously(this);
         gi = new GameInstance(this);
-        this.getCommand("uhcstart").setExecutor(new CommandStart(this));
-        this.getCommand("uhcoptions").setExecutor(new CommandOptions(this));
+        registerCommands();
         Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(), this);
 
         getLogger().info("UHC Automation loaded in " + ((double) (System.currentTimeMillis() - start)) + " ms");
@@ -86,5 +85,12 @@ public class Main extends JavaPlugin {
             Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:mysql://" + this.host+ ":" + this.port + "/" + this.database, this.username, this.password);
         }
+    }
+
+    private void registerCommands() {
+        getCommand("uhcstart").setExecutor(new CommandStart(this));
+        getCommand("uhcoptions").setExecutor(new CommandOptions(this));
+        getCommand("uhcreset").setExecutor(new CommandReset(this));
+
     }
 }
