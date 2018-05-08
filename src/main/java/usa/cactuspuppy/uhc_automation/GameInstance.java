@@ -1,14 +1,12 @@
 package usa.cactuspuppy.uhc_automation;
 
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
 
 public class GameInstance {
-    private Plugin plugin;
+    private Main main;
     private int state;
     private long startT;
     private int minsToShrink;
@@ -18,27 +16,27 @@ public class GameInstance {
     private int borderCountdown;
     private boolean borderShrinking;
 
-    public GameInstance(Plugin p) {
-        plugin = p;
+    protected GameInstance(Main p) {
+        main = p;
         state = 0;
         startT = 0;
         minsToShrink = 120;
         borderShrinking = false;
     }
 
-    public void setInitSize(int s) {
+    protected void setInitSize(int s) {
         initSize = s;
     }
 
-    public void setFinalSize(int s) {
+    protected void setFinalSize(int s) {
         finalSize = s;
     }
 
-    public void setTimeToShrink(int minutes) {
+    protected void setTimeToShrink(int minutes) {
         minsToShrink = minutes;
     }
 
-    public void setTeamMode(boolean b) {
+    protected void setTeamMode(boolean b) {
         teamMode = b;
     }
 
@@ -48,8 +46,8 @@ public class GameInstance {
         //TODO: Finish spreadplayers command
         Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "spreadplayers ");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
-        plugin.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
-        borderCountdown = (new BorderCountdown((Main) plugin, minsToShrink * 60, startT)).schedule();
+        main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
+        borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
         return true;
     }
 
@@ -60,19 +58,29 @@ public class GameInstance {
         long stopT = System.currentTimeMillis();
         long timeElapsed = stopT - startT;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
-        plugin.getLogger().info("Game Stop Time - " + sdf.format(new Date(stopT)));
-        plugin.getLogger().info("Time Elapsed: " + timeElapsed / 3600000 + " hours "
+        main.getLogger().info("Game Stop Time - " + sdf.format(new Date(stopT)));
+        main.getLogger().info("Time Elapsed: " + timeElapsed / 3600000 + " hours "
                 + (timeElapsed / 60000) % 60 + " minutes "
                 + (timeElapsed / 1000) + "seconds");
     }
 
     protected void startBorderShrink() {
-        //stop stop() from cancelling task because it no longer exists
         borderShrinking = true;
-        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "worldborder set " + finalSize + " " + calcBorderShrinkTime());
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
+                "worldborder set " + finalSize + " " + calcBorderShrinkTime());
+        main.getLogger().info("Game border shrinking from " + initSize + " " + " to " + finalSize
+                + "over " + calcBorderShrinkTime() + " secs");
     }
 
     private int calcBorderShrinkTime() {
         return (initSize - finalSize) * 2;
+    }
+
+    public int getInitSize() {
+        return initSize;
+    }
+
+    public int getFinalSize() {
+        return finalSize;
     }
 }
