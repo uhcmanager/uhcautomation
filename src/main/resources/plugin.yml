@@ -1,8 +1,9 @@
-name: UHC Automation
+name: UHC_Automation
 version: 0.1
-author: puppycactus@gmail.com
-main: usa.cactuspuppy.uhc_automation.Main
+author: CactusPuppy
 description: Automates the handling of UHC commands
+main: usa.cactuspuppy.uhc_automation.Main
+
 commands:
   uhcstart:
     description: Starts the UHC. No big surprises.
