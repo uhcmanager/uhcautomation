@@ -17,5 +17,5 @@ commands:
     permission: uhca.admin
   uhcreset:
     description: Stops the game and resets everything.
-    aliases: [reset, uhcr]
+    aliases: [reset, uhcr, uhcstop]
     usage: /<command>

@@ -1,6 +1,6 @@
 db:
   host: localhost
   port: 3306
-  database: uhc_automation
+  database: OverwatchLeague
   username: Krusher99
   password: password_is_not_a_good_password
