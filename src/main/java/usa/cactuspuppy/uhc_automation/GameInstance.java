@@ -5,6 +5,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
 
 public class GameInstance {
     private Plugin plugin;
@@ -44,6 +45,7 @@ public class GameInstance {
     public boolean start() {
         startT = System.currentTimeMillis();
         Bukkit.broadcastMessage("Game starting!");
+        //TODO: Finish spreadplayers command
         Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "spreadplayers ");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         plugin.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
@@ -55,10 +57,18 @@ public class GameInstance {
         if (!borderShrinking) {
             Bukkit.getScheduler().cancelTask(borderCountdown);
         }
+        long stopT = System.currentTimeMillis();
+        long timeElapsed = stopT - startT;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
+        plugin.getLogger().info("Game Stop Time - " + sdf.format(new Date(stopT)));
+        plugin.getLogger().info("Time Elapsed: " + timeElapsed / 3600000 + " hours "
+                + (timeElapsed / 60000) % 60 + " minutes "
+                + (timeElapsed / 1000) + "seconds");
     }
 
     protected void startBorderShrink() {
         //stop stop() from cancelling task because it no longer exists
+        borderShrinking = true;
         Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "worldborder set " + finalSize + " " + calcBorderShrinkTime());
     }
 
