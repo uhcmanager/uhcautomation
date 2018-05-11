@@ -37,8 +37,9 @@ public class Main extends JavaPlugin {
         gi = new GameInstance(this);
         registerCommands();
         Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(), this);
+        preGameSetup();
 
-        getLogger().info("UHC Automation loaded in " + ((double) (System.currentTimeMillis() - start)) + " ms");
+        getLogger().info("UHC Automation loaded in " + ((System.currentTimeMillis() - start)) + " ms");
     }
 
     @Override
@@ -92,5 +93,10 @@ public class Main extends JavaPlugin {
         getCommand("uhcoptions").setExecutor(new CommandOptions(this));
         getCommand("uhcreset").setExecutor(new CommandReset(this));
 
+    }
+
+    private void preGameSetup() {
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "fill -10 200 -10 10 202 10 barrier 0 hollow");
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "fill -9 202 -9 9 202 9 air 0 replace barrier");
     }
 }

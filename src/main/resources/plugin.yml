@@ -1,7 +1,7 @@
 name: UHC_Automation
-version: 0.1
+version: 0.2
 author: CactusPuppy
-description: Automates the handling of UHC commands
+description: Automates the handling of UHC events
 main: usa.cactuspuppy.uhc_automation.Main
 
 commands:

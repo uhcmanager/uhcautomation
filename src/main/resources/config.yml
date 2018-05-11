@@ -1,3 +1,12 @@
+game:
+  init-size: 4001
+  final-size: 101
+  episode-length: 20
+  mins-to-shrink: 120
+  team-mode: false
+  respect-teams: true
+  uhc-mode: true
+  spread-distance: 150
 db:
   host: localhost
   port: 3306

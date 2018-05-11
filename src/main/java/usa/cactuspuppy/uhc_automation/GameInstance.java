@@ -7,20 +7,28 @@ import java.util.Date;
 
 public class GameInstance {
     private Main main;
-    private int state;
     private long startT;
+
     private int minsToShrink;
     private int initSize;
     private int finalSize;
+    private int spreadDistance;
     private boolean teamMode;
+    private boolean respectTeams;
+    private boolean uhcMode;
+    
     private int borderCountdown;
     private boolean borderShrinking;
 
     protected GameInstance(Main p) {
         main = p;
-        state = 0;
         startT = 0;
-        minsToShrink = 120;
+        minsToShrink = p.getConfig().getInt("game.minds-to-shrink");
+        initSize = p.getConfig().getInt("game.init-size");
+        finalSize = p.getConfig().getInt("game.final-size");
+        teamMode = p.getConfig().getBoolean("game.team-mode");
+        respectTeams = p.getConfig().getBoolean("game.respect-teams");
+        spreadDistance = p.getConfig().getInt("game.spread-distance");
         borderShrinking = false;
     }
 
@@ -40,11 +48,18 @@ public class GameInstance {
         teamMode = b;
     }
 
+    protected void setSpreadDistance(int sd) {
+        spreadDistance = sd;
+    }
+
+    protected void setRespectTeams(boolean rt) {
+        respectTeams = rt;
+    }
+
     public boolean start() {
         startT = System.currentTimeMillis();
         Bukkit.broadcastMessage("Game starting!");
-        //TODO: Finish spreadplayers command
-        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "spreadplayers ");
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "spreadplayers 0 0 " + spreadDistance + " " + initSize / 2 + " " + respectTeams + " @a[m=0]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
         borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
