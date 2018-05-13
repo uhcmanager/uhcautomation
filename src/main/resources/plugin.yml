@@ -19,3 +19,9 @@ commands:
     description: Stops the game and resets everything.
     aliases: [reset, uhcr, uhcstop]
     usage: /<command>
+    permission: uhca.admin
+  uhcsetworld:
+    description: Sets the world the executor is in to be where the UHC is occurring
+    aliases: [setworld, uhcworld]
+    usage: /<command>
+    permission: uhca.admin

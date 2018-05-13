@@ -1,13 +1,18 @@
 package usa.cactuspuppy.uhc_automation;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.UUID;
 
 public class GameInstance {
     private Main main;
     private long startT;
+    private HashSet<UUID> livePlayers;
+    private World world;
 
     private int minsToShrink;
     private int initSize;
@@ -29,37 +34,14 @@ public class GameInstance {
         teamMode = p.getConfig().getBoolean("game.team-mode");
         respectTeams = p.getConfig().getBoolean("game.respect-teams");
         spreadDistance = p.getConfig().getInt("game.spread-distance");
+        world = UHCUtils.getWorldFromString(main, Bukkit.getServer(), p.getConfig().getString("world"));
         borderShrinking = false;
-    }
-
-    protected void setInitSize(int s) {
-        initSize = s;
-    }
-
-    protected void setFinalSize(int s) {
-        finalSize = s;
-    }
-
-    protected void setTimeToShrink(int minutes) {
-        minsToShrink = minutes;
-    }
-
-    protected void setTeamMode(boolean b) {
-        teamMode = b;
-    }
-
-    protected void setSpreadDistance(int sd) {
-        spreadDistance = sd;
-    }
-
-    protected void setRespectTeams(boolean rt) {
-        respectTeams = rt;
     }
 
     public boolean start() {
         startT = System.currentTimeMillis();
         Bukkit.broadcastMessage("Game starting!");
-        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "spreadplayers 0 0 " + spreadDistance + " " + initSize / 2 + " " + respectTeams + " @a[m=0]");
+        UHCUtils.exeCmd(Bukkit.getServer(), world, "spreadplayers 0 0 " + spreadDistance + " " + initSize / 2 + " " + respectTeams + " @a[m=0]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
         borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
@@ -97,5 +79,33 @@ public class GameInstance {
 
     public int getFinalSize() {
         return finalSize;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    protected void setInitSize(int s) {
+        initSize = s;
+    }
+
+    protected void setFinalSize(int s) {
+        finalSize = s;
+    }
+
+    protected void setTimeToShrink(int minutes) {
+        minsToShrink = minutes;
+    }
+
+    protected void setTeamMode(boolean b) {
+        teamMode = b;
+    }
+
+    protected void setSpreadDistance(int sd) {
+        spreadDistance = sd;
+    }
+
+    protected void setRespectTeams(boolean rt) {
+        respectTeams = rt;
     }
 }

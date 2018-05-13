@@ -1,3 +1,4 @@
+world: GameWorld
 game:
   init-size: 4001
   final-size: 101

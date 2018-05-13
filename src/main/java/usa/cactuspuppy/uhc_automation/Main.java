@@ -34,7 +34,9 @@ public class Main extends JavaPlugin {
             }
         };
         r.runTaskAsynchronously(this);
-        gi = new GameInstance(this);
+        if (gi == null) {
+            gi = new GameInstance(this);
+        }
         registerCommands();
         Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(), this);
         preGameSetup();
@@ -96,7 +98,7 @@ public class Main extends JavaPlugin {
     }
 
     private void preGameSetup() {
-        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "fill -10 200 -10 10 202 10 barrier 0 hollow");
-        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "fill -9 202 -9 9 202 9 air 0 replace barrier");
+        UHCUtils.exeCmd(Bukkit.getServer(), gi.getWorld(), "fill -10 200 -10 10 202 10 barrier 0 hollow");
+        UHCUtils.exeCmd(Bukkit.getServer(), gi.getWorld(), "fill -9 202 -9 9 202 9 air 0 replace barrier");
     }
 }
