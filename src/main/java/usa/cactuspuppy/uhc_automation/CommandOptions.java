@@ -55,13 +55,14 @@ public class CommandOptions implements CommandExecutor {
                     main.getConfig().set("game.spread-distance", Integer.valueOf(args[1]));
                 } else if (args[0].equals(OPTIONS[5])) {
                     if (args[1].equalsIgnoreCase("true")) {
-                        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "gamerule naturalRegeneration false");
+                        UHCUtils.exeCmd(Bukkit.getServer(), main.gi.getWorld(), "gamerule naturalRegeneration false");
                     } else if (args[1].equalsIgnoreCase("false")) {
-                        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "gamerule naturalRegeneration true");
+                        UHCUtils.exeCmd(Bukkit.getServer(), main.gi.getWorld(), "gamerule naturalRegeneration true");
                     } else {
                         commandSender.sendMessage(ChatColor.RED + "ERROR: Option " + args[1] + " is not true or false.");
                         return true;
                     }
+                    main.gi.setUHCMode(Boolean.valueOf(args[1]));
                     main.getConfig().set("game.uhc-mode", Boolean.valueOf(args[1]));
                 } else if (args[0].equals(OPTIONS[6])) {
                     if (args[1].equalsIgnoreCase("true")) {

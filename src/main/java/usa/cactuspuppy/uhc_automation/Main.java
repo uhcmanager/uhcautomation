@@ -100,5 +100,6 @@ public class Main extends JavaPlugin {
     private void preGameSetup() {
         UHCUtils.exeCmd(Bukkit.getServer(), gi.getWorld(), "fill -10 200 -10 10 202 10 barrier 0 hollow");
         UHCUtils.exeCmd(Bukkit.getServer(), gi.getWorld(), "fill -9 202 -9 9 202 9 air 0 replace barrier");
+        UHCUtils.exeCmd(Bukkit.getServer(), gi.getWorld(), "setworldspawn 0 201 0");
     }
 }

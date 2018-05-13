@@ -5,10 +5,7 @@ import net.minecraft.server.v1_12_R1.EntityPlayer;
 import net.minecraft.server.v1_12_R1.MinecraftServer;
 import net.minecraft.server.v1_12_R1.PlayerInteractManager;
 import net.minecraft.server.v1_12_R1.WorldServer;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
@@ -24,6 +21,16 @@ public class UHCUtils {
         HashSet<Player> rv = new HashSet<>();
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (p.getWorld().equals(w)) {
+                rv.add(p);
+            }
+        }
+        return rv;
+    }
+
+    public static Set<Player> getWorldLivePlayers(World w, Set<Player> players) {
+        HashSet<Player> rv = new HashSet<>();
+        for (Player p : players) {
+            if (p.getGameMode().equals(GameMode.SURVIVAL)) {
                 rv.add(p);
             }
         }

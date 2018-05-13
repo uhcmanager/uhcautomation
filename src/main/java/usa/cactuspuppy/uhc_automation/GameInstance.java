@@ -2,16 +2,18 @@ package usa.cactuspuppy.uhc_automation;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.UUID;
+import java.util.Set;
 
 public class GameInstance {
     private Main main;
     private long startT;
-    private HashSet<UUID> livePlayers;
+    private Set<Player> livePlayers;
+    private Set<Player> allPlayers;
     private World world;
 
     private int minsToShrink;
@@ -34,6 +36,8 @@ public class GameInstance {
         teamMode = p.getConfig().getBoolean("game.team-mode");
         respectTeams = p.getConfig().getBoolean("game.respect-teams");
         spreadDistance = p.getConfig().getInt("game.spread-distance");
+        teamMode = p.getConfig().getBoolean("game.team-mode");
+        uhcMode = p.getConfig().getBoolean("game.uhc-mode");
         world = UHCUtils.getWorldFromString(main, Bukkit.getServer(), p.getConfig().getString("world"));
         borderShrinking = false;
     }
@@ -41,6 +45,8 @@ public class GameInstance {
     public boolean start() {
         startT = System.currentTimeMillis();
         Bukkit.broadcastMessage("Game starting!");
+        allPlayers = UHCUtils.getWorldPlayers(world);
+        livePlayers = UHCUtils.getWorldLivePlayers(world, allPlayers);
         UHCUtils.exeCmd(Bukkit.getServer(), world, "spreadplayers 0 0 " + spreadDistance + " " + initSize / 2 + " " + respectTeams + " @a[m=0]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
@@ -107,5 +113,9 @@ public class GameInstance {
 
     protected void setRespectTeams(boolean rt) {
         respectTeams = rt;
+    }
+
+    protected void setUHCMode(boolean um) {
+        uhcMode = um;
     }
 }
