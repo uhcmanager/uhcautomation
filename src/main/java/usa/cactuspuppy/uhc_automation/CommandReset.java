@@ -19,6 +19,7 @@ public class CommandReset implements CommandExecutor {
         commandSender.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Stopping game!");
         main.getLogger().log(Level.FINE, commandSender.getName() + " initiated command to halt game");
         main.gi.stop();
+        main.gi.prep();
         return true;
     }
 }

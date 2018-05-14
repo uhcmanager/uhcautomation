@@ -5,6 +5,9 @@ description: Automates the handling of UHC events
 main: usa.cactuspuppy.uhc_automation.Main
 
 commands:
+  uhcprep:
+    description: Performs the setup to create a lobby.
+    aliases: [prep, uhcp]
   uhcstart:
     description: Starts the UHC. No big surprises.
     aliases: [start, uhcs]
@@ -23,5 +26,14 @@ commands:
   uhcsetworld:
     description: Sets the world the executor is in to be where the UHC is occurring
     aliases: [setworld, uhcworld]
+    usage: /<command>
+    permission: uhca.admin
+  uhcstatus:
+    description: Dumps game status to log files
+    aliases: [status]
+    usage: /<command>
+    permission: uhca.admin
+  uhctest:
+    description: Test command
     usage: /<command>
     permission: uhca.admin

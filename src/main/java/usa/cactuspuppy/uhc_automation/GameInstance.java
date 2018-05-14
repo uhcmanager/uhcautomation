@@ -1,17 +1,20 @@
 package usa.cactuspuppy.uhc_automation;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.bukkit.entity.Player;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 public class GameInstance {
     private Main main;
     private long startT;
+    private boolean active;
     private Set<Player> livePlayers;
     private Set<Player> allPlayers;
     private World world;
@@ -40,17 +43,26 @@ public class GameInstance {
         uhcMode = p.getConfig().getBoolean("game.uhc-mode");
         world = UHCUtils.getWorldFromString(main, Bukkit.getServer(), p.getConfig().getString("world"));
         borderShrinking = false;
+        active = false;
+    }
+
+    public void prep() {
+        UHCUtils.exeCmd(Bukkit.getServer(), world, "fill -10 200 -10 10 202 10 barrier 0 hollow");
+        UHCUtils.exeCmd(Bukkit.getServer(), world, "fill -9 202 -9 9 202 9 air");
+        UHCUtils.exeCmd(Bukkit.getServer(), world, "setworldspawn 0 201 0");
+        UHCUtils.exeCmd("tp @a 0 201 0");
     }
 
     public boolean start() {
         startT = System.currentTimeMillis();
-        Bukkit.broadcastMessage("Game starting!");
+        Bukkit.broadcastMessage(ChatColor.GREEN + "Game starting!");
         allPlayers = UHCUtils.getWorldPlayers(world);
         livePlayers = UHCUtils.getWorldLivePlayers(world, allPlayers);
         UHCUtils.exeCmd(Bukkit.getServer(), world, "spreadplayers 0 0 " + spreadDistance + " " + initSize / 2 + " " + respectTeams + " @a[m=0]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
         borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
+        active = true;
         return true;
     }
 
@@ -64,15 +76,33 @@ public class GameInstance {
         main.getLogger().info("Game Stop Time - " + sdf.format(new Date(stopT)));
         main.getLogger().info("Time Elapsed: " + timeElapsed / 3600000 + " hours "
                 + (timeElapsed / 60000) % 60 + " minutes "
-                + (timeElapsed / 1000) + "seconds");
+                + (timeElapsed / 1000) % 60 + " seconds");
+        active = false;
     }
 
     protected void startBorderShrink() {
         borderShrinking = true;
-        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
+        UHCUtils.exeCmd(Bukkit.getServer(), world,
                 "worldborder set " + finalSize + " " + calcBorderShrinkTime());
         main.getLogger().info("Game border shrinking from " + initSize + " " + " to " + finalSize
                 + "over " + calcBorderShrinkTime() + " secs");
+    }
+
+    /* Helper/Access methods */
+
+    public void logStatus() {
+        Logger log = Bukkit.getServer().getLogger();
+        String worldName;
+        if (world != null) {
+            worldName = world.getName();
+        } else {
+            worldName = "NONE";
+        }
+        log.info("World: " + worldName);
+        log.info("Active: " + active);
+        if (active) {
+            log.info("Start Time: " + startT);
+        }
     }
 
     private int calcBorderShrinkTime() {
@@ -89,6 +119,10 @@ public class GameInstance {
 
     public World getWorld() {
         return world;
+    }
+
+    protected void setGameWorld(String worldname) {
+        world = UHCUtils.getWorldFromString(main, Bukkit.getServer(), worldname);
     }
 
     protected void setInitSize(int s) {

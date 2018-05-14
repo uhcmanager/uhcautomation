@@ -75,11 +75,12 @@ public class CommandOptions implements CommandExecutor {
                     }
                     main.getConfig().set("game.respect-teams", Boolean.valueOf(args[1]));
                 }
+                main.saveConfig();
+                return true;
             } catch (NumberFormatException e) {
                 commandSender.sendMessage(ChatColor.RED + "ERROR: Option " + args[1] + " is not an integer.");
                 return false;
             }
-            return true;
         } else {
             commandSender.sendMessage(ChatColor.RED + "ERROR: Option " + args[0] + " not recognized.");
             return true;

@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation;
 
+import com.mysql.jdbc.CommunicationsException;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -39,18 +40,17 @@ public class Main extends JavaPlugin {
         }
         registerCommands();
         Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(), this);
-        preGameSetup();
 
         getLogger().info("UHC Automation loaded in " + ((System.currentTimeMillis() - start)) + " ms");
     }
 
     @Override
     public void onDisable() {
-        saveDefaultConfig();
+        saveConfig();
     }
 
     /**
-     * @source Innectic's Permissify plugin. Blatantly stolen code btw.
+     * @source Innectic's Permissify plugin.
      */
     private void createConfig() {
         try {
@@ -59,13 +59,13 @@ public class Main extends JavaPlugin {
                 if (!created) {
                     getLogger().log(Level.SEVERE, "Could not create config folder!");
                 }
-                File config = new File(getDataFolder(), "config.yml");
-                if (!config.exists()) {
-                    getLogger().info("config.yml not found, creating...");
-                    saveDefaultConfig();
-                } else {
-                    getLogger().info("Loading config.yml...");
-                }
+            }
+            File config = new File(getDataFolder(), "config.yml");
+            if (!config.exists()) {
+                getLogger().info("config.yml not found, creating...");
+                saveDefaultConfig();
+            } else {
+                getLogger().info("Loading config.yml...");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -86,7 +86,11 @@ public class Main extends JavaPlugin {
                 return;
             }
             Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://" + this.host+ ":" + this.port + "/" + this.database, this.username, this.password);
+            try {
+                connection = DriverManager.getConnection("jdbc:mysql://" + this.host+ ":" + this.port + "/" + this.database, this.username, this.password);
+            } catch (CommunicationsException e) {
+                getLogger().warning("Could not establish connection to SQL database. Check that your config.yml is correct.");
+            }
         }
     }
 
@@ -94,12 +98,9 @@ public class Main extends JavaPlugin {
         getCommand("uhcstart").setExecutor(new CommandStart(this));
         getCommand("uhcoptions").setExecutor(new CommandOptions(this));
         getCommand("uhcreset").setExecutor(new CommandReset(this));
-
-    }
-
-    private void preGameSetup() {
-        UHCUtils.exeCmd(Bukkit.getServer(), gi.getWorld(), "fill -10 200 -10 10 202 10 barrier 0 hollow");
-        UHCUtils.exeCmd(Bukkit.getServer(), gi.getWorld(), "fill -9 202 -9 9 202 9 air 0 replace barrier");
-        UHCUtils.exeCmd(Bukkit.getServer(), gi.getWorld(), "setworldspawn 0 201 0");
+        getCommand("uhcsetworld").setExecutor(new CommandSetWorld(this));
+        getCommand("uhctest").setExecutor(new CommandTest(this));
+        getCommand("uhcstatus").setExecutor(new CommandStatus(this));
+        getCommand("uhcprep").setExecutor(new CommandLobby(this));
     }
 }
