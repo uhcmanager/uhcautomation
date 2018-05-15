@@ -1,22 +1,21 @@
 package usa.cactuspuppy.uhc_automation;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.World;
-import org.bukkit.WorldBorder;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 public class GameInstance {
     private Main main;
     private long startT;
     private boolean active;
-    private Set<Player> livePlayers;
-    private Set<Player> allPlayers;
+    private Set<UUID> livePlayers;
+    private Set<UUID> allPlayers;
     private World world;
 
     private int minsToShrink;
@@ -29,6 +28,8 @@ public class GameInstance {
     
     private int borderCountdown;
     private boolean borderShrinking;
+    private PlayerMoveListener freezePlayers;
+    private int loadChunksCDID;
 
     protected GameInstance(Main p) {
         main = p;
@@ -51,6 +52,7 @@ public class GameInstance {
         UHCUtils.exeCmd(Bukkit.getServer(), world, "fill -9 202 -9 9 202 9 air");
         UHCUtils.exeCmd(Bukkit.getServer(), world, "setworldspawn 0 201 0");
         UHCUtils.exeCmd("tp @a 0 201 0");
+        UHCUtils.exeCmd("worldborder set " + initSize);
     }
 
     public boolean start() {
@@ -63,7 +65,14 @@ public class GameInstance {
         main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
         borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
         active = true;
+        freezePlayers = new PlayerMoveListener(main);
+        Bukkit.getServer().getPluginManager().registerEvents(freezePlayers, main);
+        loadChunksCDID = (new LoadingChunksCountdown(main, 5)).schedule();
         return true;
+    }
+
+    public void release() {
+        HandlerList.unregisterAll(freezePlayers);
     }
 
     public void stop() {
@@ -89,6 +98,13 @@ public class GameInstance {
     }
 
     /* Helper/Access methods */
+
+    public boolean validate() {
+        boolean valid;
+        valid = initSize > finalSize;
+        valid = valid && spreadDistance < initSize;
+        return valid;
+    }
 
     public void logStatus() {
         Logger log = Bukkit.getServer().getLogger();
@@ -119,6 +135,21 @@ public class GameInstance {
 
     public World getWorld() {
         return world;
+    }
+
+    public Set<UUID> getLivePlayers() {
+        return livePlayers;
+    }
+
+    public Set<UUID> getAllPlayers() {
+        return allPlayers;
+    }
+
+    public void registerPlayer(Player p) {
+        allPlayers.add(p.getUniqueId());
+        if (p.getGameMode() == GameMode.SURVIVAL) {
+            livePlayers.add(p.getUniqueId());
+        }
     }
 
     protected void setGameWorld(String worldname) {

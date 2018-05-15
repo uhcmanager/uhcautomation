@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,6 +14,10 @@ public class CommandStart implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!main.gi.validate()) {
+            sender.sendMessage(ChatColor.RED + "Game settings are not valid! Use /uhcstatus to see current settings or check config.");
+            return true;
+        }
         if (args.length == 0) {
             return main.gi.start();
         } else if (args.length == 1) {

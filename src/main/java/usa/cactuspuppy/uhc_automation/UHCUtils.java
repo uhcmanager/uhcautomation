@@ -1,39 +1,37 @@
 package usa.cactuspuppy.uhc_automation;
 
-import com.mojang.authlib.GameProfile;
+import net.minecraft.server.v1_12_R1.ChatMessageType;
+import net.minecraft.server.v1_12_R1.IChatBaseComponent;
+import net.minecraft.server.v1_12_R1.PacketPlayOutChat;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.command.CommandException;
-import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class UHCUtils {
-    public static Set<Player> getWorldPlayers(World w) {
-        HashSet<Player> rv = new HashSet<>();
+    public static Set<UUID> getWorldPlayers(World w) {
+        HashSet<UUID> rv = new HashSet<>();
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (p.getWorld().equals(w)) {
-                rv.add(p);
+                rv.add(p.getUniqueId());
             }
         }
         return rv;
     }
 
-    public static Set<Player> getWorldLivePlayers(World w, Set<Player> players) {
-        HashSet<Player> rv = new HashSet<>();
-        for (Player p : players) {
+    public static Set<UUID> getWorldLivePlayers(World w, Set<UUID> players) {
+        HashSet<UUID> rv = new HashSet<>();
+        for (UUID u : players) {
+            Player p = Bukkit.getPlayer(u);
             if (p.getGameMode().equals(GameMode.SURVIVAL) && p.getWorld().equals(w)) {
-                rv.add(p);
+                rv.add(p.getUniqueId());
             }
         }
         return rv;
@@ -69,5 +67,17 @@ public class UHCUtils {
 
     public static void exeCmd(String cmd) {
         Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
+    }
+
+    /**
+     * @source ConnorLinfoot
+     * @param player to send title actionbar to
+     * @param message to display
+     */
+    public static void sendActionBar(Player player, String message){
+        CraftPlayer p = (CraftPlayer) player;
+        IChatBaseComponent cbc = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + message + "\"}");
+        PacketPlayOutChat ppoc = new PacketPlayOutChat(cbc, ChatMessageType.CHAT);
+        p.getHandle().playerConnection.sendPacket(ppoc);
     }
 }

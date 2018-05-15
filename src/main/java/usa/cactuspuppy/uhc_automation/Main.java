@@ -40,7 +40,7 @@ public class Main extends JavaPlugin {
         }
         registerCommands();
         Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(), this);
-
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         getLogger().info("UHC Automation loaded in " + ((System.currentTimeMillis() - start)) + " ms");
     }
 
