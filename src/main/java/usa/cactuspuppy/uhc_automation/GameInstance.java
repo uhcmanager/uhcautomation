@@ -6,6 +6,7 @@ import org.bukkit.event.HandlerList;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -22,6 +23,7 @@ public class GameInstance {
     private int initSize;
     private int finalSize;
     private int spreadDistance;
+    private int epLength;
     private boolean teamMode;
     private boolean respectTeams;
     private boolean uhcMode;
@@ -42,7 +44,10 @@ public class GameInstance {
         spreadDistance = p.getConfig().getInt("game.spread-distance");
         teamMode = p.getConfig().getBoolean("game.team-mode");
         uhcMode = p.getConfig().getBoolean("game.uhc-mode");
+        epLength = p.getConfig().getInt("game.episode-length");
         world = UHCUtils.getWorldFromString(main, Bukkit.getServer(), p.getConfig().getString("world"));
+        livePlayers = new HashSet<>();
+        allPlayers = new HashSet<>();
         borderShrinking = false;
         active = false;
     }
@@ -56,14 +61,13 @@ public class GameInstance {
     }
 
     public boolean start() {
-        startT = System.currentTimeMillis();
+        long initT = System.currentTimeMillis();
         Bukkit.broadcastMessage(ChatColor.GREEN + "Game starting!");
         allPlayers = UHCUtils.getWorldPlayers(world);
         livePlayers = UHCUtils.getWorldLivePlayers(world, allPlayers);
         UHCUtils.exeCmd(Bukkit.getServer(), world, "spreadplayers 0 0 " + spreadDistance + " " + initSize / 2 + " " + respectTeams + " @a[m=0]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
-        main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
-        borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
+        main.getLogger().info("Game Initiate Time - " + sdf.format(new Date(initT)));
         active = true;
         freezePlayers = new PlayerMoveListener(main);
         Bukkit.getServer().getPluginManager().registerEvents(freezePlayers, main);
@@ -72,15 +76,23 @@ public class GameInstance {
     }
 
     public void release() {
+        Bukkit.getScheduler().cancelTask(loadChunksCDID);
+        startT = System.currentTimeMillis();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
+        main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
+        borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
+        (new EpisodeAnnouncer(main, epLength, startT)).schedule();
         HandlerList.unregisterAll(freezePlayers);
     }
 
     public void stop() {
-        if (!borderShrinking) {
-            Bukkit.getScheduler().cancelTask(borderCountdown);
+        if (!active) {
+            return;
         }
+        Bukkit.getScheduler().cancelAllTasks();
         long stopT = System.currentTimeMillis();
         long timeElapsed = stopT - startT;
+        startT = 0;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Stop Time - " + sdf.format(new Date(stopT)));
         main.getLogger().info("Time Elapsed: " + timeElapsed / 3600000 + " hours "
@@ -95,6 +107,7 @@ public class GameInstance {
                 "worldborder set " + finalSize + " " + calcBorderShrinkTime());
         main.getLogger().info("Game border shrinking from " + initSize + " " + " to " + finalSize
                 + "over " + calcBorderShrinkTime() + " secs");
+        Bukkit.getScheduler().cancelTask(borderCountdown);
     }
 
     /* Helper/Access methods */

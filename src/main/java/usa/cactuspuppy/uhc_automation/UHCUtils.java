@@ -16,6 +16,9 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 public class UHCUtils {
+    //do not instantiate
+    public UHCUtils() { }
+
     public static Set<UUID> getWorldPlayers(World w) {
         HashSet<UUID> rv = new HashSet<>();
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -58,10 +61,10 @@ public class UHCUtils {
         EntityPlayer ep = new EntityPlayer(nmsServer, nmsWorld, new GameProfile(UUID.randomUUID(), "UHC_Automation"), new PlayerInteractManager(nmsWorld));
         ep.setLocation(0, 0, 0, 0, 0);
         CraftPlayer d = new CraftPlayer((CraftServer) s, ep);
-        d.setOp(true);*/
-        //try {
-//            d.performCommand(cmd);
-        //} catch (CommandException e) { }
+        d.setOp(true);
+        try {
+           d.performCommand(cmd);
+        } catch (CommandException e) { }*/
         s.dispatchCommand(s.getConsoleSender(), cmd);
     }
 

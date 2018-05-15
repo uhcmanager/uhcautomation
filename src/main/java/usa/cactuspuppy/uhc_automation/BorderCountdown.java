@@ -1,7 +1,6 @@
 package usa.cactuspuppy.uhc_automation;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 
 public class BorderCountdown implements Runnable {
     private Main main;

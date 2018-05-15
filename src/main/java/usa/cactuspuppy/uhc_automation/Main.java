@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.net.ConnectException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -30,7 +31,7 @@ public class Main extends JavaPlugin {
                     initSQL();
                     statement = connection.createStatement();
                 } catch (SQLException | ClassNotFoundException e) {
-                    e.printStackTrace();
+                    getLogger().warning("Could not establish connection to SQL database. Check that your config.yml is correct.");
                 }
             }
         };
