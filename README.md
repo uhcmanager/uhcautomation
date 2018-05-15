@@ -3,4 +3,4 @@ Automates the process of running a UHC or other similarly structured event. For 
 
 NOTES:
 - Team mode is not currently implemented.
-- Plugins is untested
+- Plugin is untested
