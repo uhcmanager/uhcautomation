@@ -11,7 +11,7 @@ import java.util.Arrays;
 public class CommandOptions implements CommandExecutor {
     private Main main;
     private static final String[] OPTIONS =
-            {"initSize", "finalSize", "timeToBorderShrink", "teamMode", "sepDist", "uhcMode", "respectTeams", "epLength"};
+            {"initSize", "finalSize", "minsToBorderShrink", "teamMode", "sepDist", "uhcMode", "respectTeams", "epLength"};
 
     public CommandOptions(Main m) {
         main = m;
@@ -83,6 +83,7 @@ public class CommandOptions implements CommandExecutor {
                     main.gi.setEpLength(Integer.valueOf(args[1]));
                     main.getConfig().set("game.episode-length", Integer.valueOf(args[1]));
                 }
+                commandSender.sendMessage("Successfully set " + args[0] + " to be " + args[1]);
                 main.saveConfig();
                 return true;
             } catch (NumberFormatException e) {

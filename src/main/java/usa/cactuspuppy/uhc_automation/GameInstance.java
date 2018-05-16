@@ -75,7 +75,10 @@ public class GameInstance {
         Bukkit.broadcastMessage(ChatColor.GREEN + "Game starting!");
         allPlayers = UHCUtils.getWorldPlayers(world);
         livePlayers = UHCUtils.getWorldLivePlayers(world, allPlayers);
-        UHCUtils.exeCmd(Bukkit.getServer(), world, "spreadplayers 0 0 " + spreadDistance + " " + initSize / 2 + " " + respectTeams + " @a[m=0]");
+        UHCUtils.exeCmd("fill -10 200 -10 10 202 10 air");
+        UHCUtils.exeCmd("effect @a[m=0] minecraft:resistance 5 10 true");
+        UHCUtils.exeCmd("gamemode 2 @a[m=0]");
+        UHCUtils.exeCmd(Bukkit.getServer(), world, "spreadplayers 0 0 " + spreadDistance + " " + initSize / 2 + " " + respectTeams + " @a[m=2]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Initiate Time - " + sdf.format(new Date(initT)));
         active = true;
@@ -87,7 +90,9 @@ public class GameInstance {
 
     public void release() {
         Bukkit.getScheduler().cancelTask(loadChunksCDID);
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(main), main);
         startT = System.currentTimeMillis();
+        UHCUtils.exeCmd("gamemode 0 @a[m=2]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
         borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
@@ -152,7 +157,7 @@ public class GameInstance {
             } else {
                 return;
             }
-
+            stop();
         }
     }
 

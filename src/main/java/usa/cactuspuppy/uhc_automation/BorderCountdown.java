@@ -18,7 +18,7 @@ public class BorderCountdown implements Runnable {
     @Override
     public void run() {
         //When time up, unschedule task
-        if (System.currentTimeMillis() == end) {
+        if (System.currentTimeMillis() >= end) {
             main.gi.startBorderShrink();
             if (assignedID != null) { Bukkit.getScheduler().cancelTask(assignedID); }
             return;
