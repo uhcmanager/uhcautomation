@@ -33,7 +33,3 @@ commands:
     aliases: [status]
     usage: /<command>
     permission: uhca.admin
-  uhctest:
-    description: Test command
-    usage: /<command>
-    permission: uhca.admin

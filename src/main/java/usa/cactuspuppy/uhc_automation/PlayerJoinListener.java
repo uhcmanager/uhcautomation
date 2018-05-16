@@ -15,7 +15,7 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         if (!m.gi.getAllPlayers().contains(e.getPlayer().getUniqueId())
-                && e.getPlayer().getWorld().equals(m.gi.getWorld())) {
+                && UHCUtils.worldEqualsExt(e.getPlayer().getWorld(), m.gi.getWorld())) {
             m.gi.registerPlayer(e.getPlayer());
             e.getPlayer().sendMessage(ChatColor.GREEN + "You have been successfully registered in UHC Automation!");
         }

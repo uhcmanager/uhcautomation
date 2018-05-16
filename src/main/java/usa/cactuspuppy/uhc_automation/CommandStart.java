@@ -27,6 +27,7 @@ public class CommandStart implements CommandExecutor {
             } catch (NumberFormatException e) {
                 return false;
             }
+            return true;
         }
         return false;
     }

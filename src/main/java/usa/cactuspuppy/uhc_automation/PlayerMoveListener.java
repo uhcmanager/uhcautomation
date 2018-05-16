@@ -15,7 +15,7 @@ public class PlayerMoveListener implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
-        if (m.gi.getLivePlayers().contains(e.getPlayer().getUniqueId())) {
+        if (UHCUtils.worldEqualsExt(e.getPlayer().getWorld(), m.gi.getWorld()) && m.gi.getLivePlayers().contains(e.getPlayer().getUniqueId())) {
             if (samePlace(e.getFrom(), e.getTo())) {
                 return;
             }

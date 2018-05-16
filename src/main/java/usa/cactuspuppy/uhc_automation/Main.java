@@ -99,7 +99,6 @@ public class Main extends JavaPlugin {
         getCommand("uhcoptions").setExecutor(new CommandOptions(this));
         getCommand("uhcreset").setExecutor(new CommandReset(this));
         getCommand("uhcsetworld").setExecutor(new CommandSetWorld(this));
-        getCommand("uhctest").setExecutor(new CommandTest(this));
         getCommand("uhcstatus").setExecutor(new CommandStatus(this));
         getCommand("uhcprep").setExecutor(new CommandLobby(this));
     }

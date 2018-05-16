@@ -28,7 +28,7 @@ public class EpisodeAnnouncer implements Runnable {
             goalEP = startEP + 60000 * length;
             epCount++;
             m.gi.getAllPlayers().forEach((p) -> markEpisode(Bukkit.getPlayer(p)));
-            m.getLogger().info(ChatColor.GOLD + "Mark Episode " + epCount);
+            m.getLogger().info("Mark Episode " + epCount);
         }
     }
 
@@ -37,7 +37,7 @@ public class EpisodeAnnouncer implements Runnable {
         int hours = Math.floorDiv(mins, 60);
         mins = mins % 60;
         p.playSound(p.getLocation(), "minecraft:entity.firework.launch", (float) 1, (float) 1);
-        p.sendMessage(ChatColor.GOLD + "\nMARK: " + ChatColor.WHITE + "End of Episode" + ChatColor.GREEN + epCount);
+        p.sendMessage(ChatColor.GOLD + "\nMARK: " + ChatColor.WHITE + "End of Episode " + ChatColor.GREEN + epCount);
         p.sendMessage(ChatColor.AQUA + "Time Elapsed: " + ChatColor.GREEN + hours + ChatColor.WHITE + " Hours " + ChatColor.GREEN + mins + ChatColor.WHITE + " Minutes");
     }
 

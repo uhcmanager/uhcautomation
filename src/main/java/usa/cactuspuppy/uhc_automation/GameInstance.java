@@ -118,6 +118,34 @@ public class GameInstance {
         Bukkit.getScheduler().cancelTask(borderCountdown);
     }
 
+    public void checkForWin() {
+        if (teamMode) {
+            //TODO: team check
+        } else {
+            if (livePlayers.size() == 1) {
+                Player winner = null;
+                for (UUID u : livePlayers) {
+                    winner = Bukkit.getPlayer(u);
+                    break;
+                }
+                for (UUID u : allPlayers) {
+                    Player p = Bukkit.getPlayer(u);
+                    int timeElapsed = (int) (System.currentTimeMillis() - startT) / 1000;
+                    int hours = timeElapsed / 3600;
+                    int mins = timeElapsed / 60;
+                    int secs = timeElapsed % 60;
+                    p.sendMessage("\n" + ChatColor.GREEN + winner.getName() + ChatColor.WHITE + " wins!");
+                    p.sendMessage(ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + hours + " Hours " + mins + " Minutes " + secs + " Seconds");
+                    p.sendTitle(winner.getName(), "Wins!", 0, 80, 40);
+                }
+            } else if (livePlayers.size() == 0) {
+                for (UUID u : allPlayers) {
+
+                }
+            }
+        }
+    }
+
     /**
      *  Helper/Access methods
      */

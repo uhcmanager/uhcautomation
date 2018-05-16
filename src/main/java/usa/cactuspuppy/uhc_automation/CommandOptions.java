@@ -80,7 +80,7 @@ public class CommandOptions implements CommandExecutor {
                     }
                     main.getConfig().set("game.respect-teams", Boolean.valueOf(args[1]));
                 } else if (args[0].equals(OPTIONS[7])) {
-                    main.gi.setInitSize(Integer.valueOf(args[1]));
+                    main.gi.setEpLength(Integer.valueOf(args[1]));
                     main.getConfig().set("game.episode-length", Integer.valueOf(args[1]));
                 }
                 main.saveConfig();

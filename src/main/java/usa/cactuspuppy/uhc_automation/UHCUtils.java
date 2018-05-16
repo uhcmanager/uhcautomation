@@ -70,6 +70,14 @@ public class UHCUtils {
         return w;
     }
 
+    public static boolean worldEqualsExt(World in, World check) {
+        String inName = in.getName();
+        String checkName = check.getName();
+        String checkNether = checkName + "_nether";
+        String checkEnd = checkName + "_the_end";
+        return inName.equals(checkName) || inName.equals(checkNether) || inName.equals(checkEnd);
+    }
+
     public static void exeCmd(Server s, World w, String cmd) {
         /*s.getLogger().log(Level.INFO, "Attempting to run command: '" + cmd + "'");
         MinecraftServer nmsServer = ((CraftServer) s).getServer();
