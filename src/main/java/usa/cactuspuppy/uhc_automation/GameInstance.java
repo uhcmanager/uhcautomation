@@ -52,6 +52,7 @@ public class GameInstance {
         } else {
             livePlayers = playerSets.get("livePlayers");
             allPlayers = playerSets.get("allPlayers");
+            reactivate();
         }
         borderShrinking = false;
         active = false;
@@ -108,12 +109,15 @@ public class GameInstance {
     }
 
     public void stop() {
-        if (!active) {
-            return;
-        }
         (new DelayedReset(main)).schedule();
         long stopT = System.currentTimeMillis();
-        long timeElapsed = stopT - startT;
+        long timeElapsed;
+        if (startT == 0) {
+            timeElapsed = 0;
+        } else {
+            timeElapsed = stopT - startT;
+
+        }
         startT = 0;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Stop Time - " + sdf.format(new Date(stopT)));
@@ -122,6 +126,20 @@ public class GameInstance {
                 + (timeElapsed / 1000) % 60 + " seconds");
         active = false;
         UHCUtils.clearWorldPlayers(main);
+    }
+
+    protected void reactivate() {
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(main), main);
+        startT = System.currentTimeMillis();
+        UHCUtils.exeCmd("gamemode 0 @a[m=2]");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
+        main.getLogger().info("Game Reinitiate Time - " + sdf.format(new Date(startT)));
+        UHCUtils.exeCmd("gamerule doDaylightCycle true");
+        UHCUtils.exeCmd("gamerule doWeatherCycle true");
+        borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
+        (new EpisodeAnnouncer(main, epLength, startT)).schedule();
+        HandlerList.unregisterAll(freezePlayers);
+        allPlayers.forEach(this::startPlayer);
     }
 
     protected void startBorderShrink() {
@@ -234,6 +252,10 @@ public class GameInstance {
 
     public Set<UUID> getAllPlayers() {
         return allPlayers;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 
     public void registerPlayer(Player p) {

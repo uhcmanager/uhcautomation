@@ -16,9 +16,17 @@ public class EpisodeAnnouncer implements Runnable {
     public EpisodeAnnouncer(Main main, int mins, long startT) {
         m = main;
         length = mins;
-        startEP = startT;
-        goalEP = startEP + 60000 * mins;
-        epCount = 0;
+        long currTime = System.currentTimeMillis();
+        if (currTime - startT > 10000) {
+            int minsElapsed = (int) (Math.floorDiv(currTime - startT, 60000));
+            epCount = Math.floorDiv(minsElapsed, length);
+            startEP = startT + epCount * length * 60000;
+            goalEP = startEP + 60000 * mins;
+        } else {
+            startEP = startT;
+            goalEP = startEP + 60000 * mins;
+            epCount = 0;
+        }
     }
 
     @Override
