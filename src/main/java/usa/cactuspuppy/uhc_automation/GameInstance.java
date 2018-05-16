@@ -5,10 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class GameInstance {
@@ -38,7 +35,8 @@ public class GameInstance {
     protected GameInstance(Main p) {
         main = p;
         startT = 0;
-        minsToShrink = p.getConfig().getInt("game.minds-to-shrink");
+        world = UHCUtils.getWorldFromString(main, Bukkit.getServer(), p.getConfig().getString("world"));
+        minsToShrink = p.getConfig().getInt("game.mins-to-shrink");
         initSize = p.getConfig().getInt("game.init-size");
         finalSize = p.getConfig().getInt("game.final-size");
         teamMode = p.getConfig().getBoolean("game.team-mode");
@@ -47,9 +45,14 @@ public class GameInstance {
         teamMode = p.getConfig().getBoolean("game.team-mode");
         uhcMode = p.getConfig().getBoolean("game.uhc-mode");
         epLength = p.getConfig().getInt("game.episode-length");
-        world = UHCUtils.getWorldFromString(main, Bukkit.getServer(), p.getConfig().getString("world"));
-        livePlayers = new HashSet<>();
-        allPlayers = new HashSet<>();
+        Map<String, Set<UUID>> playerSets = UHCUtils.loadWorldPlayers(main);
+        if (playerSets.isEmpty()) {
+            livePlayers = new HashSet<>();
+            allPlayers = new HashSet<>();
+        } else {
+            livePlayers = playerSets.get("livePlayers");
+            allPlayers = playerSets.get("allPlayers");
+        }
         borderShrinking = false;
         active = false;
     }
@@ -75,6 +78,7 @@ public class GameInstance {
         Bukkit.broadcastMessage(ChatColor.GREEN + "Game starting!");
         allPlayers = UHCUtils.getWorldPlayers(world);
         livePlayers = UHCUtils.getWorldLivePlayers(world, allPlayers);
+        UHCUtils.saveWorldPlayers(main, livePlayers, allPlayers);
         UHCUtils.exeCmd("fill -10 200 -10 10 202 10 air");
         UHCUtils.exeCmd("effect @a[m=0] minecraft:resistance 10 10 true");
         UHCUtils.exeCmd("gamemode 2 @a[m=0]");
@@ -117,15 +121,20 @@ public class GameInstance {
                 + (timeElapsed / 60000) % 60 + " minutes "
                 + (timeElapsed / 1000) % 60 + " seconds");
         active = false;
+        UHCUtils.clearWorldPlayers(main);
     }
 
     protected void startBorderShrink() {
         borderShrinking = true;
         UHCUtils.exeCmd(Bukkit.getServer(), world,
                 "worldborder set " + finalSize + " " + calcBorderShrinkTime());
-        main.getLogger().info("Game border shrinking from " + initSize + " " + " to " + finalSize
+        main.getLogger().info("Game border shrinking from " + initSize + " to " + finalSize
                 + "over " + calcBorderShrinkTime() + " secs");
         Bukkit.getScheduler().cancelTask(borderCountdown);
+        for (UUID u : allPlayers) {
+            alertPlayerBorder(u);
+        }
+        (new BorderAnnouncer(main)).schedule();
     }
 
     public void checkForWin() {
@@ -167,11 +176,18 @@ public class GameInstance {
     public void startPlayer(UUID u) {
         Player p = Bukkit.getPlayer(u);
         p.sendTitle(ChatColor.BOLD + "" + ChatColor.GREEN + "GO!", UHCUtils.randomStartMSG(), 0, 80, 40);
-        p.playSound(p.getLocation(), "minecraft:block.note.pling", 1F, 1F);
+        p.playSound(p.getLocation(), "minecraft:block.note.pling", 1F, 1.18F);
         p.playSound(p.getLocation(), "minecraft:entity.enderdragon.growl", 1F, 1F);
         p.setFoodLevel(20);
         p.setSaturation(5);
         p.setHealth(20);
+    }
+
+    private void alertPlayerBorder(UUID u) {
+        Player p = Bukkit.getPlayer(u);
+        p.sendMessage(ChatColor.BOLD + "\n" + ChatColor.DARK_RED + "Border shrinking!");
+        p.sendTitle(ChatColor.BOLD + "" + ChatColor.DARK_RED + "Border shrinking!", "", 0, 80, 40);
+        p.playSound(p.getLocation(), "minecraft:entity.enderdragon.death", 1F, 1F);
     }
 
     public boolean validate() {
@@ -197,7 +213,7 @@ public class GameInstance {
     }
 
     private int calcBorderShrinkTime() {
-        return (initSize - finalSize) * 2;
+        return (initSize - finalSize) / 2;
     }
 
     public int getInitSize() {

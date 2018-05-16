@@ -10,10 +10,8 @@ import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.io.*;
+import java.util.*;
 import java.util.logging.Level;
 
 public class UHCUtils {
@@ -54,6 +52,135 @@ public class UHCUtils {
             }
         }
         return rv;
+    }
+
+    public static Map<String, Set<UUID>> loadWorldPlayers(Main m) {
+        Map<String, Set<UUID>> rv = new HashMap<>();
+        String location = m.getDataFolder() + "/" + m.getConfig().getString("data-location").replaceAll("<worldname>", m.getConfig().getString("world"));
+        File locFolder = new File(location);
+        if (!locFolder.exists()) {
+            m.getLogger().info("Attempting to make directory: " + location);
+            boolean created = locFolder.mkdirs();
+            if (!created) {
+                m.getLogger().severe("Could not create data folder: " + location);
+            } else {
+                m.getLogger().info("Created world data folder: " + location);
+            }
+            return rv;
+        } else {
+            m.getLogger().info("Found data folder '" + location + "', proceeding to try to extract UUID sets");
+        }
+        String lPFileName = location + "/livePlayers.txt";
+        String aPFileName = location + "/allPlayers.txt";
+        String line;
+        //Live Players read-in
+        try {
+            File lPFile = new File(lPFileName);
+            if (lPFile.isFile()) {
+                FileReader lPFileR = new FileReader(lPFileName);
+                BufferedReader lPBuffR = new BufferedReader(lPFileR);
+                Set<UUID> livePlayers = new HashSet<>();
+                while ((line = lPBuffR.readLine()) != null) {
+                    livePlayers.add(UUID.fromString(line));
+                }
+                lPBuffR.close();
+                rv.put("livePlayers", livePlayers);
+                m.getLogger().info("Successfully extracted livePlayers UUID set");
+            } else {
+                m.getLogger().info("Could not find livePlayers UUID set, cleansing directory.");
+                (new File(aPFileName)).delete();
+                return new HashMap<>();
+            }
+        } catch (IOException e) {
+            m.getLogger().severe("Error while loading in livePlayers file: " + lPFileName);
+        }
+        //All Players read-in
+        try {
+            File aPFile = new File(aPFileName);
+            if (aPFile.isFile()) {
+                FileReader aPFileR = new FileReader(aPFileName);
+                BufferedReader aPBuffR = new BufferedReader(aPFileR);
+                Set<UUID> allPlayers = new HashSet<>();
+                while ((line = aPBuffR.readLine()) != null) {
+                    allPlayers.add(UUID.fromString(line));
+                }
+                aPBuffR.close();
+                rv.put("allPlayers", allPlayers);
+                m.getLogger().info("Successfully extracted allPlayers UUID set");
+            } else {
+                m.getLogger().info("Could not find allPlayers UUID set, cleansing directory");
+                (new File(lPFileName)).delete();
+                return new HashMap<>();
+            }
+        } catch (IOException e) {
+            m.getLogger().severe("Error while loading in allPlayers file: " + aPFileName);
+        }
+        return rv;
+    }
+
+    public static void clearWorldPlayers(Main m) {
+        String location =  m.getDataFolder() + "/" + m.getConfig().getString("data-location").replaceAll("<worldname>", m.getConfig().getString("world"));
+        m.getLogger().info("Clearing world data folder: " + location);
+        String livePlayersName = location + "/livePlayers.txt";
+        String allPlayersName = location + "/allPlayers.txt";
+        File lPFile = new File(livePlayersName);
+        File aPFile = new File(allPlayersName);
+        lPFile.delete();
+        aPFile.delete();
+    }
+
+    public static void saveWorldPlayers(Main m, Set<UUID> livePlayers, Set<UUID> allPlayers) {
+        String location =  m.getDataFolder() + "/" + m.getConfig().getString("data-location").replaceAll("<worldname>", m.getConfig().getString("world"));
+        File dataFolder = new File(location);
+        if (!dataFolder.exists()) {
+            m.getLogger().info("Could not find world data folder '" + location + "', creating...");
+            boolean created = dataFolder.mkdirs();
+            if (!created) {
+                m.getLogger().severe("Could not create data folder to save game instance data!");
+                return;
+            } else {
+                m.getLogger().info("Created world data folder: '" + location + "', savind data...");
+            }
+        }
+        String livePlayersName = location + "/livePlayers.txt";
+        String allPlayersName = location + "/allPlayers.txt";
+        File lPFile = new File(livePlayersName);
+        File aPFile = new File(allPlayersName);
+        if (lPFile.isFile()) {
+            lPFile.delete();
+        }
+        if (aPFile.isFile()) {
+            aPFile.delete();
+        }
+        //Live Players save
+        try {
+            FileWriter lPFileW = new FileWriter(livePlayersName);
+            BufferedWriter lPBuffW = new BufferedWriter(lPFileW);
+
+            for (UUID u : livePlayers) {
+                lPBuffW.write(u.toString());
+                lPBuffW.newLine();
+            }
+
+            lPBuffW.close();
+        } catch (IOException e) {
+            m.getLogger().severe("Could not save livePlayers to file " + livePlayersName);
+        }
+        //All Players save
+        try {
+            FileWriter aPFileW = new FileWriter(allPlayersName);
+            BufferedWriter aPBuffW = new BufferedWriter(aPFileW);
+
+            for (UUID u : allPlayers) {
+                aPBuffW.write(u.toString());
+                aPBuffW.newLine();
+            }
+
+            aPBuffW.close();
+        } catch (IOException e) {
+            m.getLogger().severe("Could not save allPlayers to file " + allPlayersName);
+        }
+        m.getLogger().info("Saved player data to world data folder: " + location);
     }
 
     public static World getWorldFromString(Main m, Server s, String name) {

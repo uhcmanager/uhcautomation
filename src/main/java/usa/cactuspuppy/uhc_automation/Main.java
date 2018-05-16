@@ -46,6 +46,7 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        UHCUtils.saveWorldPlayers(this, gi.getLivePlayers(), gi.getAllPlayers());
         saveConfig();
     }
 
