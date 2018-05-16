@@ -33,6 +33,8 @@ public class GameInstance {
     private PlayerMoveListener freezePlayers;
     private int loadChunksCDID;
 
+    public static final boolean DEBUG = true;
+
     protected GameInstance(Main p) {
         main = p;
         startT = 0;
@@ -65,6 +67,10 @@ public class GameInstance {
     }
 
     public boolean start() {
+        if (livePlayers.size() == 1 && !DEBUG) {
+            main.getLogger().warning(ChatColor.RED + "Only one player is in the UHC!");
+            Bukkit.broadcastMessage(ChatColor.RED + "UHC aborted! Only one player is in the UHC!");
+        }
         long initT = System.currentTimeMillis();
         Bukkit.broadcastMessage(ChatColor.GREEN + "Game starting!");
         allPlayers = UHCUtils.getWorldPlayers(world);
@@ -140,9 +146,13 @@ public class GameInstance {
                 }
             } else if (livePlayers.size() == 0) {
                 for (UUID u : allPlayers) {
-
+                    Player p = Bukkit.getPlayer(u);
+                    p.sendMessage(ChatColor.RED + "\nWait... what? The game ended in a tie!");
                 }
+            } else {
+                return;
             }
+
         }
     }
 
