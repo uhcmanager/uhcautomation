@@ -76,7 +76,7 @@ public class GameInstance {
         allPlayers = UHCUtils.getWorldPlayers(world);
         livePlayers = UHCUtils.getWorldLivePlayers(world, allPlayers);
         UHCUtils.exeCmd("fill -10 200 -10 10 202 10 air");
-        UHCUtils.exeCmd("effect @a[m=0] minecraft:resistance 5 10 true");
+        UHCUtils.exeCmd("effect @a[m=0] minecraft:resistance 10 10 true");
         UHCUtils.exeCmd("gamemode 2 @a[m=0]");
         UHCUtils.exeCmd(Bukkit.getServer(), world, "spreadplayers 0 0 " + spreadDistance + " " + initSize / 2 + " " + respectTeams + " @a[m=2]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
@@ -95,6 +95,8 @@ public class GameInstance {
         UHCUtils.exeCmd("gamemode 0 @a[m=2]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
+        UHCUtils.exeCmd("gamerule doDaylightCycle true");
+        UHCUtils.exeCmd("gamerule doWeatherCycle true");
         borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
         (new EpisodeAnnouncer(main, epLength, startT)).schedule();
         HandlerList.unregisterAll(freezePlayers);
@@ -105,10 +107,7 @@ public class GameInstance {
         if (!active) {
             return;
         }
-        Bukkit.getScheduler().cancelAllTasks();
-        HandlerList.unregisterAll();
-        Bukkit.getServer().getPluginManager().registerEvents(new PlayerJoinListener(main), main);
-        Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(main), main);
+        (new DelayedReset(main)).schedule();
         long stopT = System.currentTimeMillis();
         long timeElapsed = stopT - startT;
         startT = 0;
@@ -168,8 +167,11 @@ public class GameInstance {
     public void startPlayer(UUID u) {
         Player p = Bukkit.getPlayer(u);
         p.sendTitle(ChatColor.BOLD + "" + ChatColor.GREEN + "GO!", UHCUtils.randomStartMSG(), 0, 80, 40);
-        p.playSound(p.getLocation(), "minecraft:block.note.pling", (float) 1, (float) 1.18);
-        p.playSound(p.getLocation(), "minecraft:entity.enderdragon.growl", (float) 1, (float) 1);
+        p.playSound(p.getLocation(), "minecraft:block.note.pling", 1F, 1F);
+        p.playSound(p.getLocation(), "minecraft:entity.enderdragon.growl", 1F, 1F);
+        p.setFoodLevel(20);
+        p.setSaturation(5);
+        p.setHealth(20);
     }
 
     public boolean validate() {
