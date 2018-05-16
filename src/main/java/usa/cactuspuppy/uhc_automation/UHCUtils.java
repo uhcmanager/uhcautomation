@@ -3,6 +3,7 @@ package usa.cactuspuppy.uhc_automation;
 import net.minecraft.server.v1_12_R1.ChatMessageType;
 import net.minecraft.server.v1_12_R1.IChatBaseComponent;
 import net.minecraft.server.v1_12_R1.PacketPlayOutChat;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Server;
@@ -54,6 +55,67 @@ public class UHCUtils {
         return rv;
     }
 
+    public static boolean isWorldData(Main m) {
+        String location = m.getDataFolder() + "/" + m.getConfig().getString("data-location").replaceAll("<worldname>", m.getConfig().getString("world"));
+        File locFolder = new File(location);
+        return locFolder.exists();
+    }
+
+    public static long loadStartTime(Main m) {
+        String location = m.getDataFolder() + "/" + m.getConfig().getString("data-location").replaceAll("<worldname>", m.getConfig().getString("world"));
+        File locFolder = new File(location);
+        if (!locFolder.exists()) {
+            m.getLogger().severe("The data folder has mysteriously vanished!");
+        } else {
+            m.getLogger().info("Found data folder '" + location + "', proceeding to try to extract start time");
+        }
+        String startTimeFileName = location + "/startTime.txt";
+        File startTimeFile = new File(startTimeFileName);
+        if (startTimeFile.isFile()) {
+            try {
+                FileReader startTFileR = new FileReader(startTimeFileName);
+                BufferedReader startTBuffR = new BufferedReader(startTFileR);
+                String line = startTBuffR.readLine();
+                return Long.valueOf(line);
+            } catch (IOException e) {
+                m.getLogger().warning("Could not load start time from '" + startTimeFileName + "', using current time as start time instead.");
+                return System.currentTimeMillis();
+            }
+        } else {
+            m.getLogger().warning("Could not find start time file, using current time as start time instead.");
+            return System.currentTimeMillis();
+        }
+    }
+
+    public static void saveStartTime(Main m, long sT) {
+        String location =  m.getDataFolder() + "/" + m.getConfig().getString("data-location").replaceAll("<worldname>", m.getConfig().getString("world"));
+        File dataFolder = new File(location);
+        if (!dataFolder.exists()) {
+            m.getLogger().info("Could not find world data folder '" + location + "', creating...");
+            boolean created = dataFolder.mkdirs();
+            if (!created) {
+                m.getLogger().severe("Could not create data folder to save game instance data!");
+                return;
+            } else {
+                m.getLogger().info("Created world data folder: '" + location + "', savind data...");
+            }
+        }
+        String startTimeFileName = location + "/startTime.txt";
+        File startTimeFile = new File(startTimeFileName);
+        if (startTimeFile.isFile()) {
+            startTimeFile.delete();
+        }
+        try {
+            FileWriter sTFW = new FileWriter(startTimeFileName);
+            BufferedWriter sTBW = new BufferedWriter(sTFW);
+
+            sTBW.write(String.valueOf(sT));
+            sTBW.close();
+        } catch (IOException e) {
+            m.getLogger().severe("Could not save start time to '" + startTimeFileName + "'!");
+        }
+    }
+
     public static Map<String, Set<UUID>> loadWorldPlayers(Main m) {
         Map<String, Set<UUID>> rv = new HashMap<>();
         String location = m.getDataFolder() + "/" + m.getConfig().getString("data-location").replaceAll("<worldname>", m.getConfig().getString("world"));
@@ -87,12 +149,18 @@ public class UHCUtils {
                 rv.put("livePlayers", livePlayers);
                 m.getLogger().info("Successfully extracted livePlayers UUID set");
             } else {
-                m.getLogger().info("Could not find livePlayers UUID set, cleansing directory.");
-                (new File(aPFileName)).delete();
+                m.getLogger().info("Game data missing! Cleansing directory.");
+                FileUtils.cleanDirectory(new File(location));
                 return new HashMap<>();
             }
         } catch (IOException e) {
-            m.getLogger().severe("Error while loading in livePlayers file: " + lPFileName);
+            m.getLogger().severe("Error while loading in livePlayers file: " + lPFileName + ", cleansing directory!");
+            try {
+                FileUtils.cleanDirectory(new File(location));
+            } catch (IOException f) {
+                f.printStackTrace();
+            }
+            return new HashMap<>();
         }
         //All Players read-in
         try {
@@ -109,24 +177,29 @@ public class UHCUtils {
                 m.getLogger().info("Successfully extracted allPlayers UUID set");
             } else {
                 m.getLogger().info("Could not find allPlayers UUID set, cleansing directory");
-                (new File(lPFileName)).delete();
+                FileUtils.cleanDirectory(new File(location));
                 return new HashMap<>();
             }
         } catch (IOException e) {
-            m.getLogger().severe("Error while loading in allPlayers file: " + aPFileName);
+            m.getLogger().severe("Error while loading in allPlayers file: " + aPFileName + ", cleansing directory!");
+            try {
+                FileUtils.cleanDirectory(new File(location));
+            } catch (IOException f) {
+                f.printStackTrace();
+            }
+            return new HashMap<>();
         }
         return rv;
     }
 
-    public static void clearWorldPlayers(Main m) {
+    public static void clearWorldData(Main m) {
         String location =  m.getDataFolder() + "/" + m.getConfig().getString("data-location").replaceAll("<worldname>", m.getConfig().getString("world"));
-        m.getLogger().info("Clearing world data folder: " + location);
-        String livePlayersName = location + "/livePlayers.txt";
-        String allPlayersName = location + "/allPlayers.txt";
-        File lPFile = new File(livePlayersName);
-        File aPFile = new File(allPlayersName);
-        lPFile.delete();
-        aPFile.delete();
+        m.getLogger().info("Deleting world data folder: " + location);
+        try {
+            FileUtils.deleteDirectory(new File(location));
+        } catch (IOException e) {
+            m.getLogger().severe("Could not delete world data folder '" + location + "'!");
+        }
     }
 
     public static void saveWorldPlayers(Main m, Set<UUID> livePlayers, Set<UUID> allPlayers) {

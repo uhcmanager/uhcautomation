@@ -46,7 +46,9 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        UHCUtils.saveWorldPlayers(this, gi.getLivePlayers(), gi.getAllPlayers());
+        if (gi.isActive()) {
+            UHCUtils.saveWorldPlayers(this, gi.getLivePlayers(), gi.getAllPlayers());
+        }
         saveConfig();
     }
 
@@ -102,5 +104,6 @@ public class Main extends JavaPlugin {
         getCommand("uhcsetworld").setExecutor(new CommandSetWorld(this));
         getCommand("uhcstatus").setExecutor(new CommandStatus(this));
         getCommand("uhcprep").setExecutor(new CommandLobby(this));
+        getCommand("uhctime").setExecutor(new CommandTime(this));
     }
 }

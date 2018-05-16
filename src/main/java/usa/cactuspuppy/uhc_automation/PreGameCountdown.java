@@ -28,7 +28,7 @@ public class PreGameCountdown implements Runnable {
 
         //Chat message
         if (secs == length) {
-            main.gi.getAllPlayers().forEach((p) -> Bukkit.getPlayer(p).sendMessage(ChatColor.RED + "ALERT: " + ChatColor.WHITE + "Game begins in 10 seconds!"));
+            main.gi.getAllPlayers().forEach((p) -> Bukkit.getPlayer(p).sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "ALERT: " + ChatColor.WHITE + "Game begins in " + length + " seconds!"));
         }
 
         //Title announcements

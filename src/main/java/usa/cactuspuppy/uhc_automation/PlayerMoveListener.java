@@ -26,7 +26,7 @@ public class PlayerMoveListener implements Listener {
     }
 
     private boolean samePlace(Location a, Location b) {
-        return a.getWorld().equals(b.getWorld()) && a.getBlockX() == b.getBlockX()
-                && a.getBlockY() == b.getBlockY() && a.getBlockZ() == b.getBlockZ();
+        return a.getWorld().equals(b.getWorld()) && a.getX() == b.getX()
+                && a.getZ() == b.getZ();
     }
 }

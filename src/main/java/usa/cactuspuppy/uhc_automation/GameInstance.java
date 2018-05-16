@@ -9,28 +9,28 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class GameInstance {
-    private Main main;
-    private long startT;
+    public Main main;
     private boolean active;
-    private Set<UUID> livePlayers;
-    private Set<UUID> allPlayers;
     private World world;
 
-    private int minsToShrink;
-    private int initSize;
-    private int finalSize;
-    private int spreadDistance;
-    private int epLength;
-    private boolean teamMode;
-    private boolean respectTeams;
-    private boolean uhcMode;
+    long startT;
+    int minsToShrink;
+    int initSize;
+    int finalSize;
+    int spreadDistance;
+    int epLength;
+    boolean teamMode;
+    boolean respectTeams;
+    boolean uhcMode;
+    Set<UUID> livePlayers;
+    Set<UUID> allPlayers;
     
-    private int borderCountdown;
-    private boolean borderShrinking;
-    private PlayerMoveListener freezePlayers;
+    int borderCountdown;
+    boolean borderShrinking;
+    PlayerMoveListener freezePlayers;
     private int loadChunksCDID;
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     protected GameInstance(Main p) {
         main = p;
@@ -45,20 +45,15 @@ public class GameInstance {
         teamMode = p.getConfig().getBoolean("game.team-mode");
         uhcMode = p.getConfig().getBoolean("game.uhc-mode");
         epLength = p.getConfig().getInt("game.episode-length");
-        Map<String, Set<UUID>> playerSets = UHCUtils.loadWorldPlayers(main);
-        if (playerSets.isEmpty()) {
-            livePlayers = new HashSet<>();
-            allPlayers = new HashSet<>();
-        } else {
-            livePlayers = playerSets.get("livePlayers");
-            allPlayers = playerSets.get("allPlayers");
-            reactivate();
-        }
+        livePlayers = new HashSet<>();
+        allPlayers = new HashSet<>();
         borderShrinking = false;
         active = false;
+        (new DelayReactivate(this)).schedule();
     }
 
     public void prep() {
+        UHCUtils.exeCmd("tp @a 0 201 0");
         UHCUtils.exeCmd(Bukkit.getServer(), world, "fill -10 200 -10 10 202 10 barrier 0 hollow");
         UHCUtils.exeCmd(Bukkit.getServer(), world, "fill -9 202 -9 9 202 9 air");
         UHCUtils.exeCmd(Bukkit.getServer(), world, "setworldspawn 0 201 0");
@@ -66,8 +61,10 @@ public class GameInstance {
         UHCUtils.exeCmd("gamerule doDaylightCycle false");
         UHCUtils.exeCmd("gamerule doWeatherCycle false");
         UHCUtils.exeCmd("time set 0");
-        UHCUtils.exeCmd("tp @a 0 201 0");
         UHCUtils.exeCmd("worldborder set " + initSize);
+        UHCUtils.exeCmd("gamerule naturalRegeneration " + !uhcMode);
+        UHCUtils.exeCmd("scoreboard objectives add Health health");
+        UHCUtils.exeCmd("scoreboard objectives setDisplay list Health");
     }
 
     public boolean start() {
@@ -97,6 +94,7 @@ public class GameInstance {
         Bukkit.getScheduler().cancelTask(loadChunksCDID);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(main), main);
         startT = System.currentTimeMillis();
+        UHCUtils.saveStartTime(main, startT);
         UHCUtils.exeCmd("gamemode 0 @a[m=2]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
@@ -125,21 +123,7 @@ public class GameInstance {
                 + (timeElapsed / 60000) % 60 + " minutes "
                 + (timeElapsed / 1000) % 60 + " seconds");
         active = false;
-        UHCUtils.clearWorldPlayers(main);
-    }
-
-    protected void reactivate() {
-        Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(main), main);
-        startT = System.currentTimeMillis();
-        UHCUtils.exeCmd("gamemode 0 @a[m=2]");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
-        main.getLogger().info("Game Reinitiate Time - " + sdf.format(new Date(startT)));
-        UHCUtils.exeCmd("gamerule doDaylightCycle true");
-        UHCUtils.exeCmd("gamerule doWeatherCycle true");
-        borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
-        (new EpisodeAnnouncer(main, epLength, startT)).schedule();
-        HandlerList.unregisterAll(freezePlayers);
-        allPlayers.forEach(this::startPlayer);
+        UHCUtils.clearWorldData(main);
     }
 
     protected void startBorderShrink() {
@@ -147,7 +131,7 @@ public class GameInstance {
         UHCUtils.exeCmd(Bukkit.getServer(), world,
                 "worldborder set " + finalSize + " " + calcBorderShrinkTime());
         main.getLogger().info("Game border shrinking from " + initSize + " to " + finalSize
-                + "over " + calcBorderShrinkTime() + " secs");
+                + " over " + calcBorderShrinkTime() + " secs");
         Bukkit.getScheduler().cancelTask(borderCountdown);
         for (UUID u : allPlayers) {
             alertPlayerBorder(u);
@@ -193,7 +177,7 @@ public class GameInstance {
 
     public void startPlayer(UUID u) {
         Player p = Bukkit.getPlayer(u);
-        p.sendTitle(ChatColor.BOLD + "" + ChatColor.GREEN + "GO!", UHCUtils.randomStartMSG(), 0, 80, 40);
+        p.sendTitle(ChatColor.GREEN.toString() + ChatColor.BOLD + "GO!", UHCUtils.randomStartMSG(), 0, 80, 40);
         p.playSound(p.getLocation(), "minecraft:block.note.pling", 1F, 1.18F);
         p.playSound(p.getLocation(), "minecraft:entity.enderdragon.growl", 1F, 1F);
         p.setFoodLevel(20);
@@ -203,8 +187,8 @@ public class GameInstance {
 
     private void alertPlayerBorder(UUID u) {
         Player p = Bukkit.getPlayer(u);
-        p.sendMessage(ChatColor.BOLD + "\n" + ChatColor.DARK_RED + "Border shrinking!");
-        p.sendTitle(ChatColor.BOLD + "" + ChatColor.DARK_RED + "Border shrinking!", "", 0, 80, 40);
+        p.sendMessage(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nBorder shrinking!");
+        p.sendTitle(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Border Shrinking!", "", 0, 80, 40);
         p.playSound(p.getLocation(), "minecraft:entity.enderdragon.death", 1F, 1F);
     }
 
@@ -274,39 +258,43 @@ public class GameInstance {
         livePlayers.remove(p.getUniqueId());
     }
 
-    protected void setEpLength(int el) {
+    void setActive(boolean a) {
+        active = a;
+    }
+
+    void setEpLength(int el) {
         epLength = el;
     }
 
-    protected void setGameWorld(String worldname) {
+    void setGameWorld(String worldname) {
         world = UHCUtils.getWorldFromString(main, Bukkit.getServer(), worldname);
     }
 
-    protected void setInitSize(int s) {
+    void setInitSize(int s) {
         initSize = s;
     }
 
-    protected void setFinalSize(int s) {
+    void setFinalSize(int s) {
         finalSize = s;
     }
 
-    protected void setTimeToShrink(int minutes) {
+    void setTimeToShrink(int minutes) {
         minsToShrink = minutes;
     }
 
-    protected void setTeamMode(boolean b) {
+    void setTeamMode(boolean b) {
         teamMode = b;
     }
 
-    protected void setSpreadDistance(int sd) {
+    void setSpreadDistance(int sd) {
         spreadDistance = sd;
     }
 
-    protected void setRespectTeams(boolean rt) {
+    void setRespectTeams(boolean rt) {
         respectTeams = rt;
     }
 
-    protected void setUHCMode(boolean um) {
+    void setUHCMode(boolean um) {
         uhcMode = um;
     }
 }

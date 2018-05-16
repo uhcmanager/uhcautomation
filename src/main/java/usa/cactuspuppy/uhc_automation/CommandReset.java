@@ -16,10 +16,13 @@ public class CommandReset implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        commandSender.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "Stopping game!");
-        main.getLogger().log(Level.INFO, commandSender.getName() + " initiated command to halt game");
         if (main.gi.isActive()) {
+            commandSender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Stopping game!");
+            main.getLogger().log(Level.INFO, commandSender.getName() + " initiated command to halt game");
             main.gi.stop();
+        } else {
+            commandSender.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Resetting game!");
+            main.getLogger().log(Level.INFO, commandSender.getName() + " initiated command to reset the game");
         }
         main.gi.prep();
         return true;

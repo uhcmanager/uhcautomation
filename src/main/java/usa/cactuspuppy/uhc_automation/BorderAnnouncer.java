@@ -19,7 +19,7 @@ public class BorderAnnouncer implements Runnable {
     public void run() {
         for (UUID u : m.gi.getAllPlayers()) {
             Player p = Bukkit.getPlayer(u);
-            p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.BOLD + "" + ChatColor.DARK_RED
+            p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.DARK_RED.toString() + ChatColor.BOLD
                     + "[Border]" + ChatColor.RESET + " ±" + (int) m.gi.getWorld().getWorldBorder().getSize() / 2));
         }
     }

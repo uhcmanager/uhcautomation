@@ -1,5 +1,5 @@
 name: UHC_Automation
-version: 0.2
+version: 1.0
 author: CactusPuppy
 description: Automates the handling of UHC events
 main: usa.cactuspuppy.uhc_automation.Main
@@ -33,3 +33,6 @@ commands:
     aliases: [status]
     usage: /<command>
     permission: uhca.admin
+  uhctime:
+    description: Tells user the time elapsed in the UHC
+    usage: /<command>
