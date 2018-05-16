@@ -6,7 +6,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.net.ConnectException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -40,7 +39,7 @@ public class Main extends JavaPlugin {
             gi = new GameInstance(this);
         }
         registerCommands();
-        Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(this), this);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         getLogger().info("UHC Automation loaded in " + ((System.currentTimeMillis() - start)) + " ms");
     }

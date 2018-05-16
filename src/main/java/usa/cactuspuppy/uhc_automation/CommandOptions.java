@@ -11,7 +11,7 @@ import java.util.Arrays;
 public class CommandOptions implements CommandExecutor {
     private Main main;
     private static final String[] OPTIONS =
-            {"initSize", "finalSize", "timeToBorderShrink", "teamMode", "sepDist", "uhcMode", "respectTeams"};
+            {"initSize", "finalSize", "timeToBorderShrink", "teamMode", "sepDist", "uhcMode", "respectTeams", "epLength"};
 
     public CommandOptions(Main m) {
         main = m;
@@ -25,12 +25,17 @@ public class CommandOptions implements CommandExecutor {
         if (Arrays.asList(OPTIONS).contains(args[0])) {
             try {
                 if (args[0].equals(OPTIONS[0])) {
+                    if (Integer.valueOf(args[1]) <= main.gi.getFinalSize()) {
+                        commandSender.sendMessage(ChatColor.RED + "ERROR: Requested initial border size " + ChatColor.RESET + Integer.valueOf(args[1])
+                                        + ChatColor.RED + " is not larger than current final border size "
+                                        + ChatColor.RESET + main.gi.getInitSize());
+                        return true;
+                    }
                     main.gi.setInitSize(Integer.valueOf(args[1]));
                     main.getConfig().set("game.init-size", Integer.valueOf(args[1]));
                 } else if (args[0].equals(OPTIONS[1])) {
-                    if (Integer.valueOf(args[1]) > main.gi.getFinalSize()) {
-                        commandSender.sendMessage(
-                                ChatColor.RED + "ERROR: Requested final border size " + ChatColor.RESET + Integer.valueOf(args[1])
+                    if (Integer.valueOf(args[1]) >= main.gi.getInitSize()) {
+                        commandSender.sendMessage(ChatColor.RED + "ERROR: Requested final border size " + ChatColor.RESET + Integer.valueOf(args[1])
                                         + ChatColor.RED + " is not smaller than current initial border size "
                                         + ChatColor.RESET + main.gi.getInitSize());
                         return true;
@@ -74,6 +79,8 @@ public class CommandOptions implements CommandExecutor {
                         return true;
                     }
                     main.getConfig().set("game.respect-teams", Boolean.valueOf(args[1]));
+                } else if (args[0].equals(OPTIONS[7])) {
+                    main.gi.setInitSize(Integer.valueOf(args[1]));
                 }
                 main.saveConfig();
                 return true;

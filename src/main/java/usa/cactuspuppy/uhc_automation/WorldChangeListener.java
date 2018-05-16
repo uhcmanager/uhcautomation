@@ -6,13 +6,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class WorldChangeListener implements Listener {
+    private Main m;
+
+    public WorldChangeListener(Main main) {
+        m = main;
+    }
     @EventHandler
     public void onPlayerTeleport(PlayerTeleportEvent e) {
-        World from = e.getFrom().getWorld();
-        World to = e.getTo().getWorld();
-        if (!from.equals(to)) {
-            //Player changed worlds
-            e.getPlayer().sendRawMessage("You changed worlds!");
+        if (e.getFrom().getWorld().equals(e.getTo().getWorld())) {
+            return;
+        }
+        String to = e.getTo().getWorld().getName();
+        String gameWorld = m.gi.getWorld().getName();
+        String gameWorldNether = gameWorld + "_nether";
+        String gameWorldEnd = gameWorld + "_the_end";
+        if (!(to.equals(gameWorld) || to.equals(gameWorldNether) || to.equals(gameWorldEnd))) {
+            m.gi.unRegisterPlayer(e.getPlayer());
         }
     }
 }

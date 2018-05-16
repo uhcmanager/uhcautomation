@@ -30,6 +30,11 @@ public class LoadingChunksCountdown implements Runnable {
         for (UUID u : m.gi.getAllPlayers()) {
             Player p = Bukkit.getPlayer(u);
             p.sendTitle(ChatColor.WHITE + "" + iter, ChatColor.RED + "Releasing players in...", 0, 40, 20);
+            if (iter > 3) {
+                p.playSound(p.getLocation(), "minecraft:block.stone_button.click_on", (float) 1, (float) 1);
+            } else {
+                p.playSound(p.getLocation(), "minecraft:block.note.pling", (float) 1, (float) 0.59);
+            }
         }
         iter--;
     }

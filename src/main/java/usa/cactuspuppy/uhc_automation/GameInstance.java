@@ -56,6 +56,10 @@ public class GameInstance {
         UHCUtils.exeCmd(Bukkit.getServer(), world, "fill -10 200 -10 10 202 10 barrier 0 hollow");
         UHCUtils.exeCmd(Bukkit.getServer(), world, "fill -9 202 -9 9 202 9 air");
         UHCUtils.exeCmd(Bukkit.getServer(), world, "setworldspawn 0 201 0");
+        UHCUtils.exeCmd("gamerule spawnRadius 0");
+        UHCUtils.exeCmd("gamerule doDaylightCycle false");
+        UHCUtils.exeCmd("gamerule doWeatherCycle false");
+        UHCUtils.exeCmd("time set 0");
         UHCUtils.exeCmd("tp @a 0 201 0");
         UHCUtils.exeCmd("worldborder set " + initSize);
     }
@@ -83,6 +87,7 @@ public class GameInstance {
         borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
         (new EpisodeAnnouncer(main, epLength, startT)).schedule();
         HandlerList.unregisterAll(freezePlayers);
+        allPlayers.forEach(this::startPlayer);
     }
 
     public void stop() {
@@ -90,6 +95,9 @@ public class GameInstance {
             return;
         }
         Bukkit.getScheduler().cancelAllTasks();
+        HandlerList.unregisterAll();
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayerJoinListener(main), main);
+        Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(main), main);
         long stopT = System.currentTimeMillis();
         long timeElapsed = stopT - startT;
         startT = 0;
@@ -110,7 +118,16 @@ public class GameInstance {
         Bukkit.getScheduler().cancelTask(borderCountdown);
     }
 
-    /* Helper/Access methods */
+    /**
+     *  Helper/Access methods
+     */
+
+    public void startPlayer(UUID u) {
+        Player p = Bukkit.getPlayer(u);
+        p.sendTitle(ChatColor.BOLD + "" + ChatColor.GREEN + "GO!", UHCUtils.randomStartMSG(), 0, 80, 40);
+        p.playSound(p.getLocation(), "minecraft:block.note.pling", (float) 1, (float) 1.18);
+        p.playSound(p.getLocation(), "minecraft:entity.enderdragon.growl", (float) 1, (float) 1);
+    }
 
     public boolean validate() {
         boolean valid;
@@ -163,6 +180,19 @@ public class GameInstance {
         if (p.getGameMode() == GameMode.SURVIVAL) {
             livePlayers.add(p.getUniqueId());
         }
+    }
+
+    public void removePlayerFromLive(Player p) {
+        livePlayers.remove(p.getUniqueId());
+    }
+
+    public void unRegisterPlayer(Player p) {
+        allPlayers.remove(p.getUniqueId());
+        livePlayers.remove(p.getUniqueId());
+    }
+
+    protected void setEpLength(int el) {
+        epLength = el;
     }
 
     protected void setGameWorld(String worldname) {
