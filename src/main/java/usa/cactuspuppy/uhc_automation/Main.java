@@ -105,5 +105,7 @@ public class Main extends JavaPlugin {
         getCommand("uhcstatus").setExecutor(new CommandStatus(this));
         getCommand("uhcprep").setExecutor(new CommandLobby(this));
         getCommand("uhctime").setExecutor(new CommandTime(this));
+        getCommand("uhcreg").setExecutor(new CommandRegister(this));
+        getCommand("uhcunreg").setExecutor(new CommandUnregister(this));
     }
 }

@@ -36,3 +36,13 @@ commands:
   uhctime:
     description: Tells user the time elapsed in the UHC
     usage: /<command>
+  uhcunreg:
+    description: Unregsiters a player from the database
+    aliases: [unreg, unregsiter]
+    usage: /<command> [player]
+    permission: uhca.admin
+  uhcreg:
+    description: Registers an online player in the database
+    aliases: [register]
+    usage: /<command> [player]
+    permission: uhca.admin

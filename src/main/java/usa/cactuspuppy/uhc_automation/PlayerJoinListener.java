@@ -19,7 +19,7 @@ public class PlayerJoinListener implements Listener {
                 && UHCUtils.worldEqualsExt(e.getPlayer().getWorld(), m.gi.getWorld())) {
             m.gi.registerPlayer(e.getPlayer());
             Player p = e.getPlayer();
-            p.sendTitle(ChatColor.GOLD + "Welcome", "to Wyntr's May 2018 Subscriber UHC", 20, 60, 20);
+            p.sendTitle(ChatColor.GOLD + "Welcome", "to the " + m.getConfig().getString("event-name"), 20, 60, 20);
             p.setHealth(19);
             p.setHealth(20);
         }

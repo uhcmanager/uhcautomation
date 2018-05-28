@@ -21,8 +21,8 @@ public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         Player p = e.getEntity();
-//        m.getLogger().info(p.getDisplayName() + " died at [" + p.getLocation().getWorld().getName() + "] "
-//                + p.getLocation().getX() + ", " + p.getLocation().getY() + ", " + p.getLocation().getZ());
+        m.getLogger().info(p.getDisplayName() + " died at [" + p.getLocation().getWorld().getName() + "] "
+                + p.getLocation().getX() + ", " + p.getLocation().getY() + ", " + p.getLocation().getZ());
         Location drops = p.getLocation();
         if (m.gi.getWorld().isGameRule("keepInventory")) {
             p.getInventory().clear();
@@ -35,8 +35,10 @@ public class PlayerDeathListener implements Listener {
         p.setGameMode(GameMode.SPECTATOR);
         m.gi.removePlayerFromLive(p);
         for (UUID u : m.gi.getAllPlayers()) {
-            Player p1 = Bukkit.getPlayer(u);
-            announceDeath(p, p1);
+            try {
+                Player p1 = Bukkit.getPlayer(u);
+                announceDeath(p, p1);
+            } catch (NullPointerException f) { }
         }
         m.gi.checkForWin();
     }

@@ -10,8 +10,11 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -31,6 +34,9 @@ public class UHCUtils {
                     "Good luck, don't die!", "Just Do It!", "FOR THE HORDE!", "For The Alliance!", "Watch out for bears!",
                     "How do YOU want to do this?", "Know yourself, know thy enemy, and you shall win.", "For Aiur!",
                     "One Punch is all you need!", "Roll for Initiative!", "You know you have to do it to 'em", "Watch out for boars!"};
+
+    private static final String USER_AGENT = "UHC_Automation/1.0";
+
     //do not instantiate
     public UHCUtils() { }
 

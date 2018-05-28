@@ -31,6 +31,7 @@ public class GameInstance {
     private int loadChunksCDID;
 
     public static final boolean DEBUG = false;
+    public static final Map<String, UUID> STRING_UUID_MAP = new HashMap<>();
 
     protected GameInstance(Main p) {
         main = p;
@@ -61,6 +62,7 @@ public class GameInstance {
         UHCUtils.exeCmd("gamerule doDaylightCycle false");
         UHCUtils.exeCmd("gamerule doWeatherCycle false");
         UHCUtils.exeCmd("time set 0");
+        UHCUtils.exeCmd("weather clear");
         UHCUtils.exeCmd("worldborder set " + initSize);
         UHCUtils.exeCmd("gamerule naturalRegeneration " + !uhcMode);
         UHCUtils.exeCmd("scoreboard objectives add Health health");
@@ -80,7 +82,7 @@ public class GameInstance {
         UHCUtils.exeCmd("fill -10 200 -10 10 202 10 air");
         UHCUtils.exeCmd("effect @a[m=0] minecraft:resistance 10 10 true");
         UHCUtils.exeCmd("gamemode 2 @a[m=0]");
-        UHCUtils.exeCmd(Bukkit.getServer(), world, "spreadplayers 0 0 " + spreadDistance + " " + initSize / 2 + " " + respectTeams + " @a[m=2]");
+        UHCUtils.exeCmd(Bukkit.getServer(), world, "spreadplayers 0 0 " + spreadDistance + " " + initSize / 2 + " " + "false" + " @a[m=2]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Initiate Time - " + sdf.format(new Date(initT)));
         active = true;
@@ -137,6 +139,10 @@ public class GameInstance {
             alertPlayerBorder(u);
         }
         (new BorderAnnouncer(main)).schedule();
+        UHCUtils.exeCmd("gamerule doDaylightCycle false");
+        UHCUtils.exeCmd("gamerule doWeatherCycle false");
+        UHCUtils.exeCmd("weather clear");
+        UHCUtils.exeCmd("time set 6000");
     }
 
     public void checkForWin() {
@@ -151,6 +157,9 @@ public class GameInstance {
                 }
                 for (UUID u : allPlayers) {
                     Player p = Bukkit.getPlayer(u);
+                    if (p == null) {
+                        continue;
+                    }
                     int timeElapsed = (int) (System.currentTimeMillis() - startT) / 1000;
                     int hours = timeElapsed / 3600;
                     int mins = timeElapsed / 60;
@@ -162,6 +171,9 @@ public class GameInstance {
             } else if (livePlayers.size() == 0) {
                 for (UUID u : allPlayers) {
                     Player p = Bukkit.getPlayer(u);
+                    if (p == null) {
+                        continue;
+                    }
                     p.sendMessage(ChatColor.RED + "\nWait... what? The game ended in a tie!");
                 }
             } else {
@@ -187,6 +199,9 @@ public class GameInstance {
 
     private void alertPlayerBorder(UUID u) {
         Player p = Bukkit.getPlayer(u);
+        if (p == null) {
+            return;
+        }
         p.sendMessage(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nBorder shrinking!");
         p.sendTitle(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Border Shrinking!", "", 0, 80, 40);
         p.playSound(p.getLocation(), "minecraft:entity.enderdragon.death", 1F, 1F);
@@ -205,12 +220,21 @@ public class GameInstance {
         if (world != null) {
             worldName = world.getName();
         } else {
-            worldName = "NONE";
+            worldName = "NOT BOUND";
         }
         log.info("World: " + worldName);
+        log.info("Event Name: " + main.getConfig().getString("event-name"));
         log.info("Active: " + active);
         if (active) {
             log.info("Start Time: " + startT);
+        }
+        log.info("Registered Players:");
+        for (UUID u : allPlayers) {
+            log.info("  " + Bukkit.getPlayer(u).getName() + " - Online: " + Bukkit.getPlayer(u).isOnline());
+        }
+        log.info("Alive Players:");
+        for (UUID u : livePlayers) {
+            log.info("  " + Bukkit.getPlayer(u).getName() + " - Online: " + Bukkit.getPlayer(u).isOnline());
         }
     }
 
@@ -249,11 +273,12 @@ public class GameInstance {
         }
     }
 
-    public void removePlayerFromLive(Player p) {
+    public void removePlayerFromLive(String s) {
+        Player p = Bukkit.getPlayer(s);
         livePlayers.remove(p.getUniqueId());
     }
 
-    public void unRegisterPlayer(Player p) {
+    public void unRegisterPlayer(OfflinePlayer p) {
         allPlayers.remove(p.getUniqueId());
         livePlayers.remove(p.getUniqueId());
     }
@@ -296,5 +321,14 @@ public class GameInstance {
 
     void setUHCMode(boolean um) {
         uhcMode = um;
+    }
+
+    OfflinePlayer getOP(UUID u) {
+        for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
+            if (op.getUniqueId().equals(u)) {
+                return op;
+            }
+        }
+        return null;
     }
 }
