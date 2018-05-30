@@ -1,11 +1,9 @@
 package usa.cactuspuppy.uhc_automation;
 
 import org.bukkit.*;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -34,7 +32,7 @@ public class PlayerDeathListener implements Listener {
         (new DelayedPlayerRespawn(m, p, drops)).schedule();
         p.setGameMode(GameMode.SPECTATOR);
         m.gi.removePlayerFromLive(p);
-        for (UUID u : m.gi.getAllPlayers()) {
+        for (UUID u : m.gi.getActivePlayers()) {
             try {
                 Player p1 = Bukkit.getPlayer(u);
                 announceDeath(p, p1);

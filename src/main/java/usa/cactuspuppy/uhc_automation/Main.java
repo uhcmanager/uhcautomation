@@ -40,14 +40,14 @@ public class Main extends JavaPlugin {
         }
         registerCommands();
         Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(this), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayerConnectionListener(this), this);
         getLogger().info("UHC Automation loaded in " + ((System.currentTimeMillis() - start)) + " ms");
     }
 
     @Override
     public void onDisable() {
         if (gi.isActive()) {
-            UHCUtils.saveWorldPlayers(this, gi.getLivePlayers(), gi.getAllPlayers());
+            UHCUtils.saveWorldPlayers(this, gi.getLivePlayers(), gi.getActivePlayers());
         }
         saveConfig();
     }

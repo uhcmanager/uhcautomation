@@ -37,7 +37,7 @@ commands:
     description: Tells user the time elapsed in the UHC
     usage: /<command>
   uhcunreg:
-    description: Unregsiters a player from the database
+    description: Unregsiters a player from the database. Player cannot be registered again unless /uhcreg is used.
     aliases: [unreg, unregsiter]
     usage: /<command> [player]
     permission: uhca.admin

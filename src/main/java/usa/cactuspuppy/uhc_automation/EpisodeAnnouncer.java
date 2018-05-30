@@ -35,7 +35,7 @@ public class EpisodeAnnouncer implements Runnable {
             startEP = goalEP;
             goalEP = startEP + 60000 * length;
             epCount++;
-            m.gi.getAllPlayers().forEach((p) -> markEpisode(Bukkit.getPlayer(p)));
+            m.gi.getActivePlayers().forEach((p) -> markEpisode(Bukkit.getPlayer(p)));
             m.getLogger().info("Mark Episode " + epCount);
         }
     }

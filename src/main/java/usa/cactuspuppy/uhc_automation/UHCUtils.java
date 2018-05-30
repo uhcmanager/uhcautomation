@@ -139,7 +139,7 @@ public class UHCUtils {
             m.getLogger().info("Found data folder '" + location + "', proceeding to try to extract UUID sets");
         }
         String lPFileName = location + "/livePlayers.txt";
-        String aPFileName = location + "/allPlayers.txt";
+        String aPFileName = location + "/activePlayers.txt";
         String line;
         //Live Players read-in
         try {
@@ -179,15 +179,15 @@ public class UHCUtils {
                     allPlayers.add(UUID.fromString(line));
                 }
                 aPBuffR.close();
-                rv.put("allPlayers", allPlayers);
-                m.getLogger().info("Successfully extracted allPlayers UUID set");
+                rv.put("activePlayers", allPlayers);
+                m.getLogger().info("Successfully extracted activePlayers UUID set");
             } else {
-                m.getLogger().info("Could not find allPlayers UUID set, cleansing directory");
+                m.getLogger().info("Could not find activePlayers UUID set, cleansing directory");
                 FileUtils.cleanDirectory(new File(location));
                 return new HashMap<>();
             }
         } catch (IOException e) {
-            m.getLogger().severe("Error while loading in allPlayers file: " + aPFileName + ", cleansing directory!");
+            m.getLogger().severe("Error while loading in activePlayers file: " + aPFileName + ", cleansing directory!");
             try {
                 FileUtils.cleanDirectory(new File(location));
             } catch (IOException f) {
@@ -222,7 +222,7 @@ public class UHCUtils {
             }
         }
         String livePlayersName = location + "/livePlayers.txt";
-        String allPlayersName = location + "/allPlayers.txt";
+        String allPlayersName = location + "/activePlayers.txt";
         File lPFile = new File(livePlayersName);
         File aPFile = new File(allPlayersName);
         if (lPFile.isFile()) {
@@ -257,7 +257,7 @@ public class UHCUtils {
 
             aPBuffW.close();
         } catch (IOException e) {
-            m.getLogger().severe("Could not save allPlayers to file " + allPlayersName);
+            m.getLogger().severe("Could not save activePlayers to file " + allPlayersName);
         }
         m.getLogger().info("Saved player data to world data folder: " + location);
     }

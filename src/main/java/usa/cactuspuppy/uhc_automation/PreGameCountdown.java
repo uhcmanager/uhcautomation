@@ -28,7 +28,7 @@ public class PreGameCountdown implements Runnable {
 
         //Chat message
         if (secs == length) {
-            main.gi.getAllPlayers().forEach((p) -> Bukkit.getPlayer(p).sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "ALERT: " + ChatColor.WHITE + "Game begins in " + length + " seconds!"));
+            main.gi.getActivePlayers().forEach((p) -> Bukkit.getPlayer(p).sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "ALERT: " + ChatColor.WHITE + "Game begins in " + length + " seconds!"));
         }
 
         //Title announcements
@@ -38,7 +38,7 @@ public class PreGameCountdown implements Runnable {
         } else {
             use = ChatColor.RED;
         }
-        main.gi.getAllPlayers().forEach((p) -> infoPlayer(Bukkit.getPlayer(p), use + "" + secs, ChatColor.WHITE + "until the game starts!", 0, 80, 40));
+        main.gi.getActivePlayers().forEach((p) -> infoPlayer(Bukkit.getPlayer(p), use + "" + secs, ChatColor.WHITE + "until the game starts!", 0, 80, 40));
 
         secs--;
     }

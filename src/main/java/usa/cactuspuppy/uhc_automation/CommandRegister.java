@@ -27,7 +27,7 @@ public class CommandRegister implements CommandExecutor {
             return true;
         }
         m.gi.registerPlayer((Player) p);
-        commandSender.sendMessage(ChatColor.GREEN + "Successfully registered " + p.getName() + " in " + m.gi.getWorld().getName() + "'s UHC");
+        commandSender.sendMessage(ChatColor.GREEN + "Successfully registered " + p.getName() + " in " + m.getConfig().getString("event-name"));
         return true;
     }
 }

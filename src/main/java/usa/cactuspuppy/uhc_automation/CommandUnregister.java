@@ -7,6 +7,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import java.util.UUID;
+
 public class CommandUnregister implements CommandExecutor {
     private Main m;
 
@@ -19,13 +21,15 @@ public class CommandUnregister implements CommandExecutor {
         if (args.length < 1) {
             return false;
         }
+        UUID u;
         OfflinePlayer p = Bukkit.getPlayer(args[0]);
         if (p == null) {
-            commandSender.sendMessage(ChatColor.RED + "Could not find player '" + args[0] + "'");
-            return true;
+            //TODO: Get UUID from database.
+        } else {
+            u = p.getUniqueId();
         }
-        m.gi.unRegisterPlayer(p);
-        commandSender.sendMessage(ChatColor.GREEN + "Successfully registered " + p.getName() + " in " + m.gi.getWorld().getName() + "'s UHC");
+        m.gi.blacklistPlayer(u);
+        commandSender.sendMessage(ChatColor.GREEN + "Successfully unregistered " + p.getName() + " in " + m.getConfig().getString("event-name"));
         return true;
     }
 }

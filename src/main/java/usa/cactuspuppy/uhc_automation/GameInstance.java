@@ -23,7 +23,9 @@ public class GameInstance {
     boolean respectTeams;
     boolean uhcMode;
     Set<UUID> livePlayers;
-    Set<UUID> allPlayers;
+    Set<UUID> activePlayers;
+    Set<UUID> regPlayers;
+    Set<UUID> blacklistPlayers;
     
     int borderCountdown;
     boolean borderShrinking;
@@ -31,7 +33,6 @@ public class GameInstance {
     private int loadChunksCDID;
 
     public static final boolean DEBUG = false;
-    public static final Map<String, UUID> STRING_UUID_MAP = new HashMap<>();
 
     protected GameInstance(Main p) {
         main = p;
@@ -47,7 +48,9 @@ public class GameInstance {
         uhcMode = p.getConfig().getBoolean("game.uhc-mode");
         epLength = p.getConfig().getInt("game.episode-length");
         livePlayers = new HashSet<>();
-        allPlayers = new HashSet<>();
+        activePlayers = new HashSet<>();
+        regPlayers = new HashSet<>();
+        blacklistPlayers = new HashSet<>();
         borderShrinking = false;
         active = false;
         (new DelayReactivate(this)).schedule();
@@ -76,9 +79,9 @@ public class GameInstance {
         }
         long initT = System.currentTimeMillis();
         Bukkit.broadcastMessage(ChatColor.GREEN + "Game starting!");
-        allPlayers = UHCUtils.getWorldPlayers(world);
-        livePlayers = UHCUtils.getWorldLivePlayers(world, allPlayers);
-        UHCUtils.saveWorldPlayers(main, livePlayers, allPlayers);
+        activePlayers = UHCUtils.getWorldPlayers(world);
+        livePlayers = UHCUtils.getWorldLivePlayers(world, activePlayers);
+        UHCUtils.saveWorldPlayers(main, livePlayers, activePlayers);
         UHCUtils.exeCmd("fill -10 200 -10 10 202 10 air");
         UHCUtils.exeCmd("effect @a[m=0] minecraft:resistance 10 10 true");
         UHCUtils.exeCmd("gamemode 2 @a[m=0]");
@@ -105,7 +108,7 @@ public class GameInstance {
         borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
         (new EpisodeAnnouncer(main, epLength, startT)).schedule();
         HandlerList.unregisterAll(freezePlayers);
-        allPlayers.forEach(this::startPlayer);
+        activePlayers.forEach(this::startPlayer);
     }
 
     public void stop() {
@@ -135,7 +138,7 @@ public class GameInstance {
         main.getLogger().info("Game border shrinking from " + initSize + " to " + finalSize
                 + " over " + calcBorderShrinkTime() + " secs");
         Bukkit.getScheduler().cancelTask(borderCountdown);
-        for (UUID u : allPlayers) {
+        for (UUID u : activePlayers) {
             alertPlayerBorder(u);
         }
         (new BorderAnnouncer(main)).schedule();
@@ -155,7 +158,7 @@ public class GameInstance {
                     winner = Bukkit.getPlayer(u);
                     break;
                 }
-                for (UUID u : allPlayers) {
+                for (UUID u : activePlayers) {
                     Player p = Bukkit.getPlayer(u);
                     if (p == null) {
                         continue;
@@ -169,7 +172,7 @@ public class GameInstance {
                     p.sendTitle(winner.getName(), "Wins!", 0, 80, 40);
                 }
             } else if (livePlayers.size() == 0) {
-                for (UUID u : allPlayers) {
+                for (UUID u : activePlayers) {
                     Player p = Bukkit.getPlayer(u);
                     if (p == null) {
                         continue;
@@ -228,13 +231,23 @@ public class GameInstance {
         if (active) {
             log.info("Start Time: " + startT);
         }
-        log.info("Registered Players:");
-        for (UUID u : allPlayers) {
-            log.info("  " + Bukkit.getPlayer(u).getName() + " - Online: " + Bukkit.getPlayer(u).isOnline());
+        log.info("All Players (UUIDs)");
+        for (UUID u : regPlayers) {
+            String online;
+            if (Bukkit.getPlayer(u) == null) {
+                online = "Offline";
+            } else {
+                online = "Online";
+            }
+            log.info("  " + u.toString() + " - " + online);
+        }
+        log.info("Logged-In Players:");
+        for (UUID u : activePlayers) {
+            log.info("  " + Bukkit.getPlayer(u).getName());
         }
         log.info("Alive Players:");
         for (UUID u : livePlayers) {
-            log.info("  " + Bukkit.getPlayer(u).getName() + " - Online: " + Bukkit.getPlayer(u).isOnline());
+            log.info("  " + Bukkit.getPlayer(u).getName());
         }
     }
 
@@ -258,8 +271,12 @@ public class GameInstance {
         return livePlayers;
     }
 
-    public Set<UUID> getAllPlayers() {
-        return allPlayers;
+    public Set<UUID> getActivePlayers() {
+        return activePlayers;
+    }
+
+    public Set<UUID> getRegPlayers() {
+        return regPlayers;
     }
 
     public boolean isActive() {
@@ -267,7 +284,8 @@ public class GameInstance {
     }
 
     public void registerPlayer(Player p) {
-        allPlayers.add(p.getUniqueId());
+        regPlayers.add(p.getUniqueId());
+        activePlayers.add(p.getUniqueId());
         if (p.getGameMode() == GameMode.SURVIVAL) {
             livePlayers.add(p.getUniqueId());
         }
@@ -278,9 +296,16 @@ public class GameInstance {
         livePlayers.remove(p.getUniqueId());
     }
 
-    public void unRegisterPlayer(OfflinePlayer p) {
-        allPlayers.remove(p.getUniqueId());
+    public void lostConnectPlayer(OfflinePlayer p) {
+        activePlayers.remove(p.getUniqueId());
         livePlayers.remove(p.getUniqueId());
+    }
+
+    public void blacklistPlayer(UUID u) {
+        blacklistPlayers.add(u);
+        regPlayers.remove(u);
+        activePlayers.remove(u);
+        livePlayers.remove(u);
     }
 
     void setActive(boolean a) {
@@ -321,14 +346,5 @@ public class GameInstance {
 
     void setUHCMode(boolean um) {
         uhcMode = um;
-    }
-
-    OfflinePlayer getOP(UUID u) {
-        for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
-            if (op.getUniqueId().equals(u)) {
-                return op;
-            }
-        }
-        return null;
     }
 }

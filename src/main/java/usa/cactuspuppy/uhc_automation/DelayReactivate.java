@@ -25,7 +25,7 @@ public class DelayReactivate implements Runnable {
         Map<String, Set<UUID>> playerSets = UHCUtils.loadWorldPlayers(g.main);
         if (!playerSets.isEmpty()) {
             g.livePlayers = playerSets.get("livePlayers");
-            g.allPlayers = playerSets.get("allPlayers");
+            g.activePlayers = playerSets.get("activePlayers");
         }
         g.startT = UHCUtils.loadStartTime(g.main);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(g.main), g.main);
