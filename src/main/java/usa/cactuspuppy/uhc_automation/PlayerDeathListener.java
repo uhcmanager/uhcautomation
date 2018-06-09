@@ -19,7 +19,7 @@ public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         Player p = e.getEntity();
-        m.getLogger().info(p.getDisplayName() + " died at [" + p.getLocation().getWorld().getName() + "] "
+        m.getLogger().info(p.getName() + " died at [" + p.getLocation().getWorld().getName() + "] "
                 + p.getLocation().getX() + ", " + p.getLocation().getY() + ", " + p.getLocation().getZ());
         Location drops = p.getLocation();
         if (m.gi.getWorld().isGameRule("keepInventory")) {
@@ -42,7 +42,7 @@ public class PlayerDeathListener implements Listener {
     }
 
     private void announceDeath(Player died, Player tell) {
-        tell.sendTitle(died.getName(), ChatColor.RED + "has been eliminated!", 0, 80, 40);
+        tell.sendTitle(died.getDisplayName(), ChatColor.RED + "has been eliminated!", 0, 80, 40);
         tell.playSound(tell.getLocation(), "minecraft:entity.wither.death", 1F, 1F);
         tell.playSound(tell.getLocation(), "minecraft:entity.wither.spawn", 1F, 1F);
     }

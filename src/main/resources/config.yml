@@ -1,5 +1,5 @@
 world: GameWorld
-event-name: Assassin Community UHC II
+event-name: Event Name
 data-location: data/<worldname>
 game:
   init-size: 4001

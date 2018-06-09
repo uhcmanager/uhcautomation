@@ -38,11 +38,11 @@ commands:
     usage: /<command>
   uhcunreg:
     description: Unregsiters a player from the database. Player cannot be registered again unless /uhcreg is used.
-    aliases: [unreg, unregsiter]
+    aliases: [unreg, unregsiter, uhcunregister]
     usage: /<command> [player]
     permission: uhca.admin
   uhcreg:
     description: Registers an online player in the database
-    aliases: [register]
+    aliases: [reg, register, uhcregister]
     usage: /<command> [player]
     permission: uhca.admin

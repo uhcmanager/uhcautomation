@@ -319,4 +319,17 @@ public class UHCUtils {
         int msg = r.nextInt(START_MSGS.length);
         return START_MSGS[msg];
     }
+
+    public static boolean validUsername(String name) {
+        if (name.length() < 3 || name.length() > 16) {
+            return false;
+        }
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || (c == '_'))) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

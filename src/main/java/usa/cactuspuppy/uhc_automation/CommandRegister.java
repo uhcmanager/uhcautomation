@@ -21,13 +21,19 @@ public class CommandRegister implements CommandExecutor {
             return false;
         }
         String playerName = args[0];
-        OfflinePlayer p = Bukkit.getPlayer(playerName);
-        if (p == null) {
-            commandSender.sendMessage(ChatColor.RED + "Could not find player '" + playerName + "'");
+        Player p = Bukkit.getPlayer(playerName);
+        if (p == null || !p.isOnline()) {
+            commandSender.sendMessage(ChatColor.RED + "Could not find player " + ChatColor.WHITE +  playerName + ChatColor.RED + ". Make sure the player is online.");
             return true;
         }
-        m.gi.registerPlayer((Player) p);
-        commandSender.sendMessage(ChatColor.GREEN + "Successfully registered " + p.getName() + " in " + m.getConfig().getString("event-name"));
+        m.gi.blacklistPlayers.remove(p.getUniqueId());
+        m.gi.registerPlayer(p);
+        commandSender.sendMessage(ChatColor.GREEN + "Successfully registered " + playerName + " in the " + m.getConfig().getString("event-name"));
+        m.getLogger().info("Registered " + playerName);
+        p.sendTitle(ChatColor.GOLD + "Welcome", "to the " + m.getConfig().getString("event-name"), 20, 60, 20);
+        p.setHealth(19);
+        p.setHealth(20);
+        p.sendMessage(ChatColor.YELLOW + "You have been manually added to the " + m.getConfig().getString("event-name"));
         return true;
     }
 }
