@@ -20,7 +20,7 @@ public class CommandOptions implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        if (args.length != 2 || (args.length >= 2 && args[0].equalsIgnoreCase(OPTIONS[8]))) {
+        if (args.length != 2 || !(args.length >= 2 && args[0].equalsIgnoreCase(OPTIONS[8]))) {
             return false;
         }
         if (Arrays.asList(OPTIONS).contains(args[0])) {
