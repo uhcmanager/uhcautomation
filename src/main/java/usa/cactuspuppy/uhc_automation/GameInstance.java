@@ -156,6 +156,7 @@ public class GameInstance {
         if (teamMode) {
             Map<String, Object> conds = checkConds();
             if ((boolean) conds.get("oneTeamRemains")) {
+                stop();
                 win();
             } else if (teamsRemaining != (int) conds.get("numTeams")) {
                 for (UUID u : activePlayers) {
@@ -322,9 +323,6 @@ public class GameInstance {
             log.info("  " + u.toString());
         }
         log.info("Team Mode: " + teamMode);
-        if (teamMode) {
-
-        }
     }
 
     @SuppressWarnings("deprecation")
