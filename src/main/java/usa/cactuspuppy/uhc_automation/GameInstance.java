@@ -75,9 +75,11 @@ public class GameInstance {
     }
 
     public boolean start() {
+        Map<String, Object> conds = getConds();
+        teamsRemaining = (int) conds.get("numTeams");
         if (livePlayers.size() == 1 && !DEBUG) {
             main.getLogger().warning(ChatColor.RED + "Only one player is in the UHC!");
-            Bukkit.broadcastMessage(ChatColor.RED + "UHC aborted! Only one player is in the UHC!");
+            UHCUtils.broadcastMessage(this, ChatColor.RED + "UHC aborted! Only one player is in the UHC!");
             return true;
         }
         long initT = System.currentTimeMillis();
@@ -134,7 +136,7 @@ public class GameInstance {
         UHCUtils.clearWorldData(main);
     }
 
-    protected void startBorderShrink() {
+    public void startBorderShrink() {
         borderShrinking = true;
         UHCUtils.exeCmd(Bukkit.getServer(), world,
                 "worldborder set " + finalSize + " " + calcBorderShrinkTime());
@@ -154,15 +156,13 @@ public class GameInstance {
     @SuppressWarnings("deprecation")
     public void checkForWin() {
         if (teamMode) {
-            Map<String, Object> conds = checkConds();
+            Map<String, Object> conds = getConds();
             if ((boolean) conds.get("oneTeamRemains")) {
                 stop();
                 win();
             } else if (teamsRemaining != (int) conds.get("numTeams")) {
-                for (UUID u : activePlayers) {
-                    Player p = Bukkit.getPlayer(u);
-                    p.sendMessage(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nA team has been eliminated! " + ChatColor.RESET + "\n" + conds.get("numTeams") + " teams remain!");
-                }
+                UHCUtils.broadcastMessage(this, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nA team has been eliminated! " + ChatColor.RESET + "\n" + conds.get("numTeams") + " teams remain!");
+                teamsRemaining = (int) conds.get("numTeams");
             }
         } else {
             if (livePlayers.size() <= 1) {
@@ -180,19 +180,13 @@ public class GameInstance {
         int secs = timeElapsed % 60;
         if (teamMode) {
             if (livePlayers.size() == 0) {
-                for (UUID u : activePlayers) {
-                    Player p = Bukkit.getPlayer(u);
-                    if (p == null) {
-                        continue;
-                    }
-                    p.sendMessage(ChatColor.RED + "\nWait... what? The game ended in a tie!");
-                    p.sendTitle(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.YELLOW + "Game ended in a tie!", 0, 80, 40);
-                }
+                UHCUtils.broadcastMessage(this, ChatColor.RED + "\nWait... what? The game ended in a tie!",
+                        ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.YELLOW + "Game ended in a tie!", 0, 80, 40);
                 return;
             }
             Team t = livePlayers.stream().findFirst().map(u -> Bukkit.getPlayer(u).getScoreboard().getPlayerTeam(Bukkit.getPlayer(u))).orElse(null);
             if (t == null) {
-                throw new RuntimeException("Winning team verification failed.");
+                main.getLogger().severe("Winning team verification failed.");
             }
             List<String> onlineWinners = new ArrayList<>();
             for (OfflinePlayer p : t.getPlayers()) {
@@ -216,40 +210,24 @@ public class GameInstance {
                 }
             }
             String winners = winningTeamPlayers.toString();
-            for (UUID u : activePlayers) {
-                Player p = Bukkit.getPlayer(u);
-                p.sendMessage(ChatColor.GREEN + "A team has emerged victorious!\nWinning team members: " + ChatColor.RESET + winners);
-                p.sendMessage(ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + hours + " Hours " + mins + " Minutes " + secs + " Seconds");
-                p.sendTitle(ChatColor.GREEN + "Game End!", "Winners: " + winners, 0 , 80, 40);
-            }
+            UHCUtils.broadcastMessage(this, "\n" + t.getName() + ChatColor.GREEN + " has emerged victorious!\nMembers: " + ChatColor.RESET + winners,
+                    t.getName() + ChatColor.GREEN + " wins!", "Winners: " + winners, 0 , 80, 40);
+            UHCUtils.broadcastMessage(this, ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + hours + " Hours " + mins + " Minutes " + secs + " Seconds");
         } else {
             if (livePlayers.size() == 1) {
-                Player winner = null;
-                for (UUID u : livePlayers) {
-                    winner = Bukkit.getPlayer(u);
-                    break;
+                Player winner = livePlayers.stream().findFirst().map(Bukkit::getPlayer).orElse(null);
+                if (winner == null) {
+                    main.getLogger().severe("Unable to find winner. This is probably a bug.");
+                    return;
                 }
-                for (UUID u : activePlayers) {
-                    Player p = Bukkit.getPlayer(u);
-                    if (p == null) {
-                        continue;
-                    }
-                    p.sendMessage("\n" + ChatColor.GREEN + winner.getDisplayName() + ChatColor.WHITE + " wins!");
-                    p.sendMessage(ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + hours + " Hours " + mins + " Minutes " + secs + " Seconds");
-                    p.sendTitle(winner.getDisplayName(), "Wins!", 0, 80, 40);
-                }
+                UHCUtils.broadcastMessage(this, "\n" + ChatColor.GREEN + winner.getDisplayName() + ChatColor.WHITE + " wins!\n"
+                        + ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + hours + " Hours " + mins + " Minutes " + secs + " Seconds",
+                        winner.getDisplayName(), "Wins!", 0, 80, 40);
             } else if (livePlayers.size() == 0) {
-                for (UUID u : activePlayers) {
-                    Player p = Bukkit.getPlayer(u);
-                    if (p == null) {
-                        continue;
-                    }
-                    p.sendMessage(ChatColor.RED + "\nWait... what? The game ended in a tie!");
-                    p.sendTitle(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.YELLOW + "Game ended in a tie!", 0, 80, 40);
-                }
+                UHCUtils.broadcastMessage(this, ChatColor.RED + "\nWait... what? The game ended in a tie!", ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.YELLOW + "Game ended in a tie!", 0, 80, 40);
             } else {
                 logStatus();
-                throw new RuntimeException("Win condition called for game instance running on world " + world.getName() + " under invalid circumstances. Game status dumped to log.");
+                main.getLogger().severe("Win condition called for game instance running on world " + world.getName() + " under invalid circumstances. Game status dumped to log.");
             }
         }
     }
@@ -297,6 +275,7 @@ public class GameInstance {
         log.info("World: " + worldName);
         log.info("Event Name: " + main.getConfig().getString("event-name"));
         log.info("Active: " + active);
+        if (DEBUG) { log.info("DEBUG MODE ACTIVE"); }
         if (active) {
             log.info("Start Time: " + startT);
         }
@@ -323,10 +302,15 @@ public class GameInstance {
             log.info("  " + u.toString());
         }
         log.info("Team Mode: " + teamMode);
+        log.info("Initial Size: " + initSize);
+        log.info("Final Size: " + finalSize);
+        log.info("Mins to Border Shrink: " + minsToShrink);
+        log.info("Episode Marker Interval: " + epLength + " mins");
+        log.info("Border Shrinking: " + borderShrinking);
     }
 
     @SuppressWarnings("deprecation")
-    private Map<String, Object> checkConds() {
+    private Map<String, Object> getConds() {
         Map<String, Object> resultMap = new HashMap<>();
         List<Team> teams = new ArrayList<>();
         for (UUID u : livePlayers) {

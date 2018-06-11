@@ -20,7 +20,18 @@ public class CommandOptions implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        if (args.length != 2 || !(args.length >= 2 && args[0].equalsIgnoreCase(OPTIONS[8]))) {
+        if (args.length == 0) {
+            return false;
+        } else if (args[0].equalsIgnoreCase(OPTIONS[8])) {
+            if (args.length < 2) {
+                return false;
+            }
+            String eventName = StringUtils.join(Arrays.copyOfRange(args, 1, args.length), " ");
+            main.getConfig().set("event-name", eventName);
+            main.saveConfig();
+            commandSender.sendMessage("Successfully set " + args[0] + " to be " + eventName);
+            return true;
+        } else if (args.length != 2) {
             return false;
         }
         if (Arrays.asList(OPTIONS).contains(args[0])) {
@@ -83,12 +94,6 @@ public class CommandOptions implements CommandExecutor {
                 } else if (args[0].equalsIgnoreCase(OPTIONS[7])) {
                     main.gi.setEpLength(Integer.valueOf(args[1]));
                     main.getConfig().set("game.episode-length", Integer.valueOf(args[1]));
-                } else if (args[0].equalsIgnoreCase(OPTIONS[8])) {
-                    String eventName = StringUtils.join(Arrays.copyOfRange(args, 1, args.length), " ");
-                    main.getConfig().set("event-name", eventName);
-                    main.saveConfig();
-                    commandSender.sendMessage("Successfully set " + args[0] + " to be " + eventName);
-                    return true;
                 }
                 main.saveConfig();
                 commandSender.sendMessage("Successfully set " + args[0] + " to be " + args[1]);
@@ -98,7 +103,7 @@ public class CommandOptions implements CommandExecutor {
                 return false;
             }
         } else {
-            commandSender.sendMessage(ChatColor.RED + "ERROR: Option " + args[0] + " not recognized.");
+            commandSender.sendMessage(ChatColor.RED + "ERROR: Option " + args[0] + " not recognized.\nValid options: " + ChatColor.RESET + StringUtils.join(OPTIONS, ", "));
             return true;
         }
     }

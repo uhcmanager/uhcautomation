@@ -9,12 +9,16 @@ public class PreGameCountdown implements Runnable {
     private int length;
     private int secs;
 
-    private Integer assignedID;
+    private static Integer assignedID;
+    public static boolean instanced;
+    public static PreGameCountdown pgc;
 
     public PreGameCountdown(Main m, int l) {
         main = m;
         length = l;
         secs = l;
+        instanced = true;
+        pgc = this;
     }
 
     @Override
@@ -23,6 +27,7 @@ public class PreGameCountdown implements Runnable {
         if (secs <= 0) {
             main.gi.start();
             if (assignedID != null) { Bukkit.getScheduler().cancelTask(assignedID); }
+            instanced = false;
             return;
         }
 
@@ -44,7 +49,16 @@ public class PreGameCountdown implements Runnable {
     }
 
     public void schedule() {
-        this.assignedID = Bukkit.getScheduler().scheduleSyncRepeatingTask(main, this, 0L, 20L);
+        assignedID = Bukkit.getScheduler().scheduleSyncRepeatingTask(main, this, 0L, 20L);
+    }
+
+    public void instaStart() {
+        secs = 0;
+        run();
+    }
+
+    public static PreGameCountdown getInstance() {
+        return pgc;
     }
 
     private void infoPlayer(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {

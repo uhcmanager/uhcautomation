@@ -18,6 +18,11 @@ public class CommandStart implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + "Game settings are not valid! Use /uhcstatus to see current settings or check config.");
             return true;
         }
+        if (PreGameCountdown.instanced) {
+            PreGameCountdown.getInstance().instaStart();
+
+            return true;
+        }
         if (args.length == 0) {
             return main.gi.start();
         } else if (args.length == 1) {

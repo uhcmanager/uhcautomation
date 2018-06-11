@@ -10,11 +10,8 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -35,8 +32,6 @@ public class UHCUtils {
                     "How do YOU want to do this?", "Know yourself, know thy enemy, and you shall win.", "For Aiur!",
                     "One Punch is all you need!", "Roll for Initiative!", "You know you have to do it to 'em", "Watch out for boars!"};
 
-    private static final String USER_AGENT = "UHC_Automation/1.0";
-
     //do not instantiate
     public UHCUtils() { }
 
@@ -48,6 +43,20 @@ public class UHCUtils {
             }
         }
         return rv;
+    }
+
+    public static void broadcastMessage(GameInstance gi, String msg) {
+        for (UUID u : gi.activePlayers) {
+            Bukkit.getPlayer(u).sendMessage(msg);
+        }
+    }
+
+    public static void broadcastMessage(GameInstance gi, String chat, String title, String subtitle, int in, int stay, int out) {
+        for (UUID u: gi.activePlayers) {
+            Player p = Bukkit.getPlayer(u);
+            p.sendMessage(chat);
+            p.sendTitle(title, subtitle, in, stay, out);
+        }
     }
 
     public static Set<UUID> getWorldLivePlayers(World w, Set<UUID> players) {
