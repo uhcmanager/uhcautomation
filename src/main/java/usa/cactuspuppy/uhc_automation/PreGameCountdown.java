@@ -28,6 +28,8 @@ public class PreGameCountdown implements Runnable {
             main.gi.start();
             if (assignedID != null) { Bukkit.getScheduler().cancelTask(assignedID); }
             instanced = false;
+            pgc = null;
+            assignedID = null;
             return;
         }
 
@@ -55,6 +57,10 @@ public class PreGameCountdown implements Runnable {
     public void instaStart() {
         secs = 0;
         run();
+    }
+
+    public int getID() {
+        return assignedID;
     }
 
     public static PreGameCountdown getInstance() {
