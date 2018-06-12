@@ -23,7 +23,7 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         long start = System.currentTimeMillis();
         createConfig();
-        BukkitRunnable r = new BukkitRunnable() {
+        (new BukkitRunnable() {
             @Override
             public void run() {
                 try {
@@ -33,14 +33,14 @@ public class Main extends JavaPlugin {
                     getLogger().warning("Could not establish connection to SQL database. Check that your config.yml is correct.");
                 }
             }
-        };
-        r.runTaskAsynchronously(this);
+        }).runTaskAsynchronously(this);
         if (gi == null) {
             gi = new GameInstance(this);
         }
         registerCommands();
         Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(this), this);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerConnectionListener(this), this);
+        (new DelayedReset(this)).schedule();
         getLogger().info("UHC Automation loaded in " + ((System.currentTimeMillis() - start)) + " ms");
     }
 
@@ -103,7 +103,7 @@ public class Main extends JavaPlugin {
         getCommand("uhcreset").setExecutor(new CommandReset(this));
         getCommand("uhcsetworld").setExecutor(new CommandSetWorld(this));
         getCommand("uhcstatus").setExecutor(new CommandStatus(this));
-        getCommand("uhcprep").setExecutor(new CommandLobby(this));
+        getCommand("uhcprep").setExecutor(new CommandPrep(this));
         getCommand("uhctime").setExecutor(new CommandTime(this));
         getCommand("uhcreg").setExecutor(new CommandRegister(this));
         getCommand("uhcunreg").setExecutor(new CommandUnregister(this));

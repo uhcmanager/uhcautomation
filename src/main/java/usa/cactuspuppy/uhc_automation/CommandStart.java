@@ -15,8 +15,8 @@ public class CommandStart implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!main.gi.validate()) {
-            sender.sendMessage(ChatColor.RED + "Game settings are not valid! Use /uhcstatus to see current settings or check config.");
+        if (!main.gi.validate(sender)) {
+            UHCUtils.broadcastMessage(main.gi, ChatColor.RED + "Could not start UHC, settings invalid.");
             return true;
         } else if (main.gi.isActive()) {
             sender.sendMessage(ChatColor.RED + "A game is already in progress! Use " + ChatColor.RESET + "/uhcreset " + ChatColor.RED + "to stop the game first!");
@@ -28,7 +28,7 @@ public class CommandStart implements CommandExecutor {
             } else if (args.length == 1) {
                 Bukkit.getScheduler().cancelTask(PreGameCountdown.getInstance().getID());
                 try {
-                    (new PreGameCountdown(main, Integer.valueOf(args[0]))).schedule();
+                    (new PreGameCountdown(main, Integer.valueOf(args[0]), sender)).schedule();
                 } catch (NumberFormatException e) {
                     return false;
                 }
@@ -38,11 +38,12 @@ public class CommandStart implements CommandExecutor {
             return true;
         }
         if (args.length == 0) {
-            return main.gi.start();
+            main.gi.start(sender);
+            return true;
         } else if (args.length == 1) {
             try {
                 int cdSecs = Integer.valueOf(args[0]);
-                (new PreGameCountdown(main, cdSecs)).schedule();
+                (new PreGameCountdown(main, cdSecs, sender)).schedule();
             } catch (NumberFormatException e) {
                 return false;
             }

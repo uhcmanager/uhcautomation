@@ -2,22 +2,25 @@ package usa.cactuspuppy.uhc_automation;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class PreGameCountdown implements Runnable {
     private Main main;
     private int length;
     private int secs;
+    private CommandSender sender;
 
     private static Integer assignedID;
     public static boolean instanced;
     public static PreGameCountdown pgc;
 
-    public PreGameCountdown(Main m, int l) {
+    public PreGameCountdown(Main m, int l, CommandSender s) {
         main = m;
         length = l;
         secs = l;
         instanced = true;
+        sender = s;
         pgc = this;
     }
 
@@ -25,7 +28,7 @@ public class PreGameCountdown implements Runnable {
     public void run() {
         //When time up, unschedule task
         if (secs <= 0) {
-            main.gi.start();
+            main.gi.start(sender);
             if (assignedID != null) { Bukkit.getScheduler().cancelTask(assignedID); }
             instanced = false;
             pgc = null;

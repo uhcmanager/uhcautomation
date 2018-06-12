@@ -1,6 +1,7 @@
 package usa.cactuspuppy.uhc_automation;
 
 import org.bukkit.*;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.scoreboard.Team;
@@ -74,30 +75,38 @@ public class GameInstance {
         UHCUtils.exeCmd("scoreboard objectives setDisplay list Health");
     }
 
-    public boolean start() {
-        Map<String, Object> conds = getConds();
-        teamsRemaining = (int) conds.get("numTeams");
-        if (livePlayers.size() == 1 && !DEBUG) {
-            main.getLogger().warning(ChatColor.RED + "Only one player is in the UHC!");
-            UHCUtils.broadcastMessage(this, ChatColor.RED + "UHC aborted! Only one player is in the UHC!");
-            return true;
+    public void start(CommandSender s) {
+        if (livePlayers.size() <= 1 && !DEBUG) {
+            main.getLogger().warning("Not enough players are in the UHC!");
+            s.sendMessage(ChatColor.RED + "UHC aborted! Not enough players in the UHC!");
+            return;
         }
         long initT = System.currentTimeMillis();
-        Bukkit.broadcastMessage(ChatColor.GREEN + "Game starting!");
+        UHCUtils.broadcastMessage(this, ChatColor.GREEN + "Game starting!");
+        boolean spread = UHCUtils.spreadplayers(this);
+        if (!spread) {
+            s.sendMessage(ChatColor.RED + "Unable to spread this many players within specified gamespace! Consider decreasing the spread distance between players or increasing the initial size of the border with /uhcoptions. UHC aborted.");
+            UHCUtils.broadcastMessage(this, ChatColor.RED + "Could not start UHC, settings invalid.");
+            return;
+        }
         activePlayers = UHCUtils.getWorldPlayers(world);
         livePlayers = UHCUtils.getWorldLivePlayers(world, activePlayers);
         UHCUtils.saveWorldPlayers(main, livePlayers, activePlayers);
         UHCUtils.exeCmd("fill -10 200 -10 10 202 10 air");
         UHCUtils.exeCmd("effect @a[m=0] minecraft:resistance 10 10 true");
         UHCUtils.exeCmd("gamemode 2 @a[m=0]");
-        UHCUtils.exeCmd(Bukkit.getServer(), world, "spreadplayers 0 0 " + spreadDistance + " " + initSize / 2 + " " + (teamMode ? (respectTeams ? "true" : "false") : "false") + " @a[m=2]");
+        if (teamMode) {
+            Map<String, Object> conds = getConds();
+            teamsRemaining = (int) conds.get("numTeams");
+        }
+//        UHCUtils.exeCmd(Bukkit.getServer(), world, "spreadplayers 0 0 " + spreadDistance + " " + initSize / 2 + " " + (teamMode ? (respectTeams ? "true" : "false") : "false") + " @a[m=2]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Initiate Time - " + sdf.format(new Date(initT)));
         active = true;
         freezePlayers = new PlayerMoveListener(main);
         Bukkit.getServer().getPluginManager().registerEvents(freezePlayers, main);
         loadChunksCDID = (new LoadingChunksCountdown(main, 5)).schedule();
-        return true;
+        return;
     }
 
     public void release() {
@@ -110,7 +119,20 @@ public class GameInstance {
         main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
         UHCUtils.exeCmd("gamerule doDaylightCycle true");
         UHCUtils.exeCmd("gamerule doWeatherCycle true");
-        borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
+        if (minsToShrink > 0) {
+            borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
+        } else if (minsToShrink == 0) {
+            borderShrinking = true;
+            UHCUtils.exeCmd(Bukkit.getServer(), world,
+                    "worldborder set " + finalSize + " " + calcBorderShrinkTime());
+            main.getLogger().info("Game border shrinking from " + initSize + " to " + finalSize
+                    + " over " + calcBorderShrinkTime() + " secs");
+            (new BorderAnnouncer(main)).schedule();
+            UHCUtils.exeCmd("gamerule doDaylightCycle false");
+            UHCUtils.exeCmd("gamerule doWeatherCycle false");
+            UHCUtils.exeCmd("weather clear");
+            UHCUtils.exeCmd("time set 6000");
+        }
         (new EpisodeAnnouncer(main, epLength, startT)).schedule();
         HandlerList.unregisterAll(freezePlayers);
         activePlayers.forEach(this::startPlayer);
@@ -158,7 +180,6 @@ public class GameInstance {
         if (teamMode) {
             Map<String, Object> conds = getConds();
             if ((boolean) conds.get("oneTeamRemains")) {
-                stop();
                 win();
             } else if (teamsRemaining != (int) conds.get("numTeams")) {
                 UHCUtils.broadcastMessage(this, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nA team has been eliminated! " + ChatColor.RESET + "\n" + conds.get("numTeams") + " teams remain!");
@@ -166,7 +187,6 @@ public class GameInstance {
             }
         } else {
             if (livePlayers.size() <= 1) {
-                stop();
                 win();
             }
         }
@@ -174,10 +194,10 @@ public class GameInstance {
 
     @SuppressWarnings("deprecation")
     public void win() {
-        int timeElapsed = (int) (System.currentTimeMillis() - startT) / 1000;
-        int hours = timeElapsed / 3600;
-        int mins = timeElapsed / 60;
-        int secs = timeElapsed % 60;
+        long timeElapsed = (System.currentTimeMillis() - startT) / 1000;
+        long hours = timeElapsed / 3600;
+        long mins = timeElapsed / 60;
+        long secs = timeElapsed % 60;
         if (teamMode) {
             if (livePlayers.size() == 0) {
                 UHCUtils.broadcastMessage(this, ChatColor.RED + "\nWait... what? The game ended in a tie!",
@@ -187,6 +207,7 @@ public class GameInstance {
             Team t = livePlayers.stream().findFirst().map(u -> Bukkit.getPlayer(u).getScoreboard().getPlayerTeam(Bukkit.getPlayer(u))).orElse(null);
             if (t == null) {
                 main.getLogger().severe("Winning team verification failed.");
+                return;
             }
             List<String> onlineWinners = new ArrayList<>();
             for (OfflinePlayer p : t.getPlayers()) {
@@ -230,6 +251,7 @@ public class GameInstance {
                 main.getLogger().severe("Win condition called for game instance running on world " + world.getName() + " under invalid circumstances. Game status dumped to log.");
             }
         }
+        stop();
     }
 
     /**
@@ -257,10 +279,16 @@ public class GameInstance {
         p.playSound(p.getLocation(), "minecraft:entity.enderdragon.death", 1F, 1F);
     }
 
-    public boolean validate() {
+    public boolean validate(CommandSender s) {
         boolean valid;
         valid = initSize > finalSize;
+        if (!valid) {
+            s.sendMessage(String.format(ChatColor.RED + "Initial size %d is not greater than final size %d. UHC aborted.", initSize, finalSize));
+        }
         valid = valid && spreadDistance < initSize;
+        if (!valid) {
+            s.sendMessage(String.format(ChatColor.RED + "Player separation distance %d is not less than spread range %d. UHC aborted.", spreadDistance, initSize / 2));
+        }
         return valid;
     }
 
@@ -280,6 +308,9 @@ public class GameInstance {
             log.info("Start Time: " + startT);
         }
         log.info("All Players (UUIDs)");
+        if (regPlayers.isEmpty()) {
+            log.info("  " + "NONE");
+        }
         for (UUID u : regPlayers) {
             String online;
             if (Bukkit.getPlayer(u) == null) {
@@ -290,14 +321,23 @@ public class GameInstance {
             log.info("  " + u.toString() + " - " + online);
         }
         log.info("Logged-In Players:");
+        if (activePlayers.isEmpty()) {
+            log.info("  " + "NONE");
+        }
         for (UUID u : activePlayers) {
             log.info("  " + Bukkit.getPlayer(u).getName());
         }
         log.info("Alive Players:");
+        if (livePlayers.isEmpty()) {
+            log.info("  " + "NONE");
+        }
         for (UUID u : livePlayers) {
             log.info("  " + Bukkit.getPlayer(u).getName());
         }
         log.info("Unregistered Players (Blacklisted):");
+        if (blacklistPlayers.isEmpty()) {
+            log.info("  " + "NONE");
+        }
         for (UUID u : blacklistPlayers) {
             log.info("  " + u.toString());
         }
@@ -310,7 +350,7 @@ public class GameInstance {
     }
 
     @SuppressWarnings("deprecation")
-    private Map<String, Object> getConds() {
+    public Map<String, Object> getConds() {
         Map<String, Object> resultMap = new HashMap<>();
         List<Team> teams = new ArrayList<>();
         for (UUID u : livePlayers) {
@@ -399,6 +439,7 @@ public class GameInstance {
 
     void setInitSize(int s) {
         initSize = s;
+        UHCUtils.exeCmd("worldborder set " + s);
     }
 
     void setFinalSize(int s) {
@@ -423,5 +464,6 @@ public class GameInstance {
 
     void setUHCMode(boolean um) {
         uhcMode = um;
+        UHCUtils.exeCmd("gamerule naturalRegeneration " + !um);
     }
 }

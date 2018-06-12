@@ -42,19 +42,36 @@ public class CommandOptions implements CommandExecutor {
                                         + ChatColor.RED + " is not larger than current final border size "
                                         + ChatColor.RESET + main.gi.getInitSize());
                         return true;
+                    } else if (Integer.valueOf(args[1]) < 0) {
+                        commandSender.sendMessage(ChatColor.RED + "ERROR: Requested initial border size " + ChatColor.RESET + Integer.valueOf(args[1])
+                                + ChatColor.RED + " is not greater than or equal to zero.");
+                        return true;
                     }
-                    main.gi.setInitSize(Integer.valueOf(args[1]));
-                    main.getConfig().set("game.init-size", Integer.valueOf(args[1]));
+                    int initSize = Integer.valueOf(args[1]);
+                    if (initSize > 60000000 || initSize == 0) { initSize = 60000000; }
+                    main.gi.setInitSize(initSize);
+                    main.getConfig().set("game.init-size", initSize);
                 } else if (args[0].equalsIgnoreCase(OPTIONS[1])) {
                     if (Integer.valueOf(args[1]) >= main.gi.getInitSize()) {
                         commandSender.sendMessage(ChatColor.RED + "ERROR: Requested final border size " + ChatColor.RESET + Integer.valueOf(args[1])
                                         + ChatColor.RED + " is not smaller than current initial border size "
                                         + ChatColor.RESET + main.gi.getInitSize());
                         return true;
+                    } else if (Integer.valueOf(args[1]) < 0) {
+                        commandSender.sendMessage(ChatColor.RED + "ERROR: Requested minutes to border shrink " + ChatColor.RESET + Integer.valueOf(args[1])
+                                + ChatColor.RED + " is not greater than or equal to zero.");
+                        return true;
                     }
-                    main.gi.setFinalSize(Integer.valueOf(args[1]));
-                    main.getConfig().set("game.final-size", Integer.valueOf(args[1]));
+                    int finalSize = Integer.valueOf(args[1]);
+                    if (finalSize > 59999999 || finalSize == 0) { finalSize = 59999999; }
+                    main.gi.setFinalSize(finalSize);
+                    main.getConfig().set("game.final-size", finalSize);
                 } else if (args[0].equalsIgnoreCase(OPTIONS[2])) {
+                    if (Integer.valueOf(args[1]) < -1) {
+                        commandSender.sendMessage(ChatColor.RED + "ERROR: Requested final border size " + ChatColor.RESET + Integer.valueOf(args[1])
+                                + ChatColor.RED + " is not positive, 0, or -1.");
+                        return true;
+                    }
                     main.gi.setTimeToShrink(Integer.valueOf(args[1]));
                     main.getConfig().set("game.mins-to-shrink", Integer.valueOf(args[1]));
                 } else if (args[0].equalsIgnoreCase(OPTIONS[3])) {
@@ -68,6 +85,11 @@ public class CommandOptions implements CommandExecutor {
                     }
                     main.getConfig().set("game.team-mode", Boolean.valueOf(args[1]));
                 } else if (args[0].equalsIgnoreCase(OPTIONS[4])) {
+                    if (Integer.valueOf(args[1]) < 0) {
+                        commandSender.sendMessage(ChatColor.RED + "ERROR: Requested initial separation distance " + ChatColor.RESET + Integer.valueOf(args[1])
+                                + ChatColor.RED + " is not greater than or equal to zero.");
+                        return true;
+                    }
                     main.gi.setSpreadDistance(Integer.valueOf(args[1]));
                     main.getConfig().set("game.spread-distance", Integer.valueOf(args[1]));
                 } else if (args[0].equalsIgnoreCase(OPTIONS[5])) {
@@ -92,6 +114,11 @@ public class CommandOptions implements CommandExecutor {
                     }
                     main.getConfig().set("game.respect-teams", Boolean.valueOf(args[1]));
                 } else if (args[0].equalsIgnoreCase(OPTIONS[7])) {
+                    if (Integer.valueOf(args[1]) < 0) {
+                        commandSender.sendMessage(ChatColor.RED + "ERROR: Requested episode length " + ChatColor.RESET + Integer.valueOf(args[1])
+                                + ChatColor.RED + " is not greater than or equal to zero.");
+                        return true;
+                    }
                     main.gi.setEpLength(Integer.valueOf(args[1]));
                     main.getConfig().set("game.episode-length", Integer.valueOf(args[1]));
                 }
@@ -99,7 +126,7 @@ public class CommandOptions implements CommandExecutor {
                 commandSender.sendMessage("Successfully set " + args[0] + " to be " + args[1]);
                 return true;
             } catch (NumberFormatException e) {
-                commandSender.sendMessage(ChatColor.RED + "ERROR: Option " + args[0] + " only accepts numbers.");
+                commandSender.sendMessage(ChatColor.RED + "ERROR: Option " + args[0] + " only accepts integers. If you typed a number, it may be too large or too small. Try a number closer to zero.");
                 return false;
             }
         } else {

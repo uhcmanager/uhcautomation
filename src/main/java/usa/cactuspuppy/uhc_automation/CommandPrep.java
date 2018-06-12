@@ -4,9 +4,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-public class CommandLobby implements CommandExecutor {
+public class CommandPrep implements CommandExecutor {
     private Main m;
-    public CommandLobby(Main main) {
+    public CommandPrep(Main main) {
         m = main;
     }
 
