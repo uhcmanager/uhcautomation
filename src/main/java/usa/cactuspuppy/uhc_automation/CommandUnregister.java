@@ -75,6 +75,7 @@ public class CommandUnregister implements CommandExecutor {
                         commandSender.sendMessage(ChatColor.GREEN + "Unregistered " + ChatColor.WHITE + name + ChatColor.GREEN +  " from the " + m.getConfig().getString("event-name"));
                         commandSender.sendMessage(ChatColor.YELLOW + "Remember that this player can now only be readded to the UHC with /uhcreg");
                         m.getLogger().info("Blacklisted " + name + " from the " + m.getConfig().getString("event-name"));
+                        UHCUtils.broadcastMessage(m.gi, ChatColor.RED + name + " has been removed from the UHC.");
                     } catch (IOException | ParseException e) {
                         e.printStackTrace();
                         commandSender.sendMessage(ChatColor.DARK_RED + "An error occurred, please try again later.");

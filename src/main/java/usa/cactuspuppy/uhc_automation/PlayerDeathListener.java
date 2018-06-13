@@ -21,6 +21,9 @@ public class PlayerDeathListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
+        if (!(m.gi.livePlayers.contains(e.getEntity().getUniqueId()))) {
+            return;
+        }
         Player p = e.getEntity();
         m.getLogger().info(p.getName() + " died at [" + p.getLocation().getWorld().getName() + "] "
                 + p.getLocation().getX() + ", " + p.getLocation().getY() + ", " + p.getLocation().getZ());
@@ -42,6 +45,7 @@ public class PlayerDeathListener implements Listener {
             } catch (NullPointerException f) { }
         }
         m.gi.checkForWin();
+        UHCUtils.saveWorldPlayers(m, m.gi.livePlayers, m.gi.activePlayers);
     }
 
     private void announceDeath(Player died, Player tell) {

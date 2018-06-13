@@ -18,6 +18,7 @@ public class Main extends JavaPlugin {
     private String host, database, username, password;
     private int port;
     protected Statement statement;
+    protected GameModeChangeListener gmcl;
 
     @Override
     public void onEnable() {
@@ -40,6 +41,8 @@ public class Main extends JavaPlugin {
         registerCommands();
         Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(this), this);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerConnectionListener(this), this);
+        gmcl = new GameModeChangeListener(this);
+        Bukkit.getServer().getPluginManager().registerEvents(gmcl, this);
         (new DelayedReset(this)).schedule();
         getLogger().info("UHC Automation loaded in " + ((System.currentTimeMillis() - start)) + " ms");
     }

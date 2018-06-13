@@ -4,6 +4,8 @@ import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
 
 import java.text.SimpleDateFormat;
@@ -83,23 +85,25 @@ public class GameInstance {
         }
         long initT = System.currentTimeMillis();
         UHCUtils.broadcastMessage(this, ChatColor.GREEN + "Game starting!");
+        UHCUtils.exeCmd("fill -10 200 -10 10 202 10 air");
         boolean spread = UHCUtils.spreadplayers(this);
         if (!spread) {
             s.sendMessage(ChatColor.RED + "Unable to spread this many players within specified gamespace! Consider decreasing the spread distance between players or increasing the initial size of the border with /uhcoptions. UHC aborted.");
             UHCUtils.broadcastMessage(this, ChatColor.RED + "Could not start UHC, settings invalid.");
+            prep();
             return;
         }
         activePlayers = UHCUtils.getWorldPlayers(world);
         livePlayers = UHCUtils.getWorldLivePlayers(world, activePlayers);
         UHCUtils.saveWorldPlayers(main, livePlayers, activePlayers);
-        UHCUtils.exeCmd("fill -10 200 -10 10 202 10 air");
+        HandlerList.unregisterAll(main.gmcl);
+        UHCUtils.exeCmd("effect @a[m=0] clear");
         UHCUtils.exeCmd("effect @a[m=0] minecraft:resistance 10 10 true");
         UHCUtils.exeCmd("gamemode 2 @a[m=0]");
         if (teamMode) {
             Map<String, Object> conds = getConds();
             teamsRemaining = (int) conds.get("numTeams");
         }
-//        UHCUtils.exeCmd(Bukkit.getServer(), world, "spreadplayers 0 0 " + spreadDistance + " " + initSize / 2 + " " + (teamMode ? (respectTeams ? "true" : "false") : "false") + " @a[m=2]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Initiate Time - " + sdf.format(new Date(initT)));
         active = true;
@@ -133,7 +137,9 @@ public class GameInstance {
             UHCUtils.exeCmd("weather clear");
             UHCUtils.exeCmd("time set 6000");
         }
-        (new EpisodeAnnouncer(main, epLength, startT)).schedule();
+        if (epLength != 0) {
+            (new EpisodeAnnouncer(main, epLength, startT)).schedule();
+        }
         HandlerList.unregisterAll(freezePlayers);
         activePlayers.forEach(this::startPlayer);
     }
@@ -406,6 +412,7 @@ public class GameInstance {
         activePlayers.add(p.getUniqueId());
         if (p.getGameMode() == GameMode.SURVIVAL) {
             livePlayers.add(p.getUniqueId());
+            p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 1000000, 255));
         }
     }
 
