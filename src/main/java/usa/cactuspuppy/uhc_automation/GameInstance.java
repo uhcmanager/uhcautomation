@@ -1,16 +1,25 @@
 package usa.cactuspuppy.uhc_automation;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class GameInstance {
     public Main main;
@@ -62,10 +71,13 @@ public class GameInstance {
     }
 
     public void prep() {
-        UHCUtils.exeCmd("tp @a 0 201 0");
+        if (UHCUtils.isWorldData(main)) {
+            UHCUtils.clearWorldData(main);
+        }
         UHCUtils.exeCmd(Bukkit.getServer(), world, "fill -10 200 -10 10 202 10 barrier 0 hollow");
         UHCUtils.exeCmd(Bukkit.getServer(), world, "fill -9 202 -9 9 202 9 air");
         UHCUtils.exeCmd(Bukkit.getServer(), world, "setworldspawn 0 201 0");
+        UHCUtils.exeCmd("tp @a 0 201 0");
         UHCUtils.exeCmd("gamerule spawnRadius 0");
         UHCUtils.exeCmd("gamerule doDaylightCycle false");
         UHCUtils.exeCmd("gamerule doWeatherCycle false");
@@ -89,12 +101,10 @@ public class GameInstance {
         boolean spread = UHCUtils.spreadplayers(this);
         if (!spread) {
             s.sendMessage(ChatColor.RED + "Unable to spread this many players within specified gamespace! Consider decreasing the spread distance between players or increasing the initial size of the border with /uhcoptions. UHC aborted.");
-            UHCUtils.broadcastMessage(this, ChatColor.RED + "Could not start UHC, settings invalid.");
+            UHCUtils.broadcastMessage(this, ChatColor.RED.toString() + ChatColor.BOLD + "Could not start UHC.");
             prep();
             return;
         }
-        activePlayers = UHCUtils.getWorldPlayers(world);
-        livePlayers = UHCUtils.getWorldLivePlayers(world, activePlayers);
         UHCUtils.saveWorldPlayers(main, livePlayers, activePlayers);
         HandlerList.unregisterAll(main.gmcl);
         UHCUtils.exeCmd("effect @a[m=0] clear");
@@ -202,7 +212,7 @@ public class GameInstance {
     public void win() {
         long timeElapsed = (System.currentTimeMillis() - startT) / 1000;
         long hours = timeElapsed / 3600;
-        long mins = timeElapsed / 60;
+        long mins = (timeElapsed / 60) % 60;
         long secs = timeElapsed % 60;
         if (teamMode) {
             if (livePlayers.size() == 0) {
@@ -253,7 +263,7 @@ public class GameInstance {
             } else if (livePlayers.size() == 0) {
                 UHCUtils.broadcastMessage(this, ChatColor.RED + "\nWait... what? The game ended in a tie!", ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.YELLOW + "Game ended in a tie!", 0, 80, 40);
             } else {
-                logStatus();
+                logStatus(Bukkit.getConsoleSender());
                 main.getLogger().severe("Win condition called for game instance running on world " + world.getName() + " under invalid circumstances. Game status dumped to log.");
             }
         }
@@ -266,6 +276,9 @@ public class GameInstance {
 
     public void startPlayer(UUID u) {
         Player p = Bukkit.getPlayer(u);
+        if (p.getLocation().getBlock().getType().equals(Material.STEP)) {
+            p.getLocation().getBlock().setType(Material.AIR);
+        }
         p.sendTitle(ChatColor.GREEN.toString() + ChatColor.BOLD + "GO!", UHCUtils.randomStartMSG(), 0, 80, 40);
         p.playSound(p.getLocation(), "minecraft:block.note.pling", 1F, 1.18F);
         p.playSound(p.getLocation(), "minecraft:entity.enderdragon.growl", 1F, 1F);
@@ -298,83 +311,90 @@ public class GameInstance {
         return valid;
     }
 
-    public void logStatus() {
-        Logger log = Bukkit.getServer().getLogger();
+    public void logStatus(CommandSender s) {
         String worldName;
         if (world != null) {
             worldName = world.getName();
         } else {
             worldName = "NOT BOUND";
         }
-        log.info("World: " + worldName);
-        log.info("Event Name: " + main.getConfig().getString("event-name"));
-        log.info("Active: " + active);
-        if (DEBUG) { log.info("DEBUG MODE ACTIVE"); }
+        s.sendMessage("\n" + ChatColor.GOLD.toString() + ChatColor.BOLD + "Current Status:");
+        s.sendMessage("World: " + worldName);
+        s.sendMessage("Event Name: " + main.getConfig().getString("event-name"));
+        s.sendMessage("Active: " + active);
+        s.sendMessage("Team Mode: " + teamMode);
+        if (DEBUG) { s.sendMessage("DEBUG MODE ACTIVE"); }
         if (active) {
-            log.info("Start Time: " + startT);
-        }
-        log.info("All Players (UUIDs)");
-        if (regPlayers.isEmpty()) {
-            log.info("  " + "NONE");
-        }
-        for (UUID u : regPlayers) {
-            String online;
-            if (Bukkit.getPlayer(u) == null) {
-                online = "Offline";
-            } else {
-                online = "Online";
+            s.sendMessage("Start Time: " + startT);
+            if (teamMode) {
+                s.sendMessage("Teams Remaining: " + teamsRemaining);
             }
-            log.info("  " + u.toString() + " - " + online);
         }
-        log.info("Logged-In Players:");
+        s.sendMessage("All Players (UUIDs)");
+        if (regPlayers.isEmpty()) {
+            s.sendMessage("  " + "NONE");
+        } else {
+            for (UUID u : regPlayers) {
+                String name;
+                String online;
+                Player p = Bukkit.getPlayer(u);
+                if (p == null) {
+                    name = u.toString();
+                    online = "Offline";
+                } else {
+                    name = p.getName();
+                    online = "Online";
+                }
+                s.sendMessage("  " + name + " - " + online);
+            }
+        }
+        s.sendMessage("Logged-In Players:");
         if (activePlayers.isEmpty()) {
-            log.info("  " + "NONE");
+            s.sendMessage("  " + "NONE");
+        } else {
+            for (UUID u : activePlayers) {
+                s.sendMessage("  " + Bukkit.getPlayer(u).getName());
+            }
         }
-        for (UUID u : activePlayers) {
-            log.info("  " + Bukkit.getPlayer(u).getName());
-        }
-        log.info("Alive Players:");
+        s.sendMessage("Alive Players:");
         if (livePlayers.isEmpty()) {
-            log.info("  " + "NONE");
+            s.sendMessage("  " + "NONE");
+        } else {
+            for (UUID u : livePlayers) {
+                s.sendMessage("  " + Bukkit.getPlayer(u).getName());
+            }
         }
-        for (UUID u : livePlayers) {
-            log.info("  " + Bukkit.getPlayer(u).getName());
-        }
-        log.info("Unregistered Players (Blacklisted):");
+        s.sendMessage("Unregistered Players (Blacklisted):");
         if (blacklistPlayers.isEmpty()) {
-            log.info("  " + "NONE");
+            s.sendMessage("  " + "NONE");
+        } else {
+            for (UUID u : blacklistPlayers) {
+                s.sendMessage("  " + u.toString());
+            }
         }
-        for (UUID u : blacklistPlayers) {
-            log.info("  " + u.toString());
-        }
-        log.info("Team Mode: " + teamMode);
-        log.info("Initial Size: " + initSize);
-        log.info("Final Size: " + finalSize);
-        log.info("Mins to Border Shrink: " + minsToShrink);
-        log.info("Episode Marker Interval: " + epLength + " mins");
-        log.info("Border Shrinking: " + borderShrinking);
+        s.sendMessage("Initial Size: " + initSize);
+        s.sendMessage("Final Size: " + finalSize);
+        s.sendMessage("Mins to Border Shrink: " + minsToShrink);
+        s.sendMessage("Episode Marker Interval: " + epLength + " mins");
+        s.sendMessage("Border Shrinking: " + borderShrinking);
     }
 
     @SuppressWarnings("deprecation")
     public Map<String, Object> getConds() {
         Map<String, Object> resultMap = new HashMap<>();
-        List<Team> teams = new ArrayList<>();
+        Set<Team> teams = new HashSet<>();
         for (UUID u : livePlayers) {
             Player p = Bukkit.getPlayer(u);
             teams.add(p.getScoreboard().getPlayerTeam(p));
         }
-        if (teams.size() == 1) {
-            resultMap.put("oneTeamRemains", true);
-            resultMap.put("winningTeam", teams.get(0));
-        } else {
-            resultMap.put("oneTeamRemains", false);
-            resultMap.put("numTeams", teams.size());
-        }
+        resultMap.put("oneTeamRemains", teams.size() == 1);
+        resultMap.put("numTeams", teams.size());
         return resultMap;
     }
 
     private int calcBorderShrinkTime() {
-        return (initSize - finalSize) / 2;
+        double slowFactor = 3.0;
+        return (int) ((initSize - finalSize) / (2 * slowFactor));
     }
 
     public int getInitSize() {
@@ -412,8 +432,14 @@ public class GameInstance {
         activePlayers.add(p.getUniqueId());
         if (p.getGameMode() == GameMode.SURVIVAL) {
             livePlayers.add(p.getUniqueId());
-            p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 1000000, 255));
+            if (!active) {
+                UHCUtils.exeCmd("effect " + p.getName() + " minecraft:weakness 1000000 255 true");
+            }
         }
+    }
+
+    public void addPlayerToLive(Player p) {
+        livePlayers.add(p.getUniqueId());
     }
 
     public void removePlayerFromLive(Player p) {

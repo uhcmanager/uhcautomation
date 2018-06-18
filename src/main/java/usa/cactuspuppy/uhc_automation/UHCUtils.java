@@ -2,17 +2,30 @@ package usa.cactuspuppy.uhc_automation;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import net.minecraft.server.v1_12_R1.ChatMessageType;
-import net.minecraft.server.v1_12_R1.IChatBaseComponent;
-import net.minecraft.server.v1_12_R1.PacketPlayOutChat;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.io.FileUtils;
-import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import static java.util.stream.Collectors.toList;
@@ -32,22 +45,12 @@ public class UHCUtils {
                     "Who's ready for some fireworks!", "LEEEROY JENKINS", "[inspirational message]", "Release the hounds!",
                     "Good luck, don't die!", "Good luck, have fun!", "Just Do It!", "FOR THE HORDE!", "For The Alliance!", "Watch out for bears!",
                     "How do YOU want to do this?", "Know yourself, know thy enemy, and you shall win.", "For Aiur!",
-                    "One Punch is all you need!", "Roll for Initiative!", "You know you have to do it to 'em", "Watch out for boars!"};
+                    "One Punch is all you need!", "Roll for Initiative!", "You know you have to do it to 'em", "Watch out for boars!", "CHAAAAAAARGE"};
 
     private static final Random random = new Random();
 
     //do not instantiate
     public UHCUtils() { }
-
-    public static Set<UUID> getWorldPlayers(World w) {
-        HashSet<UUID> rv = new HashSet<>();
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            if (p.getWorld().equals(w)) {
-                rv.add(p.getUniqueId());
-            }
-        }
-        return rv;
-    }
 
     public static void broadcastMessage(GameInstance gi, String msg) {
         for (UUID u : gi.activePlayers) {
@@ -61,17 +64,6 @@ public class UHCUtils {
             p.sendMessage(chat);
             p.sendTitle(title, subtitle, in, stay, out);
         }
-    }
-
-    public static Set<UUID> getWorldLivePlayers(World w, Set<UUID> players) {
-        HashSet<UUID> rv = new HashSet<>();
-        for (UUID u : players) {
-            Player p = Bukkit.getPlayer(u);
-            if (p.getGameMode().equals(GameMode.SURVIVAL) && p.getWorld().equals(w)) {
-                rv.add(p.getUniqueId());
-            }
-        }
-        return rv;
     }
 
     public static boolean isWorldData(Main m) {
@@ -116,13 +108,16 @@ public class UHCUtils {
                 m.getLogger().severe("Could not create data folder to save game instance data!");
                 return;
             } else {
-                m.getLogger().info("Created world data folder: '" + location + "', savind data...");
+                m.getLogger().info("Created world data folder: '" + location + "', saving data...");
             }
         }
         String startTimeFileName = location + "/startTime.txt";
         File startTimeFile = new File(startTimeFileName);
         if (startTimeFile.isFile()) {
-            startTimeFile.delete();
+            final boolean delete = startTimeFile.delete();
+            if (!delete) {
+                m.getLogger().severe("Could not delete " + startTimeFileName);
+            }
         }
         try {
             FileWriter sTFW = new FileWriter(startTimeFileName);
@@ -315,16 +310,8 @@ public class UHCUtils {
         Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
     }
 
-    /**
-     * @source ConnorLinfoot
-     * @param player to send title actionbar to
-     * @param message to display
-     */
     public static void sendActionBar(Player player, String message){
-        CraftPlayer p = (CraftPlayer) player;
-        IChatBaseComponent cbc = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + message + "\"}");
-        PacketPlayOutChat ppoc = new PacketPlayOutChat(cbc, ChatMessageType.CHAT);
-        p.getHandle().playerConnection.sendPacket(ppoc);
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message));
     }
 
     public static String randomStartMSG() {
@@ -349,7 +336,6 @@ public class UHCUtils {
     public static boolean spreadplayers(GameInstance g) {
         double range = g.getInitSize() / 2;
         boolean teams = g.teamMode;
-        Map<String, Object> conds = g.getConds();
 
         //May be allowed to be changed in future, TBD
         int x = 0;
@@ -503,7 +489,15 @@ public class UHCUtils {
                 location = locations[i++];
             }
 
-            player.teleport(new Location(world, Math.floor(location.getX()) + 0.5D, world.getHighestBlockYAt((int) location.getX(), (int) location.getZ()), Math.floor(location.getZ()) + 0.5D));
+            Location loc = new Location(world, Math.floor(location.getX()) + 0.5D, world.getHighestBlockYAt((int) location.getX(), (int) location.getZ()) - 1, Math.floor(location.getZ()) + 0.5D);
+            Material m = world.getBlockAt(loc).getType();
+            if (m.equals(Material.WATER) || m.equals(Material.STATIONARY_WATER)) {
+                loc.setY(loc.getY() + 1D);
+                loc.getBlock().setType(Material.STEP);
+            }
+            loc.setY(loc.getY() + 1D);
+            player.teleport(loc);
+
             double value = Double.MAX_VALUE;
 
             for (int k = 0; k < locations.length; ++k) {

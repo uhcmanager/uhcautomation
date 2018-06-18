@@ -1,7 +1,5 @@
 package usa.cactuspuppy.uhc_automation;
 
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -19,8 +17,8 @@ public class BorderAnnouncer implements Runnable {
     public void run() {
         for (UUID u : m.gi.getActivePlayers()) {
             Player p = Bukkit.getPlayer(u);
-            p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.DARK_RED.toString() + ChatColor.BOLD
-                    + "[Border]" + ChatColor.RESET + " ±" + (int) m.gi.getWorld().getWorldBorder().getSize() / 2));
+            UHCUtils.sendActionBar(p, ChatColor.DARK_RED.toString() + ChatColor.BOLD
+                    + "[Border]" + ChatColor.RESET + " ±" + (int) m.gi.getWorld().getWorldBorder().getSize() / 2);
         }
     }
 

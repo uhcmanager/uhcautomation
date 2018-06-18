@@ -12,8 +12,7 @@ public class CommandStatus implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        commandSender.sendMessage("Current Game Instance status dumped to log");
-        m.gi.logStatus();
+        m.gi.logStatus(commandSender);
         return true;
     }
 }

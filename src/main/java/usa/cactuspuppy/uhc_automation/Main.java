@@ -1,7 +1,6 @@
 package usa.cactuspuppy.uhc_automation;
 
 import com.mysql.jdbc.CommunicationsException;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -39,10 +38,6 @@ public class Main extends JavaPlugin {
             gi = new GameInstance(this);
         }
         registerCommands();
-        Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(this), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new PlayerConnectionListener(this), this);
-        gmcl = new GameModeChangeListener(this);
-        Bukkit.getServer().getPluginManager().registerEvents(gmcl, this);
         (new DelayedReset(this)).schedule();
         getLogger().info("UHC Automation loaded in " + ((System.currentTimeMillis() - start)) + " ms");
     }
