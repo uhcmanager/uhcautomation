@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
@@ -63,6 +64,15 @@ public class UHCUtils {
             Player p = Bukkit.getPlayer(u);
             p.sendMessage(chat);
             p.sendTitle(title, subtitle, in, stay, out);
+        }
+    }
+
+    public static void broadcastMessagewithSound(GameInstance gi, String chat, String title, String subtitle, int in, int stay, int out, String sound, float volume, float pitch) {
+        for (UUID u: gi.activePlayers) {
+            Player p = Bukkit.getPlayer(u);
+            p.sendMessage(chat);
+            p.sendTitle(title, subtitle, in, stay, out);
+            p.playSound(p.getLocation(), sound, volume, pitch);
         }
     }
 
@@ -356,7 +366,7 @@ public class UHCUtils {
         if (rangeSpread == -1) {
             return false;
         }
-        final double distanceSpread = spread(g.getWorld(), players, locations, teams);
+        final double distanceSpread = spread(g.getWorld(), players, locations, teams, g);
 
         Bukkit.getLogger().info(String.format("Succesfully spread %d %s around %s,%s", locations.length, teams ? "teams" : "players", 0, 0));
         if (locations.length > 1) {
@@ -468,10 +478,11 @@ public class UHCUtils {
     }
 
     @SuppressWarnings("deprecation")
-    private static double spread(World world, List<Player> list, Location[] locations, boolean teams) {
+    private static double spread(World world, List<Player> list, Location[] locations, boolean teams, GameInstance g) {
         double distance = 0.0D;
         int i = 0;
         Map<Team, Location> hashmap = Maps.newHashMap();
+        g.giveBoats = new HashSet<>();
 
         for (int j = 0; j < list.size(); ++j) {
             Player player = list.get(j);
@@ -494,6 +505,9 @@ public class UHCUtils {
             if (m.equals(Material.WATER) || m.equals(Material.STATIONARY_WATER)) {
                 loc.setY(loc.getY() + 1D);
                 loc.getBlock().setType(Material.STEP);
+                if (isOceanBiome(world.getBiome(loc.getBlockX(), loc.getBlockZ()))) {
+                    g.giveBoats.add(player);
+                }
             }
             loc.setY(loc.getY() + 1D);
             player.teleport(loc);
@@ -535,5 +549,9 @@ public class UHCUtils {
         }
 
         return locations;
+    }
+
+    private static boolean isOceanBiome(Biome biome) {
+        return biome.equals(Biome.OCEAN) || biome.equals(Biome.DEEP_OCEAN) || biome.equals(Biome.FROZEN_OCEAN);
     }
 }

@@ -9,6 +9,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
 import java.text.SimpleDateFormat;
@@ -43,10 +44,11 @@ public class GameInstance {
     int borderCountdown;
     boolean borderShrinking;
     PlayerMoveListener freezePlayers;
+    Set<Player> giveBoats;
     private int loadChunksCDID;
     private int teamsRemaining;
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     protected GameInstance(Main p) {
         main = p;
@@ -97,6 +99,7 @@ public class GameInstance {
         }
         long initT = System.currentTimeMillis();
         UHCUtils.broadcastMessage(this, ChatColor.GREEN + "Game starting!");
+        UHCUtils.exeCmd("clear @a[m=0]");
         UHCUtils.exeCmd("fill -10 200 -10 10 202 10 air");
         boolean spread = UHCUtils.spreadplayers(this);
         if (!spread) {
@@ -152,6 +155,7 @@ public class GameInstance {
         }
         HandlerList.unregisterAll(freezePlayers);
         activePlayers.forEach(this::startPlayer);
+        giveBoats = null;
     }
 
     public void stop() {
@@ -276,9 +280,6 @@ public class GameInstance {
 
     public void startPlayer(UUID u) {
         Player p = Bukkit.getPlayer(u);
-        if (p.getLocation().getBlock().getType().equals(Material.STEP)) {
-            p.getLocation().getBlock().setType(Material.AIR);
-        }
         p.sendTitle(ChatColor.GREEN.toString() + ChatColor.BOLD + "GO!", UHCUtils.randomStartMSG(), 0, 80, 40);
         p.playSound(p.getLocation(), "minecraft:block.note.pling", 1F, 1.18F);
         p.playSound(p.getLocation(), "minecraft:entity.enderdragon.growl", 1F, 1F);
@@ -286,6 +287,10 @@ public class GameInstance {
         p.setFoodLevel(20);
         p.setSaturation(5);
         p.setHealth(20);
+        if (giveBoats.contains(p)) {
+            p.getInventory().addItem(new ItemStack(Material.BOAT, 1));
+            p.sendMessage(ChatColor.GREEN + "Since you spawned in an ocean biome, you have received a boat to reach land faster.");
+        }
     }
 
     private void alertPlayerBorder(UUID u) {
@@ -393,8 +398,8 @@ public class GameInstance {
     }
 
     private int calcBorderShrinkTime() {
-        double slowFactor = 3.0;
-        return (int) ((initSize - finalSize) / (2 * slowFactor));
+        double slowFactor = 2.0;
+        return (int) ((initSize - finalSize) * slowFactor);
     }
 
     public int getInitSize() {

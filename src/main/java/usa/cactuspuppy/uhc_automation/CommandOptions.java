@@ -42,7 +42,7 @@ public class CommandOptions implements CommandExecutor {
                     if (Integer.valueOf(args[1]) <= main.gi.getFinalSize()) {
                         commandSender.sendMessage(ChatColor.RED + "ERROR: Requested initial border size " + ChatColor.RESET + Integer.valueOf(args[1])
                                         + ChatColor.RED + " is not larger than current final border size "
-                                        + ChatColor.RESET + main.gi.getInitSize());
+                                        + ChatColor.RESET + main.gi.getFinalSize());
                         return true;
                     } else if (Integer.valueOf(args[1]) < 0) {
                         commandSender.sendMessage(ChatColor.RED + "ERROR: Requested initial border size " + ChatColor.RESET + Integer.valueOf(args[1])
