@@ -15,7 +15,7 @@ public class WorldChangeListener implements Listener {
         if (e.getFrom().getWorld().equals(e.getTo().getWorld())) {
             return;
         }
-        if (UHCUtils.worldEqualsExt(e.getTo().getWorld(), m.gi.getWorld())) {
+        if (!UHCUtils.worldEqualsExt(e.getTo().getWorld(), m.gi.getWorld())) {
             m.gi.lostConnectPlayer(e.getPlayer());
         }
     }

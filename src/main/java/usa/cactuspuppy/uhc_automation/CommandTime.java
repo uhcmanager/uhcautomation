@@ -21,11 +21,8 @@ public class CommandTime implements CommandExecutor {
         }
         long timeElapsed = currTime - m.gi.startT;
         int timeElapsedSecs = (int) timeElapsed / 1000;
-        int hours = timeElapsedSecs / 3600;
-        int mins = (timeElapsedSecs / 60) % 60;
-        int secs = timeElapsedSecs % 60;
         commandSender.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD
-                + "Time Elapsed: " + ChatColor.RESET + hours + " Hours " + mins + " Minutes " + secs + " Seconds");
+                + "Time Elapsed: " + ChatColor.RESET + UHCUtils.secsToFormatString(timeElapsedSecs));
         return true;
     }
 }

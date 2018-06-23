@@ -17,8 +17,25 @@ public class BorderAnnouncer implements Runnable {
     public void run() {
         for (UUID u : m.gi.getActivePlayers()) {
             Player p = Bukkit.getPlayer(u);
-            UHCUtils.sendActionBar(p, ChatColor.DARK_RED.toString() + ChatColor.BOLD
-                    + "[Border]" + ChatColor.RESET + " ±" + (int) m.gi.getWorld().getWorldBorder().getSize() / 2);
+            int playerX = p.getLocation().getBlockX();
+            int playerZ = p.getLocation().getBlockZ();
+            int mostSigCoord = Math.max(Math.abs(playerX), Math.abs(playerZ));
+            int distToBorder = ((int) m.gi.getWorld().getWorldBorder().getSize() / 2) - mostSigCoord;
+
+            String color = ChatColor.RED.toString();
+            if (distToBorder <= 10) {
+                color = ChatColor.DARK_RED.toString() + ChatColor.BOLD;
+            }
+
+            UHCUtils.sendActionBar(p, ChatColor.GOLD.toString() + ChatColor.BOLD + "[Border] " + ChatColor.RESET + "±" + (int) m.gi.getWorld().getWorldBorder().getSize() / 2 + color + " (" + distToBorder + distToString(Math.abs(distToBorder)) + " away)");
+        }
+    }
+
+    private String distToString(int dist) {
+        if (dist == 1) {
+            return " block";
+        } else {
+            return " blocks";
         }
     }
 

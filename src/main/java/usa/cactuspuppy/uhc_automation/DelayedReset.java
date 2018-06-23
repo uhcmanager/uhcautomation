@@ -16,6 +16,7 @@ public class DelayedReset implements Runnable {
         HandlerList.unregisterAll();
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerConnectionListener(main), main);
         Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(main), main);
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(main), main);
         main.gmcl = new GameModeChangeListener(main);
         Bukkit.getServer().getPluginManager().registerEvents(main.gmcl, main);
     }
