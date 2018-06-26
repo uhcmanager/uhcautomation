@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation;
 
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -81,7 +82,6 @@ public class GameInstance {
         UHCUtils.exeCmd(Bukkit.getServer(), world, "fill -10 253 -10 10 255 10 barrier 0 hollow");
         UHCUtils.exeCmd(Bukkit.getServer(), world, "fill -9 255 -9 9 255 9 air");
         UHCUtils.exeCmd(Bukkit.getServer(), world, "setworldspawn 0 254 0");
-//        UHCUtils.exeCmd("tp @a 0 201 0");
         Location spawn = new Location(world, 0, 254, 0);
         for (Player p : activePlayers.stream().map(Bukkit::getPlayer).collect(Collectors.toList())) {
             p.teleport(spawn);
@@ -174,12 +174,11 @@ public class GameInstance {
         } else {
             timeElapsed = stopT - startT;
         }
+        timeElapsed /= 1000;
         startT = 0;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Stop Time - " + sdf.format(new Date(stopT)));
-        main.getLogger().info("Time Elapsed: " + timeElapsed / 3600000 + " hours "
-                + (timeElapsed / 60000) % 60 + " minutes "
-                + (timeElapsed / 1000) % 60 + " seconds");
+        main.getLogger().info("Time Elapsed: " + UHCUtils.secsToFormatString((int) timeElapsed));
         active = false;
         borderShrinking = false;
         UHCUtils.clearWorldData(main);
@@ -222,9 +221,6 @@ public class GameInstance {
     @SuppressWarnings("deprecation")
     public void win() {
         long timeElapsed = (System.currentTimeMillis() - startT) / 1000;
-        long hours = timeElapsed / 3600;
-        long mins = (timeElapsed / 60) % 60;
-        long secs = timeElapsed % 60;
         if (teamMode) {
             if (getNumTeams() > 1) {
                 logStatus(Bukkit.getConsoleSender());
@@ -263,8 +259,8 @@ public class GameInstance {
                 }
                 String winners = winningTeamPlayers.toString();
                 UHCUtils.broadcastMessagewithTitle(this, "\n" + t.getName() + ChatColor.GREEN + " has emerged victorious!\nMembers: " + ChatColor.RESET + winners,
-                        t.getName() + ChatColor.GREEN + " wins!", "Winners: " + winners, 0 , 80, 40);
-                UHCUtils.broadcastMessage(this, ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + hours + " Hours " + mins + " Minutes " + secs + " Seconds");
+                        t.getName(), ChatColor.GREEN + "wins!", 0 , 80, 40);
+                UHCUtils.broadcastMessage(this, ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + WordUtils.capitalize(UHCUtils.secsToFormatString((int) timeElapsed)));
             }
         } else {
             if (livePlayers.size() == 1) {
@@ -274,7 +270,7 @@ public class GameInstance {
                     return;
                 }
                 UHCUtils.broadcastMessagewithTitle(this, "\n" + ChatColor.GREEN + winner.getDisplayName() + ChatColor.WHITE + " wins!\n"
-                        + ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + hours + " Hours " + mins + " Minutes " + secs + " Seconds",
+                        + ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + WordUtils.capitalize(UHCUtils.secsToFormatString((int) timeElapsed)),
                         winner.getDisplayName(), "Wins!", 0, 80, 40);
             } else if (livePlayers.size() == 0) {
                 UHCUtils.broadcastMessagewithTitle(this, ChatColor.RED + "\nWait... what? The game ended in a tie!", ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.YELLOW + "Game ended in a tie!", 0, 80, 40);
@@ -344,6 +340,7 @@ public class GameInstance {
         if (active) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
             s.sendMessage("Start Time: " + sdf.format(startT));
+            s.sendMessage("Time Elapsed: " + UHCUtils.secsToFormatString((int) ((System.currentTimeMillis() - startT) / 1000)));
             if (teamMode) {
                 s.sendMessage("Teams Remaining: " + teamsRemaining);
             } else {
