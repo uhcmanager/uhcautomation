@@ -1,4 +1,4 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,6 +10,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
+import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

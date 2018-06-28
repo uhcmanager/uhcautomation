@@ -1,6 +1,7 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Tasks;
 
 import org.bukkit.Bukkit;
+import usa.cactuspuppy.uhc_automation.Main;
 
 public class DelayedPrep implements Runnable {
     private Main main;

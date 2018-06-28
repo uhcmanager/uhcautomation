@@ -3,6 +3,17 @@ package usa.cactuspuppy.uhc_automation;
 import com.mysql.jdbc.CommunicationsException;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import usa.cactuspuppy.uhc_automation.Commands.CommandOptions;
+import usa.cactuspuppy.uhc_automation.Commands.CommandPrep;
+import usa.cactuspuppy.uhc_automation.Commands.CommandRegister;
+import usa.cactuspuppy.uhc_automation.Commands.CommandReset;
+import usa.cactuspuppy.uhc_automation.Commands.CommandSetWorld;
+import usa.cactuspuppy.uhc_automation.Commands.CommandStart;
+import usa.cactuspuppy.uhc_automation.Commands.CommandStatus;
+import usa.cactuspuppy.uhc_automation.Commands.CommandTime;
+import usa.cactuspuppy.uhc_automation.Commands.CommandUnregister;
+import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
+import usa.cactuspuppy.uhc_automation.Tasks.DelayedReset;
 
 import java.io.File;
 import java.sql.Connection;
@@ -12,12 +23,12 @@ import java.sql.Statement;
 import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
-    protected GameInstance gi;
+    public GameInstance gi;
     private Connection connection;
     private String host, database, username, password;
     private int port;
     protected Statement statement;
-    protected GameModeChangeListener gmcl;
+    public GameModeChangeListener gmcl;
 
     @Override
     public void onEnable() {
@@ -29,6 +40,7 @@ public class Main extends JavaPlugin {
                 try {
                     initSQL();
                     statement = connection.createStatement();
+
                 } catch (SQLException | ClassNotFoundException e) {
                     getLogger().warning("Could not establish connection to SQL database. Check that your config.yml is correct.");
                 }

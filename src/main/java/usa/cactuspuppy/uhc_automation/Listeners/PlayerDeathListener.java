@@ -1,4 +1,4 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -9,6 +9,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import usa.cactuspuppy.uhc_automation.Tasks.DelayedPlayerRespawn;
+import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.util.UUID;
 
@@ -22,10 +25,10 @@ public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         Player p = e.getEntity();
-        if (!(m.gi.livePlayers.contains(p.getUniqueId())) && m.gi.isActive()) {
+        if (!(m.gi.getLivePlayers().contains(p.getUniqueId())) && m.gi.isActive()) {
             return;
         }
-        if (!m.gi.isActive() && m.gi.activePlayers.contains(p.getUniqueId())) {
+        if (!m.gi.isActive() && m.gi.getActivePlayers().contains(p.getUniqueId())) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(m, () -> {
                 p.spigot().respawn();
                 p.teleport(new Location(m.gi.getWorld(), 0, 254, 0));
@@ -53,7 +56,7 @@ public class PlayerDeathListener implements Listener {
             } catch (NullPointerException f) { }
         }
         m.gi.checkForWin();
-        UHCUtils.saveWorldPlayers(m, m.gi.livePlayers, m.gi.activePlayers);
+        UHCUtils.saveWorldPlayers(m, m.gi.getLivePlayers(), m.gi.getActivePlayers());
     }
 
     private void announceDeath(Player died, Player tell) {

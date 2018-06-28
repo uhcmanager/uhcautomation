@@ -1,4 +1,4 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Listeners;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -7,6 +7,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 public class PlayerConnectionListener implements Listener {
     private Main m;

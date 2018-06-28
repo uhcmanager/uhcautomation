@@ -1,7 +1,9 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Tasks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.util.LinkedList;
 

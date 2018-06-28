@@ -13,6 +13,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
+import usa.cactuspuppy.uhc_automation.Listeners.PlayerMoveListener;
+import usa.cactuspuppy.uhc_automation.Tasks.BorderAnnouncer;
+import usa.cactuspuppy.uhc_automation.Tasks.BorderCountdown;
+import usa.cactuspuppy.uhc_automation.Tasks.DelayReactivate;
+import usa.cactuspuppy.uhc_automation.Tasks.DelayedReset;
+import usa.cactuspuppy.uhc_automation.Tasks.EpisodeAnnouncer;
+import usa.cactuspuppy.uhc_automation.Tasks.LoadingChunksCountdown;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,7 +37,7 @@ public class GameInstance {
     private boolean active;
     private World world;
 
-    long startT;
+    public long startT;
     int minsToShrink;
     int initSize;
     int finalSize;
@@ -477,40 +484,40 @@ public class GameInstance {
         active = a;
     }
 
-    void setEpLength(int el) {
+    public void setEpLength(int el) {
         epLength = el;
     }
 
-    void setGameWorld(String worldname) {
+    public void setGameWorld(String worldname) {
         world = UHCUtils.getWorldFromString(main, Bukkit.getServer(), worldname);
     }
 
-    void setInitSize(int s) {
+    public void setInitSize(int s) {
         initSize = s;
         UHCUtils.exeCmd("worldborder set " + s);
     }
 
-    void setFinalSize(int s) {
+    public void setFinalSize(int s) {
         finalSize = s;
     }
 
-    void setTimeToShrink(int minutes) {
+    public void setTimeToShrink(int minutes) {
         minsToShrink = minutes;
     }
 
-    void setTeamMode(boolean b) {
+    public void setTeamMode(boolean b) {
         teamMode = b;
     }
 
-    void setSpreadDistance(int sd) {
+    public void setSpreadDistance(int sd) {
         spreadDistance = sd;
     }
 
-    void setRespectTeams(boolean rt) {
+    public void setRespectTeams(boolean rt) {
         respectTeams = rt;
     }
 
-    void setUHCMode(boolean um) {
+    public void setUHCMode(boolean um) {
         uhcMode = um;
         UHCUtils.exeCmd("gamerule naturalRegeneration " + !um);
     }

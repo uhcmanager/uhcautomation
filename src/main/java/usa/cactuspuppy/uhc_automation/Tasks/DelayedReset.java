@@ -1,7 +1,12 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Tasks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
+import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
+import usa.cactuspuppy.uhc_automation.Listeners.PlayerConnectionListener;
+import usa.cactuspuppy.uhc_automation.Listeners.PlayerDeathListener;
+import usa.cactuspuppy.uhc_automation.Listeners.WorldChangeListener;
+import usa.cactuspuppy.uhc_automation.Main;
 
 public class DelayedReset implements Runnable {
     private Main main;

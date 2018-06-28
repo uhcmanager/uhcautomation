@@ -1,8 +1,10 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Listeners;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 public class WorldChangeListener implements Listener {
     private Main m;

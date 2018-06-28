@@ -1,9 +1,10 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Tasks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import usa.cactuspuppy.uhc_automation.Main;
 
 public class PreGameCountdown implements Runnable {
     private Main main;

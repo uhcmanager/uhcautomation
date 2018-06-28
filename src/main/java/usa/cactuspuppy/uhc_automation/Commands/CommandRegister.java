@@ -1,4 +1,4 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import usa.cactuspuppy.uhc_automation.Main;
 
 public class CommandRegister implements CommandExecutor {
     private Main m;
@@ -25,7 +26,7 @@ public class CommandRegister implements CommandExecutor {
             commandSender.sendMessage(ChatColor.RED + "Could not find player " + ChatColor.WHITE +  playerName + ChatColor.RED + ". Make sure the player is online.");
             return true;
         }
-        m.gi.blacklistPlayers.remove(p.getUniqueId());
+        m.gi.getBlacklistPlayers().remove(p.getUniqueId());
         m.gi.registerPlayer(p);
         commandSender.sendMessage(ChatColor.GREEN + "Successfully registered " + playerName + " in the " + m.getConfig().getString("event-name"));
         m.getLogger().info("Registered " + playerName);

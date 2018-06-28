@@ -1,8 +1,9 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import usa.cactuspuppy.uhc_automation.Main;
 
 public class CommandStatus implements CommandExecutor {
     private Main m;

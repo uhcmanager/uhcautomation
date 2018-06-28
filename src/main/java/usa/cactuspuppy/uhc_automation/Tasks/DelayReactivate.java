@@ -1,7 +1,10 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Tasks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
+import usa.cactuspuppy.uhc_automation.GameInstance;
+import usa.cactuspuppy.uhc_automation.Listeners.PlayerDeathListener;
+import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
