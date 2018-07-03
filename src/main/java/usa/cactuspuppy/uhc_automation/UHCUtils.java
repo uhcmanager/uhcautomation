@@ -6,11 +6,13 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
@@ -39,7 +41,7 @@ public class UHCUtils {
     public static String[] START_MSGS =
             {"Live and let die!", "Go for broke!", "Ready Player One!", "No time like the present!",
                     "This ought to be a match to remember!", "Eliminate Other Players", "Capture Objective A", "Triumph or Die!",
-                    "Hack and Slash!", "Lives Remaining: 1", "Tear them apart!", "May the odds be ever in your favor!",
+                    "Hack and Slash!", "Lives Remaining: 0", "Tear them apart!", "May the odds be ever in your favor!",
                     "Once more unto the breach", "Go Get 'Em, Tiger!", "Time to kick the tires and light the fires!", "Git 'er Done!",
                     "Alea Iacta Est", "Cry havoc and let slip the dogs of war", "Let Slip the Dogs of War!", "Veni, vidi, vici.",
                     "Oooh hoo hoo hoo... this'll be good!", "Fire In The Hole!", "Fire at will!", "Fight for the Assassins!",
@@ -47,7 +49,7 @@ public class UHCUtils {
                     "Who's ready for some fireworks!", "LEEEROY JENKINS", "[inspirational message]", "Release the hounds!",
                     "Good luck, don't die!", "Good luck, have fun!", "Just Do It!", "FOR THE HORDE!", "For The Alliance!", "Watch out for bears!",
                     "How do YOU want to do this?", "Know yourself, know thy enemy, and you shall win.", "For Aiur!",
-                    "One Punch is all you need!", "Roll for Initiative!", "You know you have to do it to 'em", "Watch out for boars!", "CHAAAAAAARGE", "Ready for Battle!"};
+                    "One Punch is all you need!", "Roll for Initiative!", "You know you have to do it to 'em", "Watch out for boars!", "CHAAAAAAARGE", "Ready for Battle!", "Ready for Combat!", "D.Va, ready for combat!"};
 
     private static final Random random = new Random();
 
@@ -55,13 +57,13 @@ public class UHCUtils {
     public UHCUtils() { }
 
     public static void broadcastMessage(GameInstance gi, String msg) {
-        for (UUID u : gi.activePlayers) {
+        for (UUID u : gi.getActivePlayers()) {
             Bukkit.getPlayer(u).sendMessage(msg);
         }
     }
 
     public static void broadcastMessagewithTitle(GameInstance gi, String chat, String title, String subtitle, int in, int stay, int out) {
-        for (UUID u: gi.activePlayers) {
+        for (UUID u: gi.getActivePlayers()) {
             Player p = Bukkit.getPlayer(u);
             p.sendMessage(chat);
             p.sendTitle(title, subtitle, in, stay, out);
@@ -69,7 +71,7 @@ public class UHCUtils {
     }
 
     public static void broadcastMessagewithSound(GameInstance gi, String chat, String sound, float volume, float pitch) {
-        for (UUID u: gi.activePlayers) {
+        for (UUID u: gi.getActivePlayers()) {
             Player p = Bukkit.getPlayer(u);
             p.sendMessage(chat);
             p.playSound(p.getLocation(), sound, volume, pitch);
@@ -77,7 +79,7 @@ public class UHCUtils {
     }
 
     public static void broadcastMessagewithSoundandTitle(GameInstance gi, String chat, String title, String subtitle, int in, int stay, int out, String sound, float volume, float pitch) {
-        for (UUID u: gi.activePlayers) {
+        for (UUID u: gi.getActivePlayers()) {
             Player p = Bukkit.getPlayer(u);
             p.sendMessage(chat);
             p.sendTitle(title, subtitle, in, stay, out);
@@ -354,7 +356,7 @@ public class UHCUtils {
 
     public static boolean spreadplayers(GameInstance g) {
         double range = g.getInitSize() / 2;
-        boolean teams = g.teamMode;
+        boolean teams = g.teamMode && g.isRespectTeams();
 
         //May be allowed to be changed in future, TBD
         int x = 0;
@@ -365,7 +367,7 @@ public class UHCUtils {
         final double xRangeMax = x + range;
         final double zRangeMax = z + range;
 
-        List<Player> players = g.livePlayers.stream().map(Bukkit::getPlayer).collect(toList());
+        List<Player> players = g.getLivePlayers().stream().map(Bukkit::getPlayer).collect(toList());
 
         final int spreadSize = teams ? getTeams(players) : players.size();
 
@@ -498,7 +500,7 @@ public class UHCUtils {
             Location location;
 
             if (teams) {
-                Team team = player.getScoreboard().getPlayerTeam(player);
+                Team team = Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player);
 
                 if (!hashmap.containsKey(team)) {
                     hashmap.put(team, locations[i++]);
@@ -542,7 +544,7 @@ public class UHCUtils {
         Set<Team> teams = Sets.newHashSet();
 
         for (Player player : players) {
-            teams.add(player.getScoreboard().getPlayerTeam(player));
+            teams.add(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player));
         }
 
         return teams.size();
@@ -560,7 +562,7 @@ public class UHCUtils {
         return locations;
     }
 
-    private static boolean isOceanBiome(Biome biome) {
+    public static boolean isOceanBiome(Biome biome) {
         return biome.equals(Biome.OCEAN) || biome.equals(Biome.DEEP_OCEAN) || biome.equals(Biome.FROZEN_OCEAN);
     }
 
@@ -606,5 +608,17 @@ public class UHCUtils {
         }
 
         return fmtStng.toString();
+    }
+
+    public static void sendPlayerTime(Main m, CommandSender commandSender) {
+        long currTime = System.currentTimeMillis();
+        if (!(m.gi.isStarted())) {
+            commandSender.sendMessage(ChatColor.RED + "Game has not started yet!");
+            return;
+        }
+        long timeElapsed = currTime - m.gi.startT;
+        int timeElapsedSecs = (int) timeElapsed / 1000;
+        commandSender.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD
+                + "Time Elapsed: " + ChatColor.RESET + secsToFormatString(timeElapsedSecs));
     }
 }

@@ -36,24 +36,24 @@ public class GameInstance {
     public Main main;
     private boolean active;
     private World world;
+    private Set<UUID> livePlayers;
+    private Set<UUID> activePlayers;
+    private Set<UUID> regPlayers;
+    private Set<UUID> blacklistPlayers;
 
     public long startT;
-    int minsToShrink;
-    int initSize;
-    int finalSize;
+    private int minsToShrink;
+    private int initSize;
+    private int finalSize;
     int spreadDistance;
-    int epLength;
+    public int epLength;
     boolean teamMode;
-    boolean respectTeams;
-    boolean uhcMode;
-    Set<UUID> livePlayers;
-    Set<UUID> activePlayers;
-    Set<UUID> regPlayers;
-    Set<UUID> blacklistPlayers;
+    private boolean respectTeams;
+    private boolean uhcMode;
     
     int borderCountdown;
     boolean borderShrinking;
-    PlayerMoveListener freezePlayers;
+    public PlayerMoveListener freezePlayers;
     Set<Player> giveBoats;
     private int loadChunksCDID;
     private int teamsRemaining;
@@ -138,7 +138,6 @@ public class GameInstance {
         freezePlayers = new PlayerMoveListener(main);
         Bukkit.getServer().getPluginManager().registerEvents(freezePlayers, main);
         loadChunksCDID = (new LoadingChunksCountdown(main, 5)).schedule();
-        return;
     }
 
     public void release() {
@@ -214,7 +213,7 @@ public class GameInstance {
             int numTeams = getNumTeams();
             if (numTeams <= 1) {
                 win();
-            } else if (teamsRemaining != numTeams) {
+            } else if (numTeams < teamsRemaining) {
                 UHCUtils.broadcastMessage(this, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nA team has been eliminated! " + ChatColor.RESET + "\n" + numTeams + " teams remain!");
                 teamsRemaining = numTeams;
             }
@@ -238,7 +237,7 @@ public class GameInstance {
                 UHCUtils.broadcastMessagewithTitle(this, ChatColor.RED + "\nWait... what? The game ended in a tie!",
                         ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.RESET + "Game ended in a tie!", 0, 80, 40);
             } else {
-                Team t = livePlayers.stream().findFirst().map(u -> Bukkit.getPlayer(u).getScoreboard().getPlayerTeam(Bukkit.getPlayer(u))).orElse(null);
+                Team t = livePlayers.stream().findFirst().map(u -> Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(Bukkit.getPlayer(u))).orElse(null);
                 if (t == null) {
                     main.getLogger().severe("Winning team verification failed.");
                     return;
@@ -409,9 +408,19 @@ public class GameInstance {
         Set<Team> teams = new HashSet<>();
         for (UUID u : livePlayers) {
             Player p = Bukkit.getPlayer(u);
-            teams.add(p.getScoreboard().getPlayerTeam(p));
+            teams.add(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(p));
         }
         return resultMap.size();
+    }
+
+    public void recalcPlayerSet() {
+        Set<UUID> aPCopy = new HashSet<>(activePlayers);
+        for (UUID u : aPCopy) {
+            if (Bukkit.getOfflinePlayer(u) == null || !Bukkit.getOfflinePlayer(u).isOnline()) {
+                activePlayers.remove(u);
+                livePlayers.remove(u);
+            }
+        }
     }
 
     private int calcBorderShrinkTime() {
@@ -419,35 +428,34 @@ public class GameInstance {
         return (int) ((initSize - finalSize) * slowFactor);
     }
 
-    public int getInitSize() {
-        return initSize;
-    }
+    public int getInitSize() { return initSize; }
 
-    public int getFinalSize() {
-        return finalSize;
-    }
+    public int getFinalSize() { return finalSize; }
 
-    public World getWorld() {
-        return world;
-    }
+    public World getWorld() { return world; }
 
-    public Set<UUID> getLivePlayers() {
-        return livePlayers;
-    }
+    public Set<UUID> getLivePlayers() { return livePlayers; }
 
-    public Set<UUID> getActivePlayers() {
-        return activePlayers;
-    }
+    public Set<UUID> getActivePlayers() { return activePlayers; }
 
-    public Set<UUID> getRegPlayers() {
-        return regPlayers;
-    }
+    public Set<UUID> getRegPlayers() { return regPlayers; }
 
-    public Set<UUID> getBlacklistPlayers () { return blacklistPlayers; }
+    public Set<UUID> getBlacklistPlayers() { return blacklistPlayers; }
+
+    public int getMinsToShrink() { return minsToShrink; }
 
     public boolean isActive() {
         return active;
     }
+
+    public boolean isStarted() {
+        return startT == 0;
+    }
+
+    public boolean isRespectTeams() {
+        return respectTeams;
+    }
+
 
     public void registerPlayer(Player p) {
         regPlayers.add(p.getUniqueId());
@@ -457,6 +465,9 @@ public class GameInstance {
             if (!active) {
                 UHCUtils.exeCmd("effect " + p.getName() + " minecraft:weakness 1000000 255 true");
             }
+        }
+        if (TimeModeCache.getInstance().getPlayerPref(p.getUniqueId()) == null) {
+            TimeModeCache.getInstance().storePlayerPref(p.getUniqueId(), TimeDisplayMode.CHAT);
         }
     }
 
@@ -480,7 +491,7 @@ public class GameInstance {
         livePlayers.remove(u);
     }
 
-    void setActive(boolean a) {
+    public void setActive(boolean a) {
         active = a;
     }
 
@@ -520,5 +531,17 @@ public class GameInstance {
     public void setUHCMode(boolean um) {
         uhcMode = um;
         UHCUtils.exeCmd("gamerule naturalRegeneration " + !um);
+    }
+
+    public void setLivePlayers(Set<UUID> livePlayers1) {
+        livePlayers = livePlayers1;
+    }
+
+    public void setActivePlayers(Set<UUID> activePlayers1) {
+        activePlayers = activePlayers1;
+    }
+
+    public void setBorderCountdown(int cd) {
+        borderCountdown = cd;
     }
 }

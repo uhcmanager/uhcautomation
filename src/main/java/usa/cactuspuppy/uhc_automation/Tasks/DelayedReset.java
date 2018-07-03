@@ -2,6 +2,7 @@ package usa.cactuspuppy.uhc_automation.Tasks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
+import usa.cactuspuppy.uhc_automation.Listeners.FixColoredNamesChatListener;
 import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
 import usa.cactuspuppy.uhc_automation.Listeners.PlayerConnectionListener;
 import usa.cactuspuppy.uhc_automation.Listeners.PlayerDeathListener;
@@ -24,6 +25,7 @@ public class DelayedReset implements Runnable {
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(main), main);
         main.gmcl = new GameModeChangeListener(main);
         Bukkit.getServer().getPluginManager().registerEvents(main.gmcl, main);
+        Bukkit.getServer().getPluginManager().registerEvents(new FixColoredNamesChatListener(main), main);
     }
 
     public void schedule() {

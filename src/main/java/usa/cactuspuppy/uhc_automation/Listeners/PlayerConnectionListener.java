@@ -20,7 +20,7 @@ public class PlayerConnectionListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
-        if (UHCUtils.worldEqualsExt(p.getWorld(), m.gi.getWorld())) {
+        if (UHCUtils.worldEqualsExt(p.getWorld(), m.gi.getWorld()) && !m.gi.isActive()) {
             if (m.gi.getBlacklistPlayers().contains(p.getUniqueId())) {
                 p.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "You have been blacklisted from the current UHC. If you believe this is in error, pleace contact a server administrator. For now, you will be put into spectator mode, but will not be considered part of the game (you will not receive alerts concerning the game).");
                 p.setGameMode(GameMode.SPECTATOR);

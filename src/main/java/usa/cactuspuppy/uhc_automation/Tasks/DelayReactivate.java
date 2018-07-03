@@ -27,9 +27,10 @@ public class DelayReactivate implements Runnable {
         g.main.getLogger().info("Found previous game data, attempting to load...");
         Map<String, Set<UUID>> playerSets = UHCUtils.loadWorldPlayers(g.main);
         if (!playerSets.isEmpty()) {
-            g.livePlayers = playerSets.get("livePlayers");
-            g.activePlayers = playerSets.get("activePlayers");
+            g.setLivePlayers(playerSets.get("livePlayers"));
+            g.setActivePlayers(playerSets.get("activePlayers"));
         }
+        g.recalcPlayerSet();
         g.startT = UHCUtils.loadStartTime(g.main);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(g.main), g.main);
         UHCUtils.exeCmd("gamemode 0 @a[m=2]");
@@ -37,8 +38,12 @@ public class DelayReactivate implements Runnable {
         g.main.getLogger().info("Game Reinitiate Time - " + sdf.format(new Date(System.currentTimeMillis())));
         UHCUtils.exeCmd("gamerule doDaylightCycle true");
         UHCUtils.exeCmd("gamerule doWeatherCycle true");
-        g.borderCountdown = (new BorderCountdown(g.main, g.minsToShrink * 60, g.startT)).schedule();
-        (new EpisodeAnnouncer(g.main, g.epLength, g.startT)).schedule();
+        if (g.epLength != 0) {
+            (new EpisodeAnnouncer(g.main, g.epLength, g.startT)).schedule();
+        }
+        if (g.getMinsToShrink() > 0) {
+            g.setBorderCountdown((new BorderCountdown(g.main, g.getMinsToShrink() * 60, g.startT)).schedule());
+        }
         HandlerList.unregisterAll(g.freezePlayers);
         g.setActive(true);
     }

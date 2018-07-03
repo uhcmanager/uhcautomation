@@ -17,10 +17,10 @@ public class GameModeChangeListener implements Listener {
     @EventHandler
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
         Player p = e.getPlayer();
-        if (m.gi.activePlayers.contains(p.getUniqueId())) {
-            if (m.gi.livePlayers.contains(p.getUniqueId()) && e.getNewGameMode() != GameMode.SURVIVAL) {
+        if (m.gi.getActivePlayers().contains(p.getUniqueId())) {
+            if (m.gi.getLivePlayers().contains(p.getUniqueId()) && e.getNewGameMode() != GameMode.SURVIVAL) {
                 m.gi.removePlayerFromLive(p);
-            } else if (!m.gi.livePlayers.contains(p.getUniqueId()) && e.getNewGameMode() == GameMode.SURVIVAL) {
+            } else if (!m.gi.getLivePlayers().contains(p.getUniqueId()) && e.getNewGameMode() == GameMode.SURVIVAL) {
                 m.gi.addPlayerToLive(p);
             }
         }

@@ -29,7 +29,7 @@ public class CommandRegister implements CommandExecutor {
         m.gi.getBlacklistPlayers().remove(p.getUniqueId());
         m.gi.registerPlayer(p);
         commandSender.sendMessage(ChatColor.GREEN + "Successfully registered " + playerName + " in the " + m.getConfig().getString("event-name"));
-        m.getLogger().info("Registered " + playerName);
+        m.getLogger().info("Registered " + playerName + " into " + m.getConfig().getString("event-name"));
         p.sendTitle(ChatColor.GOLD + "Welcome", "to the " + m.getConfig().getString("event-name"), 20, 60, 20);
         p.setHealth(19);
         p.setHealth(20);

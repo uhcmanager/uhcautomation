@@ -24,8 +24,9 @@ import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
     public GameInstance gi;
+    public SQLHandler sqlHandler;
     private Connection connection;
-    private String host, database, username, password;
+    public String host, database, username, password;
     private int port;
     protected Statement statement;
     public GameModeChangeListener gmcl;
@@ -33,6 +34,7 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         long start = System.currentTimeMillis();
+        Main m = this;
         createConfig();
         (new BukkitRunnable() {
             @Override
@@ -41,8 +43,18 @@ public class Main extends JavaPlugin {
                     initSQL();
                     statement = connection.createStatement();
 
+                    if (!SQLHandler.isInstanced()) {
+                        new SQLHandler(m, statement);
+                    } else {
+                        SQLHandler.getInstance().rebind(statement);
+                    }
+
+                    sqlHandler = SQLHandler.getInstance();
+                    sqlHandler.createUHCTimeTable();
+                    TimeModeCache.getInstance().addAllToCache(sqlHandler.getPlayerPrefs());
                 } catch (SQLException | ClassNotFoundException e) {
                     getLogger().warning("Could not establish connection to SQL database. Check that your config.yml is correct.");
+                    e.printStackTrace();
                 }
             }
         }).runTaskAsynchronously(this);
@@ -63,7 +75,7 @@ public class Main extends JavaPlugin {
     }
 
     /**
-     * @source Innectic's Permissify plugin.
+     * @source Innectic's Permissify plugin. https://github.com/ifydev/Permissify
      */
     private void createConfig() {
         try {
