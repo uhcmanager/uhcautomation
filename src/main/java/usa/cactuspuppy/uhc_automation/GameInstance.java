@@ -37,7 +37,7 @@ public class GameInstance {
     private int loadChunksCDID;
     private int teamsRemaining;
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     protected GameInstance(Main p) {
         main = p;
@@ -202,7 +202,7 @@ public class GameInstance {
     public void win() {
         long timeElapsed = (System.currentTimeMillis() - startT) / 1000;
         long hours = timeElapsed / 3600;
-        long mins = timeElapsed / 60;
+        long mins = (timeElapsed / 60) % 60;
         long secs = timeElapsed % 60;
         if (teamMode) {
             if (livePlayers.size() == 0) {
@@ -412,7 +412,7 @@ public class GameInstance {
         activePlayers.add(p.getUniqueId());
         if (p.getGameMode() == GameMode.SURVIVAL) {
             livePlayers.add(p.getUniqueId());
-            p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 1000000, 255));
+            UHCUtils.exeCmd("effect " + p.getName() + " minecraft:weakness 1000000 255 true");
         }
     }
 
