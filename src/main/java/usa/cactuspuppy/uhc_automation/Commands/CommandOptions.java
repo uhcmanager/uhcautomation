@@ -6,12 +6,16 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class CommandOptions implements CommandExecutor {
+public class CommandOptions implements CommandExecutor, TabCompleter {
     private Main main;
     private static final String[] OPTIONS =
             {"init-size", "final-size", "mins-to-shrink", "team-mode", "spread-distance", "uhc-mode", "respect-teams", "episode-length", "event-name"};
@@ -21,7 +25,7 @@ public class CommandOptions implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+    public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
         if (args.length == 0) {
             return false;
         //event-name handling
@@ -144,5 +148,26 @@ public class CommandOptions implements CommandExecutor {
             commandSender.sendMessage(ChatColor.RED + "ERROR: Option " + args[0] + " not recognized.\nValid options: " + ChatColor.RESET + StringUtils.join(OPTIONS, ", "));
             return true;
         }
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] args) {
+        if (args.length == 1) {
+            return Arrays.stream(OPTIONS).filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
+        } else if (args.length == 2) {
+            String option = args[0];
+            if (!Arrays.asList(OPTIONS).contains(option)) {
+                return null;
+            } else if (isBooleanOption(option)) {
+                return Stream.of("true", "false").filter(s -> s.startsWith(args[1])).collect(Collectors.toList());
+            }
+            return null;
+        }
+        return null;
+    }
+
+    private boolean isBooleanOption(String s) {
+        String[] booleans = {"team-mode", "uhc-mode", "respect-teams"};
+        return Arrays.asList(booleans).contains(s);
     }
 }

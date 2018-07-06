@@ -1,19 +1,25 @@
 package usa.cactuspuppy.uhc_automation.Commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import usa.cactuspuppy.uhc_automation.Main;
 
-public class CommandSetWorld implements CommandExecutor {
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class CommandSetWorld implements CommandExecutor, TabCompleter {
     private Main m;
     public CommandSetWorld(Main main) {
         m = main;
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length != 1) {
             return false;
         }
@@ -24,5 +30,13 @@ public class CommandSetWorld implements CommandExecutor {
         }
         m.gi.setGameWorld(args[0]);
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] args) {
+        if (args.length == 1) {
+            return Bukkit.getWorlds().stream().filter(world -> world.getEnvironment() == World.Environment.NORMAL).map(World::getName).filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
+        }
+        return null;
     }
 }

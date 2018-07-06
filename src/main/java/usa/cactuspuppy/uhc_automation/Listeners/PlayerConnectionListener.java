@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.Listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -20,18 +21,30 @@ public class PlayerConnectionListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
-        if (UHCUtils.worldEqualsExt(p.getWorld(), m.gi.getWorld()) && !m.gi.isActive()) {
+        if (UHCUtils.worldEqualsExt(p.getWorld(), m.gi.getWorld())) {
+            p.setScoreboard(m.gi.getScoreboard());
             if (m.gi.getBlacklistPlayers().contains(p.getUniqueId())) {
-                p.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "You have been blacklisted from the current UHC. If you believe this is in error, pleace contact a server administrator. For now, you will be put into spectator mode, but will not be considered part of the game (you will not receive alerts concerning the game).");
+                p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "You have joined the game as a spectator. Ask an administrator if you think you should be in the game.");
                 p.setGameMode(GameMode.SPECTATOR);
+                m.gi.registerPlayer(e.getPlayer());
                 return;
             }
-            if (!m.gi.getRegPlayers().contains(p.getUniqueId())) {
+            if (m.gi.isActive()) {
+                if (m.gi.getRegPlayers().contains(p.getUniqueId())) {
+                    m.gi.registerPlayer(p);
+                } else {
+                    p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "You have joined the game as a spectator. Ask an administrator if you think you should be in the game.");
+                    p.setGameMode(GameMode.SPECTATOR);
+                    m.gi.registerPlayer(e.getPlayer());
+                }
+            } else if (!m.gi.getActivePlayers().contains(p.getUniqueId())) {
                 p.sendTitle(ChatColor.GOLD + "Welcome", "to the " + m.getConfig().getString("event-name"), 20, 60, 20);
                 p.setHealth(19);
                 p.setHealth(20);
+                m.gi.registerPlayer(p);
             }
-            m.gi.registerPlayer(e.getPlayer());
+        } else {
+            p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
     }
 

@@ -9,17 +9,17 @@ public class LiftOverrideCountdown implements Runnable {
 
     /**
      * Creates restoration countdown to be used
-     * @param length in secs until override is lifted
+     * @param length in ticks until override is lifted
      * @param main class to use
      */
     public LiftOverrideCountdown(int length, Main main) {
-        liftTime = System.currentTimeMillis() + length * 1000;
+        liftTime = System.currentTimeMillis() + length * 50;
         this.main = main;
     }
 
     public void run() {
         if (System.currentTimeMillis() >= liftTime) {
-//            main.gi.getTimeAnnouncer().setOverride(false);
+            main.gi.getTimeAnnouncer().setOverride(false);
         }
     }
 

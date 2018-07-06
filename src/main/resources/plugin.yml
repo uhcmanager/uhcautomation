@@ -46,3 +46,6 @@ commands:
     aliases: [reg, register, uhcregister]
     usage: /<command> <player>
     permission: uhca.admin
+  uhcteam:
+    description: Manages teams within the UHC
+    aliases: [team]

@@ -10,6 +10,7 @@ import usa.cactuspuppy.uhc_automation.Commands.CommandReset;
 import usa.cactuspuppy.uhc_automation.Commands.CommandSetWorld;
 import usa.cactuspuppy.uhc_automation.Commands.CommandStart;
 import usa.cactuspuppy.uhc_automation.Commands.CommandStatus;
+import usa.cactuspuppy.uhc_automation.Commands.CommandTeam;
 import usa.cactuspuppy.uhc_automation.Commands.CommandTime;
 import usa.cactuspuppy.uhc_automation.Commands.CommandUnregister;
 import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
@@ -69,7 +70,7 @@ public class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         if (gi.isActive()) {
-            UHCUtils.saveWorldPlayers(this, gi.getLivePlayers(), gi.getActivePlayers());
+            UHCUtils.saveWorldPlayers(this);
         }
         saveConfig();
     }
@@ -129,5 +130,6 @@ public class Main extends JavaPlugin {
         getCommand("uhctime").setExecutor(new CommandTime(this));
         getCommand("uhcreg").setExecutor(new CommandRegister(this));
         getCommand("uhcunreg").setExecutor(new CommandUnregister(this));
+        getCommand("uhcteam").setExecutor(new CommandTeam(this));
     }
 }

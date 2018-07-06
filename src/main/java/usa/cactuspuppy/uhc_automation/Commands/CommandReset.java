@@ -17,7 +17,7 @@ public class CommandReset implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+    public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
         if (main.gi.isActive()) {
             UHCUtils.broadcastMessage(main.gi, ChatColor.RED.toString() + ChatColor.BOLD + "Stopping game!");
             main.getLogger().log(Level.INFO, commandSender.getName() + " initiated command to halt game");

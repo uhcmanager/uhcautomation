@@ -12,7 +12,7 @@ public class CommandStatus implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+    public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
         m.gi.logStatus(commandSender);
         return true;
     }

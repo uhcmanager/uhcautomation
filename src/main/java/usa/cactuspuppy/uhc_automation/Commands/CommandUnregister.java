@@ -28,7 +28,7 @@ public class CommandUnregister implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+    public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
         if (args.length != 1) {
             return false;
         }
@@ -83,6 +83,8 @@ public class CommandUnregister implements CommandExecutor {
                         commandSender.sendMessage(ChatColor.DARK_RED + "An error occurred, please try again later.");
                     }
                 }
+                UHCUtils.saveWorldPlayers(m);
+                m.gi.checkForWin();
             }
         }.runTaskAsynchronously(m);
         return true;

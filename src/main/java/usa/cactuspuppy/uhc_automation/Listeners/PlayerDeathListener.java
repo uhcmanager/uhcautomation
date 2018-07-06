@@ -56,7 +56,7 @@ public class PlayerDeathListener implements Listener {
             } catch (NullPointerException f) { }
         }
         m.gi.checkForWin();
-        UHCUtils.saveWorldPlayers(m, m.gi.getLivePlayers(), m.gi.getActivePlayers());
+        UHCUtils.saveWorldPlayers(m);
     }
 
     private void announceDeath(Player died, Player tell) {

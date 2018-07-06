@@ -46,10 +46,11 @@ public class UHCUtils {
                     "Alea Iacta Est", "Cry havoc and let slip the dogs of war", "Let Slip the Dogs of War!", "Veni, vidi, vici.",
                     "Oooh hoo hoo hoo... this'll be good!", "Fire In The Hole!", "Fire at will!", "Fight for the Assassins!",
                     "Kill or be killed!", "THEY SHALL NOT PASS", "If anyone is gonna win, it's gonna be you.",
-                    "Who's ready for some fireworks!", "LEEEROY JENKINS", "[inspirational message]", "Release the hounds!",
+                    "Who's ready for some fireworks!", "LEEEROY JENKINS", "Release the hounds!",
                     "Good luck, don't die!", "Good luck, have fun!", "Just Do It!", "FOR THE HORDE!", "For The Alliance!", "Watch out for bears!",
                     "How do YOU want to do this?", "Know yourself, know thy enemy, and you shall win.", "For Aiur!",
-                    "One Punch is all you need!", "Roll for Initiative!", "You know you have to do it to 'em", "Watch out for boars!", "CHAAAAAAARGE", "Ready for Battle!", "Ready for Combat!", "D.Va, ready for combat!"};
+                    "One Punch is all you need!", "Roll for Initiative!", "You know you have to do it to 'em", "Watch out for boars!", "CHAAAAAAARGE",
+                    "Ready for Battle!", "Ready for Combat!", "D.Va, ready for combat!", "Fight!"};
 
     private static final Random random = new Random();
 
@@ -93,33 +94,38 @@ public class UHCUtils {
         return locFolder.exists();
     }
 
-    public static long loadStartTime(Main m) {
+    public static Map<String, Object> loadAuxData(Main m) {
+        Map<String, Object> rv = new HashMap<>();
         String location = m.getDataFolder() + "/" + m.getConfig().getString("data-location").replaceAll("<worldname>", m.getConfig().getString("world"));
         File locFolder = new File(location);
         if (!locFolder.exists()) {
             m.getLogger().severe("The data folder has mysteriously vanished!");
         } else {
-            m.getLogger().info("Found data folder '" + location + "', proceeding to try to extract start time");
+            m.getLogger().info("Found data folder '" + location + "', proceeding to try to extract auxiliary data");
         }
-        String startTimeFileName = location + "/startTime.txt";
-        File startTimeFile = new File(startTimeFileName);
-        if (startTimeFile.isFile()) {
+        String auxDataName = location + "/auxData.txt";
+        File auxDataFile = new File(auxDataName);
+        if (auxDataFile.isFile()) {
             try {
-                FileReader startTFileR = new FileReader(startTimeFileName);
-                BufferedReader startTBuffR = new BufferedReader(startTFileR);
-                String line = startTBuffR.readLine();
-                return Long.valueOf(line);
+                FileReader auxDataFileR = new FileReader(auxDataName);
+                BufferedReader auxDataBuffR = new BufferedReader(auxDataFileR);
+                String line = auxDataBuffR.readLine();
+                rv.put("sT", Long.valueOf(line));
+                line = auxDataBuffR.readLine();
+                rv.put("teamMode", Boolean.valueOf(line));
+                return rv;
             } catch (IOException e) {
-                m.getLogger().warning("Could not load start time from '" + startTimeFileName + "', using current time as start time instead.");
-                return System.currentTimeMillis();
+                m.getLogger().warning("Could not load auxiliary data from '" + auxDataName + "'. Clearing world data.");
+                return new HashMap<>();
             }
         } else {
-            m.getLogger().warning("Could not find start time file, using current time as start time instead.");
-            return System.currentTimeMillis();
+            m.getLogger().warning("Could not find auxiliary data. Clearing worlc data...");
+            clearWorldData(m);
+            return new HashMap<>();
         }
     }
 
-    public static void saveStartTime(Main m, long sT) {
+    public static void saveAuxData(Main m) {
         String location =  m.getDataFolder() + "/" + m.getConfig().getString("data-location").replaceAll("<worldname>", m.getConfig().getString("world"));
         File dataFolder = new File(location);
         if (!dataFolder.exists()) {
@@ -132,22 +138,24 @@ public class UHCUtils {
                 m.getLogger().info("Created world data folder: '" + location + "', saving data...");
             }
         }
-        String startTimeFileName = location + "/startTime.txt";
-        File startTimeFile = new File(startTimeFileName);
-        if (startTimeFile.isFile()) {
-            final boolean delete = startTimeFile.delete();
+        String auxDataName = location + "/auxData.txt";
+        File auxDataFile = new File(auxDataName);
+        if (auxDataFile.isFile()) {
+            final boolean delete = auxDataFile.delete();
             if (!delete) {
-                m.getLogger().severe("Could not delete " + startTimeFileName);
+                m.getLogger().severe("Could not delete existing aux data file: " + auxDataName);
             }
         }
         try {
-            FileWriter sTFW = new FileWriter(startTimeFileName);
-            BufferedWriter sTBW = new BufferedWriter(sTFW);
+            FileWriter aDFW = new FileWriter(auxDataName);
+            BufferedWriter aDBW = new BufferedWriter(aDFW);
 
-            sTBW.write(String.valueOf(sT));
-            sTBW.close();
+            aDBW.write(String.valueOf(m.gi.startT));
+            aDBW.newLine();
+            aDBW.write(String.valueOf(m.gi.teamMode));
+            aDBW.close();
         } catch (IOException e) {
-            m.getLogger().severe("Could not save start time to '" + startTimeFileName + "'!");
+            m.getLogger().severe("Could not save aux data to '" + auxDataName + "'!");
         }
     }
 
@@ -167,61 +175,53 @@ public class UHCUtils {
         } else {
             m.getLogger().info("Found data folder '" + location + "', proceeding to try to extract UUID sets");
         }
-        String lPFileName = location + "/livePlayers.txt";
-        String aPFileName = location + "/activePlayers.txt";
+        String rPFileName = location + "/regPlayers.txt";
+        String bPFileName = location + "/blacklistPlayers.txt";
         String line;
-        //Live Players read-in
+        //Reg Players read-in
         try {
-            File lPFile = new File(lPFileName);
+            File lPFile = new File(rPFileName);
             if (lPFile.isFile()) {
-                FileReader lPFileR = new FileReader(lPFileName);
-                BufferedReader lPBuffR = new BufferedReader(lPFileR);
-                Set<UUID> livePlayers = new HashSet<>();
-                while ((line = lPBuffR.readLine()) != null) {
-                    livePlayers.add(UUID.fromString(line));
+                FileReader rPFileR = new FileReader(rPFileName);
+                BufferedReader rPBuffR = new BufferedReader(rPFileR);
+                Set<UUID> regPlayers = new HashSet<>();
+                while ((line = rPBuffR.readLine()) != null) {
+                    regPlayers.add(UUID.fromString(line));
                 }
-                lPBuffR.close();
-                rv.put("livePlayers", livePlayers);
-                m.getLogger().info("Successfully extracted livePlayers UUID set");
+                rPBuffR.close();
+                rv.put("regPlayers", regPlayers);
+                m.getLogger().info("Successfully extracted regPlayers UUID set");
             } else {
-                m.getLogger().info("Game data missing! Cleansing directory.");
-                FileUtils.cleanDirectory(new File(location));
+                m.getLogger().info("Could not find regPlayers UUID set, clearing world data...");
+                clearWorldData(m);
                 return new HashMap<>();
             }
         } catch (IOException e) {
-            m.getLogger().severe("Error while loading in livePlayers file: " + lPFileName + ", cleansing directory!");
-            try {
-                FileUtils.cleanDirectory(new File(location));
-            } catch (IOException f) {
-                f.printStackTrace();
-            }
+            m.getLogger().severe("Error while loading in regPlayers file: " + rPFileName + "! Clearing world data...");
+            clearWorldData(m);
             return new HashMap<>();
         }
-        //All Players read-in
+        //Blacklist Players read-in
         try {
-            File aPFile = new File(aPFileName);
-            if (aPFile.isFile()) {
-                FileReader aPFileR = new FileReader(aPFileName);
-                BufferedReader aPBuffR = new BufferedReader(aPFileR);
-                Set<UUID> allPlayers = new HashSet<>();
-                while ((line = aPBuffR.readLine()) != null) {
-                    allPlayers.add(UUID.fromString(line));
+            File bPFile = new File(bPFileName);
+            if (bPFile.isFile()) {
+                FileReader bPFileR = new FileReader(bPFileName);
+                BufferedReader bPBuffR = new BufferedReader(bPFileR);
+                Set<UUID> blacklistPlayers = new HashSet<>();
+                while ((line = bPBuffR.readLine()) != null) {
+                    blacklistPlayers.add(UUID.fromString(line));
                 }
-                aPBuffR.close();
-                rv.put("activePlayers", allPlayers);
-                m.getLogger().info("Successfully extracted activePlayers UUID set");
+                bPBuffR.close();
+                rv.put("blacklistPlayers", blacklistPlayers);
+                m.getLogger().info("Successfully extracted blacklistPlayers UUID set");
             } else {
-                m.getLogger().info("Could not find activePlayers UUID set, cleansing directory");
-                FileUtils.cleanDirectory(new File(location));
+                m.getLogger().info("Could not find blacklistPlayers UUID set. Clearing world data...");
+                clearWorldData(m);
                 return new HashMap<>();
             }
         } catch (IOException e) {
-            m.getLogger().severe("Error while loading in activePlayers file: " + aPFileName + ", cleansing directory!");
-            try {
-                FileUtils.cleanDirectory(new File(location));
-            } catch (IOException f) {
-                f.printStackTrace();
-            }
+            m.getLogger().severe("Error while loading in blacklistPlayers file: " + bPFileName + "! clearing world data...");
+            clearWorldData(m);
             return new HashMap<>();
         }
         return rv;
@@ -234,10 +234,13 @@ public class UHCUtils {
             FileUtils.deleteDirectory(new File(location));
         } catch (IOException e) {
             m.getLogger().severe("Could not delete world data folder '" + location + "'!");
+            e.printStackTrace();
         }
     }
 
-    public static void saveWorldPlayers(Main m, Set<UUID> livePlayers, Set<UUID> allPlayers) {
+    public static void saveWorldPlayers(Main m) {
+        Set<UUID> regPlayers = m.gi.getRegPlayers();
+        Set<UUID> blacklistPlayers = m.gi.getBlacklistPlayers();
         String location =  m.getDataFolder() + "/" + m.getConfig().getString("data-location").replaceAll("<worldname>", m.getConfig().getString("world"));
         File dataFolder = new File(location);
         if (!dataFolder.exists()) {
@@ -250,43 +253,43 @@ public class UHCUtils {
                 m.getLogger().info("Created world data folder: '" + location + "', savind data...");
             }
         }
-        String livePlayersName = location + "/livePlayers.txt";
-        String allPlayersName = location + "/activePlayers.txt";
-        File lPFile = new File(livePlayersName);
-        File aPFile = new File(allPlayersName);
-        if (lPFile.isFile()) {
-            lPFile.delete();
+        String regPlayersName = location + "/regPlayers.txt";
+        String blacklistPlayersName = location + "/blacklistPlayers.txt";
+        File rPFile = new File(regPlayersName);
+        File bPFile = new File(blacklistPlayersName);
+        if (rPFile.isFile()) {
+            rPFile.delete();
         }
-        if (aPFile.isFile()) {
-            aPFile.delete();
+        if (bPFile.isFile()) {
+            bPFile.delete();
         }
-        //Live Players save
+        //Reg Players save
         try {
-            FileWriter lPFileW = new FileWriter(livePlayersName);
-            BufferedWriter lPBuffW = new BufferedWriter(lPFileW);
+            FileWriter rPFileW = new FileWriter(regPlayersName);
+            BufferedWriter rPBuffW = new BufferedWriter(rPFileW);
 
-            for (UUID u : livePlayers) {
-                lPBuffW.write(u.toString());
-                lPBuffW.newLine();
+            for (UUID u : regPlayers) {
+                rPBuffW.write(u.toString());
+                rPBuffW.newLine();
             }
 
-            lPBuffW.close();
+            rPBuffW.close();
         } catch (IOException e) {
-            m.getLogger().severe("Could not save livePlayers to file " + livePlayersName);
+            m.getLogger().severe("Could not save regPlayers to file " + regPlayersName);
         }
-        //All Players save
+        //Blacklist Players save
         try {
-            FileWriter aPFileW = new FileWriter(allPlayersName);
-            BufferedWriter aPBuffW = new BufferedWriter(aPFileW);
+            FileWriter bPFileW = new FileWriter(blacklistPlayersName);
+            BufferedWriter bPBuffW = new BufferedWriter(bPFileW);
 
-            for (UUID u : allPlayers) {
-                aPBuffW.write(u.toString());
-                aPBuffW.newLine();
+            for (UUID u : blacklistPlayers) {
+                bPBuffW.write(u.toString());
+                bPBuffW.newLine();
             }
 
-            aPBuffW.close();
+            bPBuffW.close();
         } catch (IOException e) {
-            m.getLogger().severe("Could not save activePlayers to file " + allPlayersName);
+            m.getLogger().severe("Could not save blacklistPlayers to file " + blacklistPlayersName);
         }
         m.getLogger().info("Saved player data to world data folder: " + location);
     }
@@ -372,7 +375,7 @@ public class UHCUtils {
         final int spreadSize = teams ? getTeams(players) : players.size();
 
         final Location[] locations = getSpreadLocations(g.getWorld(), spreadSize, xRangeMin, zRangeMin, xRangeMax, zRangeMax);
-        final int rangeSpread = range(g.getWorld(), g.spreadDistance, xRangeMin, zRangeMin, xRangeMax, zRangeMax, locations);
+        final int rangeSpread = range(g.getWorld(), g.getSpreadDistance(), xRangeMin, zRangeMin, xRangeMax, zRangeMax, locations);
 
         if (rangeSpread == -1) {
             return false;
@@ -493,7 +496,7 @@ public class UHCUtils {
         double distance = 0.0D;
         int i = 0;
         Map<Team, Location> hashmap = Maps.newHashMap();
-        g.giveBoats = new HashSet<>();
+        g.setGiveBoats(new HashSet<>());
 
         for (int j = 0; j < list.size(); ++j) {
             Player player = list.get(j);
@@ -517,7 +520,7 @@ public class UHCUtils {
                 loc.setY(loc.getY() + 1D);
                 loc.getBlock().setType(Material.STEP);
                 if (isOceanBiome(world.getBiome(loc.getBlockX(), loc.getBlockZ()))) {
-                    g.giveBoats.add(player);
+                    g.getGiveBoats().add(player);
                 }
             }
             loc.setY(loc.getY() + 1D);
@@ -566,6 +569,15 @@ public class UHCUtils {
         return biome.equals(Biome.OCEAN) || biome.equals(Biome.DEEP_OCEAN) || biome.equals(Biome.FROZEN_OCEAN);
     }
 
+    public static int getSecsElapsed(Main m) {
+        long currTime = System.currentTimeMillis();
+        if (!(m.gi.isStarted())) {
+            return -1;
+        }
+        long timeElapsed = currTime - m.gi.startT;
+        return (int) timeElapsed / 1000;
+    }
+
     public static Map<String, Integer> secsToHMS(int secs) {
         Map<String, Integer> hms = new HashMap<>();
 
@@ -610,14 +622,23 @@ public class UHCUtils {
         return fmtStng.toString();
     }
 
+    public static String secsToFormatString2(int secs) {
+        Map<String, Integer> hms = secsToHMS(secs);
+        return hmsToFormatString2(hms.get("hrs"), hms.get("mins"), hms.get("secs"));
+    }
+
+    public static String hmsToFormatString2(int hrs, int mins, int secs) {
+        assert hrs >= 0 && mins >= 0 && secs >= 0;
+
+        return hrs + ":" + mins + "'" + secs +"\"";
+    }
+
     public static void sendPlayerTime(Main m, CommandSender commandSender) {
-        long currTime = System.currentTimeMillis();
-        if (!(m.gi.isStarted())) {
+        int timeElapsedSecs = getSecsElapsed(m);
+        if (timeElapsedSecs == -1) {
             commandSender.sendMessage(ChatColor.RED + "Game has not started yet!");
             return;
         }
-        long timeElapsed = currTime - m.gi.startT;
-        int timeElapsedSecs = (int) timeElapsed / 1000;
         commandSender.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD
                 + "Time Elapsed: " + ChatColor.RESET + secsToFormatString(timeElapsedSecs));
     }

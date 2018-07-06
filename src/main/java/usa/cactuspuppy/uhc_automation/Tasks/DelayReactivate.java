@@ -21,30 +21,41 @@ public class DelayReactivate implements Runnable {
 
     @Override
     public void run() {
+        g.setTimeAnnouncer(new TimeAnnouncer(g.main));
         if (!UHCUtils.isWorldData(g.main)) {
             return;
         }
         g.main.getLogger().info("Found previous game data, attempting to load...");
         Map<String, Set<UUID>> playerSets = UHCUtils.loadWorldPlayers(g.main);
-        if (!playerSets.isEmpty()) {
-            g.setLivePlayers(playerSets.get("livePlayers"));
-            g.setActivePlayers(playerSets.get("activePlayers"));
+        if (playerSets.isEmpty()) {
+            g.main.getLogger().info("Failed to load game data, game not restarted.");
+            return;
+        } else {
+            g.setBlacklistPlayers(playerSets.get("blacklistPlayers"));
+            g.setRegPlayers(playerSets.get("regPlayers"));
         }
         g.recalcPlayerSet();
-        g.startT = UHCUtils.loadStartTime(g.main);
+        Map<String, Object> auxData = UHCUtils.loadAuxData(g.main);
+        if (auxData.isEmpty()) {
+            g.main.getLogger().info("Failed to load auxiliary data, game not restarted.");
+            return;
+        } else {
+            g.setTeamMode((boolean) auxData.get("teamMode"));
+            g.startT = (long) auxData.get("sT");
+        }
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(g.main), g.main);
         UHCUtils.exeCmd("gamemode 0 @a[m=2]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         g.main.getLogger().info("Game Reinitiate Time - " + sdf.format(new Date(System.currentTimeMillis())));
         UHCUtils.exeCmd("gamerule doDaylightCycle true");
         UHCUtils.exeCmd("gamerule doWeatherCycle true");
-        if (g.epLength != 0) {
-            (new EpisodeAnnouncer(g.main, g.epLength, g.startT)).schedule();
+        if (g.getEpLength() != 0) {
+            (new EpisodeAnnouncer(g.main, g.getEpLength(), g.startT)).schedule();
         }
         if (g.getMinsToShrink() > 0) {
             g.setBorderCountdown((new BorderCountdown(g.main, g.getMinsToShrink() * 60, g.startT)).schedule());
         }
-        HandlerList.unregisterAll(g.freezePlayers);
+        HandlerList.unregisterAll(g.getFreezePlayers());
         g.setActive(true);
     }
 

@@ -12,6 +12,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import usa.cactuspuppy.uhc_automation.Listeners.PlayerMoveListener;
 import usa.cactuspuppy.uhc_automation.Tasks.BorderAnnouncer;
@@ -19,7 +21,9 @@ import usa.cactuspuppy.uhc_automation.Tasks.BorderCountdown;
 import usa.cactuspuppy.uhc_automation.Tasks.DelayReactivate;
 import usa.cactuspuppy.uhc_automation.Tasks.DelayedReset;
 import usa.cactuspuppy.uhc_automation.Tasks.EpisodeAnnouncer;
+import usa.cactuspuppy.uhc_automation.Tasks.LiftOverrideCountdown;
 import usa.cactuspuppy.uhc_automation.Tasks.LoadingChunksCountdown;
+import usa.cactuspuppy.uhc_automation.Tasks.TimeAnnouncer;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,33 +38,35 @@ import java.util.stream.Collectors;
 
 public class GameInstance {
     public Main main;
+    public long startT;
+    public boolean teamMode;
+
+
     private boolean active;
     private World world;
     private Set<UUID> livePlayers;
     private Set<UUID> activePlayers;
     private Set<UUID> regPlayers;
     private Set<UUID> blacklistPlayers;
-
-    public long startT;
     private int minsToShrink;
     private int initSize;
     private int finalSize;
-    int spreadDistance;
-    public int epLength;
-    boolean teamMode;
+    private int spreadDistance;
+    private int epLength;
     private boolean respectTeams;
     private boolean uhcMode;
-    
-    int borderCountdown;
-    boolean borderShrinking;
-    public PlayerMoveListener freezePlayers;
-    Set<Player> giveBoats;
+    private Scoreboard scoreboard;
+    private int borderCountdown;
+    private boolean borderShrinking;
+    private PlayerMoveListener freezePlayers;
+    private TimeAnnouncer timeAnnouncer;
+    private Set<Player> giveBoats;
     private int loadChunksCDID;
     private int teamsRemaining;
 
     public static final boolean DEBUG = true;
 
-    protected GameInstance(Main p) {
+    GameInstance(Main p) {
         main = p;
         startT = 0;
         teamsRemaining = 0;
@@ -80,6 +86,7 @@ public class GameInstance {
         borderShrinking = false;
         active = false;
         (new DelayReactivate(this)).schedule();
+        scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
     }
 
     public void prep() {
@@ -103,8 +110,11 @@ public class GameInstance {
         UHCUtils.exeCmd("worldborder center 0 0");
         UHCUtils.exeCmd("worldborder set " + initSize);
         UHCUtils.exeCmd("gamerule naturalRegeneration " + !uhcMode);
-        UHCUtils.exeCmd("scoreboard objectives add Health health");
-        UHCUtils.exeCmd("scoreboard objectives setDisplay list Health");
+        if (scoreboard.getObjective("Health") != null) {
+            scoreboard.getObjective("Health").unregister();
+        }
+        scoreboard.registerNewObjective("Health", "health");
+        scoreboard.getObjective("Health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
     }
 
     public void start(CommandSender s) {
@@ -124,7 +134,7 @@ public class GameInstance {
             prep();
             return;
         }
-        UHCUtils.saveWorldPlayers(main, livePlayers, activePlayers);
+        UHCUtils.saveWorldPlayers(main);
         HandlerList.unregisterAll(main.gmcl);
         UHCUtils.exeCmd("effect @a[m=0] clear");
         UHCUtils.exeCmd("effect @a[m=0] minecraft:resistance 10 10 true");
@@ -143,7 +153,7 @@ public class GameInstance {
     public void release() {
         Bukkit.getScheduler().cancelTask(loadChunksCDID);
         startT = System.currentTimeMillis();
-        UHCUtils.saveStartTime(main, startT);
+        UHCUtils.saveAuxData(main);
         UHCUtils.exeCmd("gamemode 0 @a[m=2]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
@@ -169,10 +179,15 @@ public class GameInstance {
         HandlerList.unregisterAll(freezePlayers);
         activePlayers.forEach(this::startPlayer);
         giveBoats = null;
+        timeAnnouncer.schedule();
+        timeAnnouncer.setOverride(true);
+        timeAnnouncer.showBoard();
+        (new LiftOverrideCountdown(120, main)).schedule();
     }
 
     public void stop() {
         (new DelayedReset(main)).schedule();
+        timeAnnouncer.clearBoard();
         long stopT = System.currentTimeMillis();
         long timeElapsed;
         if (startT == 0) {
@@ -188,6 +203,7 @@ public class GameInstance {
         active = false;
         borderShrinking = false;
         UHCUtils.clearWorldData(main);
+        blacklistPlayers.clear();
     }
 
     public void startBorderShrink() {
@@ -201,6 +217,7 @@ public class GameInstance {
             alertPlayerBorder(u);
         }
         (new BorderAnnouncer(main)).schedule();
+        (new LiftOverrideCountdown(120, main)).schedule();
         UHCUtils.exeCmd("gamerule doDaylightCycle false");
         UHCUtils.exeCmd("gamerule doWeatherCycle false");
         UHCUtils.exeCmd("weather clear");
@@ -208,25 +225,8 @@ public class GameInstance {
     }
 
     @SuppressWarnings("deprecation")
-    public void checkForWin() {
-        if (teamMode) {
-            int numTeams = getNumTeams();
-            if (numTeams <= 1) {
-                win();
-            } else if (numTeams < teamsRemaining) {
-                UHCUtils.broadcastMessage(this, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nA team has been eliminated! " + ChatColor.RESET + "\n" + numTeams + " teams remain!");
-                teamsRemaining = numTeams;
-            }
-        } else {
-            if (livePlayers.size() <= 1) {
-                win();
-            }
-        }
-    }
-
-    @SuppressWarnings("deprecation")
     public void win() {
-        long timeElapsed = (System.currentTimeMillis() - startT) / 1000;
+        int timeElapsed = UHCUtils.getSecsElapsed(main);
         if (teamMode) {
             if (getNumTeams() > 1) {
                 logStatus(Bukkit.getConsoleSender());
@@ -266,7 +266,7 @@ public class GameInstance {
                 String winners = winningTeamPlayers.toString();
                 UHCUtils.broadcastMessagewithTitle(this, "\n" + t.getName() + ChatColor.GREEN + " has emerged victorious!\nMembers: " + ChatColor.RESET + winners,
                         t.getName(), ChatColor.GREEN + "wins!", 0 , 80, 40);
-                UHCUtils.broadcastMessage(this, ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + WordUtils.capitalize(UHCUtils.secsToFormatString((int) timeElapsed)));
+                UHCUtils.broadcastMessage(this, ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + WordUtils.capitalize(UHCUtils.secsToFormatString(timeElapsed)));
             }
         } else {
             if (livePlayers.size() == 1) {
@@ -291,6 +291,23 @@ public class GameInstance {
     /**
      *  Helper/Access methods
      */
+
+    @SuppressWarnings("deprecation")
+    public void checkForWin() {
+        if (teamMode) {
+            int numTeams = getNumTeams();
+            if (numTeams <= 1) {
+                win();
+            } else if (numTeams < teamsRemaining) {
+                UHCUtils.broadcastMessage(this, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nA team has been eliminated! " + ChatColor.RESET + "\n" + numTeams + " teams remain!");
+                teamsRemaining = numTeams;
+            }
+        } else {
+            if (livePlayers.size() <= 1) {
+                win();
+            }
+        }
+    }
 
     public void startPlayer(UUID u) {
         Player p = Bukkit.getPlayer(u);
@@ -346,7 +363,7 @@ public class GameInstance {
         if (active) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
             s.sendMessage("Start Time: " + sdf.format(startT));
-            s.sendMessage("Time Elapsed: " + UHCUtils.secsToFormatString((int) ((System.currentTimeMillis() - startT) / 1000)));
+            s.sendMessage("Time Elapsed: " + UHCUtils.secsToFormatString(UHCUtils.getSecsElapsed(main)));
             if (teamMode) {
                 s.sendMessage("Teams Remaining: " + teamsRemaining);
             } else {
@@ -428,6 +445,10 @@ public class GameInstance {
         return (int) ((initSize - finalSize) * slowFactor);
     }
 
+    /**
+     * Getters and setters
+     */
+
     public int getInitSize() { return initSize; }
 
     public int getFinalSize() { return finalSize; }
@@ -442,14 +463,36 @@ public class GameInstance {
 
     public Set<UUID> getBlacklistPlayers() { return blacklistPlayers; }
 
+    public TimeAnnouncer getTimeAnnouncer() { return timeAnnouncer; }
+
     public int getMinsToShrink() { return minsToShrink; }
+
+    public int getSpreadDistance() {
+        return spreadDistance;
+    }
+
+    public int getEpLength() {
+        return epLength;
+    }
+
+    public PlayerMoveListener getFreezePlayers() {
+        return freezePlayers;
+    }
+
+    public Set<Player> getGiveBoats() {
+        return giveBoats;
+    }
+
+    public Scoreboard getScoreboard() {
+        return scoreboard;
+    }
 
     public boolean isActive() {
         return active;
     }
 
     public boolean isStarted() {
-        return startT == 0;
+        return startT != 0;
     }
 
     public boolean isRespectTeams() {
@@ -464,6 +507,8 @@ public class GameInstance {
             livePlayers.add(p.getUniqueId());
             if (!active) {
                 UHCUtils.exeCmd("effect " + p.getName() + " minecraft:weakness 1000000 255 true");
+            } else if (teamMode) {
+                teamsRemaining = getNumTeams();
             }
         }
         if (TimeModeCache.getInstance().getPlayerPref(p.getUniqueId()) == null) {
@@ -477,6 +522,7 @@ public class GameInstance {
 
     public void removePlayerFromLive(Player p) {
         livePlayers.remove(p.getUniqueId());
+        blacklistPlayers.add(p.getUniqueId());
     }
 
     public void lostConnectPlayer(OfflinePlayer p) {
@@ -533,15 +579,23 @@ public class GameInstance {
         UHCUtils.exeCmd("gamerule naturalRegeneration " + !um);
     }
 
-    public void setLivePlayers(Set<UUID> livePlayers1) {
-        livePlayers = livePlayers1;
-    }
-
-    public void setActivePlayers(Set<UUID> activePlayers1) {
-        activePlayers = activePlayers1;
-    }
-
     public void setBorderCountdown(int cd) {
         borderCountdown = cd;
+    }
+
+    public void setBlacklistPlayers(Set<UUID> bP) {
+        blacklistPlayers = bP;
+    }
+
+    public void setRegPlayers(Set<UUID> rP) {
+        regPlayers = rP;
+    }
+
+    public void setGiveBoats(Set<Player> giveBoats) {
+        this.giveBoats = giveBoats;
+    }
+
+    public void setTimeAnnouncer(TimeAnnouncer timeAnnouncer) {
+        this.timeAnnouncer = timeAnnouncer;
     }
 }

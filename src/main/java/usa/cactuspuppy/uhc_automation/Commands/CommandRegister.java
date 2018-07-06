@@ -16,7 +16,7 @@ public class CommandRegister implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+    public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
         if (args.length < 1) {
             return false;
         }
