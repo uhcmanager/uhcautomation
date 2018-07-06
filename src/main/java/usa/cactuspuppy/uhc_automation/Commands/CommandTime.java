@@ -82,7 +82,7 @@ public class CommandTime implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return Arrays.stream(TimeDisplayMode.values()).map(Enum::name).filter(s -> s.startsWith(args[0])).map(String::toLowerCase).collect(Collectors.toList());
+            return Arrays.stream(TimeDisplayMode.values()).map(Enum::name).map(String::toLowerCase).filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
         }
         return null;
     }

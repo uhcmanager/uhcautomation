@@ -110,10 +110,12 @@ public class GameInstance {
         UHCUtils.exeCmd("worldborder center 0 0");
         UHCUtils.exeCmd("worldborder set " + initSize);
         UHCUtils.exeCmd("gamerule naturalRegeneration " + !uhcMode);
-        if (scoreboard.getObjective("Health") != null) {
+        if (scoreboard.getObjective("Health") == null) {
+            scoreboard.registerNewObjective("Health", "health");
+        } else if (!scoreboard.getObjective("Health").getCriteria().equals("health")) {
             scoreboard.getObjective("Health").unregister();
+            scoreboard.registerNewObjective("Health", "health");
         }
-        scoreboard.registerNewObjective("Health", "health");
         scoreboard.getObjective("Health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
     }
 
@@ -421,13 +423,12 @@ public class GameInstance {
 
     @SuppressWarnings("deprecation")
     public int getNumTeams() {
-        Map<String, Object> resultMap = new HashMap<>();
         Set<Team> teams = new HashSet<>();
         for (UUID u : livePlayers) {
             Player p = Bukkit.getPlayer(u);
             teams.add(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(p));
         }
-        return resultMap.size();
+        return teams.size();
     }
 
     public void recalcPlayerSet() {

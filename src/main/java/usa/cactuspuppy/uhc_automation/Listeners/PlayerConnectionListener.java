@@ -22,7 +22,6 @@ public class PlayerConnectionListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         if (UHCUtils.worldEqualsExt(p.getWorld(), m.gi.getWorld())) {
-            p.setScoreboard(m.gi.getScoreboard());
             if (m.gi.getBlacklistPlayers().contains(p.getUniqueId())) {
                 p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "You have joined the game as a spectator. Ask an administrator if you think you should be in the game.");
                 p.setGameMode(GameMode.SPECTATOR);
@@ -43,6 +42,7 @@ public class PlayerConnectionListener implements Listener {
                 p.setHealth(20);
                 m.gi.registerPlayer(p);
             }
+            p.setScoreboard(m.gi.getScoreboard());
         } else {
             p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
