@@ -1,4 +1,4 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,6 +10,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
+import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,7 +28,7 @@ public class CommandUnregister implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+    public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
         if (args.length != 1) {
             return false;
         }
@@ -81,6 +83,8 @@ public class CommandUnregister implements CommandExecutor {
                         commandSender.sendMessage(ChatColor.DARK_RED + "An error occurred, please try again later.");
                     }
                 }
+                UHCUtils.saveWorldPlayers(m);
+                m.gi.checkForWin();
             }
         }.runTaskAsynchronously(m);
         return true;

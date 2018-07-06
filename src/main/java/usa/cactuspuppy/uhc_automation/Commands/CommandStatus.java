@@ -1,8 +1,9 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import usa.cactuspuppy.uhc_automation.Main;
 
 public class CommandStatus implements CommandExecutor {
     private Main m;
@@ -11,9 +12,8 @@ public class CommandStatus implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        commandSender.sendMessage("Current Game Instance status dumped to log");
-        m.gi.logStatus();
+    public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
+        m.gi.logStatus(commandSender);
         return true;
     }
 }

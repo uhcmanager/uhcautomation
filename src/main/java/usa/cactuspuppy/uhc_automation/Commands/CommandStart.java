@@ -1,10 +1,13 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.Tasks.PreGameCountdown;
+import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 public class CommandStart implements CommandExecutor {
     private Main main;
@@ -14,7 +17,7 @@ public class CommandStart implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
         if (!main.gi.validate(sender)) {
             UHCUtils.broadcastMessage(main.gi, ChatColor.RED + "Could not start UHC, settings invalid.");
             return true;

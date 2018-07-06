@@ -1,8 +1,9 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Tasks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import usa.cactuspuppy.uhc_automation.Main;
 
 import java.util.UUID;
 

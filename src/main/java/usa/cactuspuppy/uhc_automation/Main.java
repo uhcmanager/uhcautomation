@@ -1,9 +1,20 @@
 package usa.cactuspuppy.uhc_automation;
 
 import com.mysql.jdbc.CommunicationsException;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import usa.cactuspuppy.uhc_automation.Commands.CommandOptions;
+import usa.cactuspuppy.uhc_automation.Commands.CommandPrep;
+import usa.cactuspuppy.uhc_automation.Commands.CommandRegister;
+import usa.cactuspuppy.uhc_automation.Commands.CommandReset;
+import usa.cactuspuppy.uhc_automation.Commands.CommandSetWorld;
+import usa.cactuspuppy.uhc_automation.Commands.CommandStart;
+import usa.cactuspuppy.uhc_automation.Commands.CommandStatus;
+import usa.cactuspuppy.uhc_automation.Commands.CommandTeam;
+import usa.cactuspuppy.uhc_automation.Commands.CommandTime;
+import usa.cactuspuppy.uhc_automation.Commands.CommandUnregister;
+import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
+import usa.cactuspuppy.uhc_automation.Tasks.DelayedReset;
 
 import java.io.File;
 import java.sql.Connection;
@@ -13,16 +24,18 @@ import java.sql.Statement;
 import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
-    protected GameInstance gi;
+    public GameInstance gi;
+    public SQLHandler sqlHandler;
     private Connection connection;
-    private String host, database, username, password;
+    public String host, database, username, password;
     private int port;
     protected Statement statement;
-    protected GameModeChangeListener gmcl;
+    public GameModeChangeListener gmcl;
 
     @Override
     public void onEnable() {
         long start = System.currentTimeMillis();
+        Main m = this;
         createConfig();
         (new BukkitRunnable() {
             @Override
@@ -30,8 +43,19 @@ public class Main extends JavaPlugin {
                 try {
                     initSQL();
                     statement = connection.createStatement();
+
+                    if (!SQLHandler.isInstanced()) {
+                        new SQLHandler(m, statement);
+                    } else {
+                        SQLHandler.getInstance().rebind(statement);
+                    }
+
+                    sqlHandler = SQLHandler.getInstance();
+                    sqlHandler.createUHCTimeTable();
+                    TimeModeCache.getInstance().addAllToCache(sqlHandler.getPlayerPrefs());
                 } catch (SQLException | ClassNotFoundException e) {
                     getLogger().warning("Could not establish connection to SQL database. Check that your config.yml is correct.");
+                    e.printStackTrace();
                 }
             }
         }).runTaskAsynchronously(this);
@@ -39,10 +63,6 @@ public class Main extends JavaPlugin {
             gi = new GameInstance(this);
         }
         registerCommands();
-        Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(this), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new PlayerConnectionListener(this), this);
-        gmcl = new GameModeChangeListener(this);
-        Bukkit.getServer().getPluginManager().registerEvents(gmcl, this);
         (new DelayedReset(this)).schedule();
         getLogger().info("UHC Automation loaded in " + ((System.currentTimeMillis() - start)) + " ms");
     }
@@ -50,13 +70,13 @@ public class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         if (gi.isActive()) {
-            UHCUtils.saveWorldPlayers(this, gi.getLivePlayers(), gi.getActivePlayers());
+            UHCUtils.saveWorldPlayers(this);
         }
         saveConfig();
     }
 
     /**
-     * @source Innectic's Permissify plugin.
+     * @source Innectic's Permissify plugin. https://github.com/ifydev/Permissify
      */
     private void createConfig() {
         try {
@@ -110,5 +130,6 @@ public class Main extends JavaPlugin {
         getCommand("uhctime").setExecutor(new CommandTime(this));
         getCommand("uhcreg").setExecutor(new CommandRegister(this));
         getCommand("uhcunreg").setExecutor(new CommandUnregister(this));
+        getCommand("uhcteam").setExecutor(new CommandTeam(this));
     }
 }

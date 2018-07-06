@@ -1,8 +1,11 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Tasks;
 
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 public class EpisodeAnnouncer implements Runnable {
     private Main m;
@@ -42,11 +45,9 @@ public class EpisodeAnnouncer implements Runnable {
 
     private void markEpisode(Player p) {
         int mins = epCount * length;
-        int hours = Math.floorDiv(mins, 60);
-        mins = mins % 60;
         p.playSound(p.getLocation(), "minecraft:entity.firework.launch", (float) 1, (float) 1);
         p.sendMessage(ChatColor.GOLD + "\nMARK: " + ChatColor.WHITE + "End of Episode " + ChatColor.GREEN + epCount);
-        p.sendMessage(ChatColor.AQUA + "Time Elapsed: " + ChatColor.GREEN + hours + ChatColor.WHITE + " Hours " + ChatColor.GREEN + mins + ChatColor.WHITE + " Minutes");
+        p.sendMessage(ChatColor.AQUA + "Time Elapsed: " + ChatColor.WHITE + WordUtils.capitalize(UHCUtils.secsToFormatString(mins * 60)));
     }
 
     public void schedule() {
