@@ -22,7 +22,7 @@ public class WorldChangeListener implements Listener {
             e.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
             m.gi.lostConnectPlayer(e.getPlayer());
         } else {
-            e.getPlayer().setScoreboard(m.gi.getScoreboard());
+            m.gi.bindPlayertoScoreboard(e.getPlayer());
         }
     }
 }

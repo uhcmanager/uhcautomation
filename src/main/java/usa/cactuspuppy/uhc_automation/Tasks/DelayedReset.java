@@ -26,6 +26,7 @@ public class DelayedReset implements Runnable {
         main.gmcl = new GameModeChangeListener(main);
         Bukkit.getServer().getPluginManager().registerEvents(main.gmcl, main);
         Bukkit.getServer().getPluginManager().registerEvents(new FixColoredNamesChatListener(main), main);
+        (new FixTabNameTask(main)).schedule();
     }
 
     public void schedule() {

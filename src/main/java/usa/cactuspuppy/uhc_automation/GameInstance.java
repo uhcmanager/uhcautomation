@@ -87,6 +87,12 @@ public class GameInstance {
         active = false;
         (new DelayReactivate(this)).schedule();
         scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        if (scoreboard.getObjective("Health") == null) {
+            scoreboard.registerNewObjective("Health", "health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
+        } else if (!scoreboard.getObjective("Health").getCriteria().equals("health")) {
+            scoreboard.getObjective("Health").unregister();
+            scoreboard.registerNewObjective("Health", "health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
+        }
     }
 
     public void prep() {
@@ -110,13 +116,6 @@ public class GameInstance {
         UHCUtils.exeCmd("worldborder center 0 0");
         UHCUtils.exeCmd("worldborder set " + initSize);
         UHCUtils.exeCmd("gamerule naturalRegeneration " + !uhcMode);
-        if (scoreboard.getObjective("Health") == null) {
-            scoreboard.registerNewObjective("Health", "health");
-        } else if (!scoreboard.getObjective("Health").getCriteria().equals("health")) {
-            scoreboard.getObjective("Health").unregister();
-            scoreboard.registerNewObjective("Health", "health");
-        }
-        scoreboard.getObjective("Health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
     }
 
     public void start(CommandSender s) {
@@ -444,6 +443,10 @@ public class GameInstance {
     private int calcBorderShrinkTime() {
         double slowFactor = 2.0;
         return (int) ((initSize - finalSize) * slowFactor);
+    }
+
+    public void bindPlayertoScoreboard(Player p) {
+        p.setScoreboard(scoreboard);
     }
 
     /**

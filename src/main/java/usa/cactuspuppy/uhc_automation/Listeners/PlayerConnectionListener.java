@@ -22,10 +22,11 @@ public class PlayerConnectionListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         if (UHCUtils.worldEqualsExt(p.getWorld(), m.gi.getWorld())) {
+            m.gi.bindPlayertoScoreboard(p);
             if (m.gi.getBlacklistPlayers().contains(p.getUniqueId())) {
                 p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "You have joined the game as a spectator. Ask an administrator if you think you should be in the game.");
                 p.setGameMode(GameMode.SPECTATOR);
-                m.gi.registerPlayer(e.getPlayer());
+                m.gi.registerPlayer(p);
                 return;
             }
             if (m.gi.isActive()) {
@@ -34,7 +35,7 @@ public class PlayerConnectionListener implements Listener {
                 } else {
                     p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "You have joined the game as a spectator. Ask an administrator if you think you should be in the game.");
                     p.setGameMode(GameMode.SPECTATOR);
-                    m.gi.registerPlayer(e.getPlayer());
+                    m.gi.registerPlayer(p);
                 }
             } else if (!m.gi.getActivePlayers().contains(p.getUniqueId())) {
                 p.sendTitle(ChatColor.GOLD + "Welcome", "to the " + m.getConfig().getString("event-name"), 20, 60, 20);
@@ -42,7 +43,6 @@ public class PlayerConnectionListener implements Listener {
                 p.setHealth(20);
                 m.gi.registerPlayer(p);
             }
-            p.setScoreboard(m.gi.getScoreboard());
         } else {
             p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }

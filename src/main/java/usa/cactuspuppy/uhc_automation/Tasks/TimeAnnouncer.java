@@ -51,7 +51,7 @@ public class TimeAnnouncer implements Runnable {
     }
 
     public void removePlayerfromObjectiveSet(Player p) {
-        p.setScoreboard(m.gi.getScoreboard());
+        m.gi.bindPlayertoScoreboard(p);
         objectivePlayerSet.remove(p.getUniqueId());
     }
 
@@ -75,7 +75,7 @@ public class TimeAnnouncer implements Runnable {
             if (overrride) {
                 return;
             }
-            player.sendTitle("", "                        " + UHCUtils.secsToFormatString2(UHCUtils.getSecsElapsed(m)), 0, 40, 0);
+            player.sendTitle("", "                        " + UHCUtils.secsToFormatString2(UHCUtils.getSecsElapsed(m)), 0, 20, 0);
         }
     }
 

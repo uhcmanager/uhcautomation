@@ -59,7 +59,7 @@ public class CommandTime implements CommandExecutor, TabCompleter {
                     m.gi.getTimeAnnouncer().removePlayerfromObjectiveSet(p);
                 }
                 TimeModeCache.getInstance().storePlayerPref(p.getUniqueId(), next);
-                commandSender.sendMessage(ChatColor.GREEN + "Changed time display preference to " + ChatColor.RESET + next.name());
+                commandSender.sendMessage(ChatColor.GREEN + "Changed time display preference to " + ChatColor.RESET + next.name().toLowerCase());
             } else {
                 commandSender.sendMessage(ChatColor.RED + "Custom time display options are only allowed for in-game players!");
                 return true;
