@@ -3,20 +3,11 @@ package usa.cactuspuppy.uhc_automation;
 import com.mysql.jdbc.CommunicationsException;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import usa.cactuspuppy.uhc_automation.Commands.CommandOptions;
-import usa.cactuspuppy.uhc_automation.Commands.CommandPrep;
-import usa.cactuspuppy.uhc_automation.Commands.CommandRegister;
-import usa.cactuspuppy.uhc_automation.Commands.CommandReset;
-import usa.cactuspuppy.uhc_automation.Commands.CommandSetWorld;
-import usa.cactuspuppy.uhc_automation.Commands.CommandStart;
-import usa.cactuspuppy.uhc_automation.Commands.CommandStatus;
-import usa.cactuspuppy.uhc_automation.Commands.CommandTeam;
-import usa.cactuspuppy.uhc_automation.Commands.CommandTime;
-import usa.cactuspuppy.uhc_automation.Commands.CommandUnregister;
+import usa.cactuspuppy.uhc_automation.Commands.*;
 import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
 import usa.cactuspuppy.uhc_automation.Tasks.DelayedReset;
 
-import java.io.File;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -37,6 +28,7 @@ public class Main extends JavaPlugin {
         long start = System.currentTimeMillis();
         Main m = this;
         createConfig();
+        createRules();
         (new BukkitRunnable() {
             @Override
             public void run() {
@@ -98,6 +90,39 @@ public class Main extends JavaPlugin {
         }
     }
 
+    private void createRules() {
+        try {
+            if (!getDataFolder().exists()) {
+                boolean created = getDataFolder().mkdirs();
+                if (!created) {
+                    getLogger().log(Level.SEVERE, "Could not create config folder!");
+                }
+            }
+            File rules = new File(getDataFolder(), "rules.txt");
+            if (!rules.exists()) {
+                getLogger().info("rules.txt not found, creating...");
+
+                Reader jarRulesReader = getTextResource("rules.txt");
+                BufferedReader jarRulesBuffR = new BufferedReader(jarRulesReader);
+
+                FileWriter rulesWriter = new FileWriter(rules.getPath());
+                BufferedWriter rulesBuffW = new BufferedWriter(rulesWriter);
+
+                String line;
+                while ((line = jarRulesBuffR.readLine()) != null) {
+                    rulesBuffW.write(line);
+                    rulesBuffW.newLine();
+                }
+
+                rulesBuffW.close();
+            } else {
+                getLogger().info("Loading rules.txt...");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void initSQL() throws SQLException, ClassNotFoundException {
         host = getConfig().getString("db.host");
         port = getConfig().getInt("db.port");
@@ -130,6 +155,7 @@ public class Main extends JavaPlugin {
         getCommand("uhctime").setExecutor(new CommandTime(this));
         getCommand("uhcreg").setExecutor(new CommandRegister(this));
         getCommand("uhcunreg").setExecutor(new CommandUnregister(this));
-        getCommand("uhcteam").setExecutor(new CommandTeam(this));
+        getCommand("uhcrules").setExecutor(new CommandRules(this));
+        getCommand("uhchelp").setExecutor(new CommandHelp());
     }
 }

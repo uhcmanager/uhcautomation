@@ -1,6 +1,7 @@
 world: GameWorld
 event-name: Event Name
 data-location: data/<worldname>
+tips: false
 game:
   init-size: 4001
   final-size: 101

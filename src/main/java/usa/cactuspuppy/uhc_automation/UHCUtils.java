@@ -4,6 +4,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_12_R1.IChatBaseComponent;
+import net.minecraft.server.v1_12_R1.PacketPlayOutChat;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,8 +15,10 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
+import usa.cactuspuppy.uhc_automation.Commands.CommandRules;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -498,8 +502,7 @@ public class UHCUtils {
         Map<Team, Location> hashmap = Maps.newHashMap();
         g.setGiveBoats(new HashSet<>());
 
-        for (int j = 0; j < list.size(); ++j) {
-            Player player = list.get(j);
+        for (Player player : list) {
             Location location;
 
             if (teams) {
@@ -528,9 +531,9 @@ public class UHCUtils {
 
             double value = Double.MAX_VALUE;
 
-            for (int k = 0; k < locations.length; ++k) {
-                if (location != locations[k]) {
-                    double d = location.distanceSquared(locations[k]);
+            for (Location location1 : locations) {
+                if (location != location1) {
+                    double d = location.distanceSquared(location1);
                     value = Math.min(d, value);
                 }
             }
@@ -641,5 +644,37 @@ public class UHCUtils {
         }
         commandSender.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD
                 + "Time Elapsed: " + ChatColor.RESET + secsToFormatString(timeElapsedSecs));
+    }
+
+    public static String getRules(Main m) {
+        String rulesLocation = m.getDataFolder() + "/rules.txt";
+        File rulesFile = new File(rulesLocation);
+        if (!rulesFile.isFile()) {
+            m.getLogger().severe("Could not find rules file at: " + rulesLocation + ". Restart server to generate file.");
+            return "";
+        }
+        String rulesTitle = CommandRules.rulesTitlePrefix + "Rules:";
+        StringJoiner rules = new StringJoiner("\n");
+        rules.add(rulesTitle);
+        try {
+            FileReader rulesFileR = new FileReader(rulesLocation);
+            BufferedReader rulesBuffR = new BufferedReader(rulesFileR);
+            String line;
+            int ruleNum = 0;
+
+            while ((line = rulesBuffR.readLine()) != null) {
+                ruleNum++;
+                rules.add(CommandRules.ruleNumPrefix + ruleNum + CommandRules.numDelimiter + ChatColor.RESET + line);
+            }
+            return rules.toString();
+        } catch (IOException e) {
+            m.getLogger().severe("Error while reading from rules file " + rulesLocation);
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public static void sendPlayerGithubWiki(Player player) {
+        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " {\"text\":\"Wiki Link\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://github.com/CactusPuppy/uhcautomation/wiki\"},\"italic\":\"true\",\"bold\":\"true\",\"underlined\":\"true\",\"color\":\"green\"}");
     }
 }
