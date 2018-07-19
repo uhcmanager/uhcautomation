@@ -647,8 +647,8 @@ public class UHCUtils {
         String rulesLocation = m.getDataFolder() + "/rules.txt";
         File rulesFile = new File(rulesLocation);
         if (!rulesFile.isFile()) {
-            m.getLogger().severe("Could not find rules file at: " + rulesLocation + ". Restart server to generate file.");
-            return "";
+            m.getLogger().info("Could not find rules file at: " + rulesLocation + ". Generating rules.txt for you now.");
+            Main.getInstance().createRules();
         }
         String rulesTitle = CommandRules.rulesTitlePrefix + "Rules:";
         StringJoiner rules = new StringJoiner("\n");

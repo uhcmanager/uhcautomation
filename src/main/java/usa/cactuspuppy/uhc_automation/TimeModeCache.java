@@ -27,6 +27,7 @@ public class TimeModeCache {
 
     public void storePlayerPref(UUID u, TimeDisplayMode pref) {
         cache.put(u, pref);
+        SQLAPI.getInstance().enqueuePlayerUpdate(u);
     }
 
     public void addAllToCache(Map<UUID, TimeDisplayMode> prefs) {

@@ -3,11 +3,26 @@ package usa.cactuspuppy.uhc_automation;
 import com.mysql.jdbc.CommunicationsException;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import usa.cactuspuppy.uhc_automation.Commands.*;
+import usa.cactuspuppy.uhc_automation.Commands.CommandHelp;
+import usa.cactuspuppy.uhc_automation.Commands.CommandOptions;
+import usa.cactuspuppy.uhc_automation.Commands.CommandPrep;
+import usa.cactuspuppy.uhc_automation.Commands.CommandRegister;
+import usa.cactuspuppy.uhc_automation.Commands.CommandReset;
+import usa.cactuspuppy.uhc_automation.Commands.CommandRules;
+import usa.cactuspuppy.uhc_automation.Commands.CommandSetWorld;
+import usa.cactuspuppy.uhc_automation.Commands.CommandStart;
+import usa.cactuspuppy.uhc_automation.Commands.CommandStatus;
+import usa.cactuspuppy.uhc_automation.Commands.CommandTime;
+import usa.cactuspuppy.uhc_automation.Commands.CommandUnregister;
 import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
-import usa.cactuspuppy.uhc_automation.Tasks.DelayedReset;
+import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
+import usa.cactuspuppy.uhc_automation.Tasks.SQLRepeating;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -15,8 +30,9 @@ import java.sql.Statement;
 import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
+    private static Main instance;
     public GameInstance gi;
-    public SQLHandler sqlHandler;
+    public SQLAPI sqlHandler;
     private Connection connection;
     public String host, database, username, password;
     private int port;
@@ -26,7 +42,7 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         long start = System.currentTimeMillis();
-        Main m = this;
+        instance = this;
         createConfig();
         createRules();
         (new BukkitRunnable() {
@@ -36,13 +52,13 @@ public class Main extends JavaPlugin {
                     initSQL();
                     statement = connection.createStatement();
 
-                    if (!SQLHandler.isInstanced()) {
-                        new SQLHandler(m, statement);
+                    if (!SQLAPI.isInstanced()) {
+                        new SQLAPI(instance, statement);
                     } else {
-                        SQLHandler.getInstance().rebind(statement);
+                        SQLAPI.getInstance().rebind(statement);
                     }
 
-                    sqlHandler = SQLHandler.getInstance();
+                    sqlHandler = SQLAPI.getInstance();
                     sqlHandler.createUHCTimeTable();
                     TimeModeCache.getInstance().addAllToCache(sqlHandler.getPlayerPrefs());
                 } catch (SQLException | ClassNotFoundException e) {
@@ -55,16 +71,24 @@ public class Main extends JavaPlugin {
             gi = new GameInstance(this);
         }
         registerCommands();
-        (new DelayedReset(this)).schedule();
+        (new RestartTasks(this)).schedule();
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                SQLRepeating.start();
+            }
+        }.runTaskLater(this, 1L);
         getLogger().info("UHC Automation loaded in " + ((System.currentTimeMillis() - start)) + " ms");
     }
 
     @Override
     public void onDisable() {
         if (gi.isActive()) {
+            System.out.println("[UHC_Automation] Game is active, saving game data...");
             UHCUtils.saveWorldPlayers(this);
         }
-        saveConfig();
+        SQLRepeating.shutdown();
     }
 
     /**
@@ -90,7 +114,7 @@ public class Main extends JavaPlugin {
         }
     }
 
-    private void createRules() {
+    void createRules() {
         try {
             if (!getDataFolder().exists()) {
                 boolean created = getDataFolder().mkdirs();
@@ -157,5 +181,9 @@ public class Main extends JavaPlugin {
         getCommand("uhcunreg").setExecutor(new CommandUnregister(this));
         getCommand("uhcrules").setExecutor(new CommandRules(this));
         getCommand("uhchelp").setExecutor(new CommandHelp());
+    }
+
+    public static Main getInstance() {
+        return instance;
     }
 }

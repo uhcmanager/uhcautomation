@@ -9,10 +9,10 @@ import usa.cactuspuppy.uhc_automation.Listeners.PlayerDeathListener;
 import usa.cactuspuppy.uhc_automation.Listeners.WorldChangeListener;
 import usa.cactuspuppy.uhc_automation.Main;
 
-public class DelayedReset implements Runnable {
+public class RestartTasks implements Runnable {
     private Main main;
 
-    public DelayedReset(Main m) {
+    public RestartTasks(Main m) {
         main = m;
     }
 

@@ -19,7 +19,7 @@ import usa.cactuspuppy.uhc_automation.Listeners.PlayerMoveListener;
 import usa.cactuspuppy.uhc_automation.Tasks.BorderAnnouncer;
 import usa.cactuspuppy.uhc_automation.Tasks.BorderCountdown;
 import usa.cactuspuppy.uhc_automation.Tasks.DelayReactivate;
-import usa.cactuspuppy.uhc_automation.Tasks.DelayedReset;
+import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
 import usa.cactuspuppy.uhc_automation.Tasks.EpisodeAnnouncer;
 import usa.cactuspuppy.uhc_automation.Tasks.LiftOverrideCountdown;
 import usa.cactuspuppy.uhc_automation.Tasks.LoadingChunksCountdown;
@@ -28,10 +28,8 @@ import usa.cactuspuppy.uhc_automation.Tasks.TimeAnnouncer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -187,7 +185,7 @@ public class GameInstance {
     }
 
     public void stop() {
-        (new DelayedReset(main)).schedule();
+        (new RestartTasks(main)).schedule();
         timeAnnouncer.clearBoard();
         long stopT = System.currentTimeMillis();
         long timeElapsed;
