@@ -1,6 +1,7 @@
 package usa.cactuspuppy.uhc_automation.Tasks;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.event.HandlerList;
 import usa.cactuspuppy.uhc_automation.GameInstance;
 import usa.cactuspuppy.uhc_automation.Listeners.PlayerDeathListener;
@@ -44,11 +45,9 @@ public class DelayReactivate implements Runnable {
             g.startT = (long) auxData.get("sT");
         }
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(g.main), g.main);
-        UHCUtils.exeCmd("gamemode 0 @a[m=2]");
+        g.getLivePlayers().stream().map(Bukkit::getPlayer).forEach(p -> p.setGameMode(GameMode.SURVIVAL));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         g.main.getLogger().info("Game Reinitiate Time - " + sdf.format(new Date(System.currentTimeMillis())));
-        UHCUtils.exeCmd("gamerule doDaylightCycle true");
-        UHCUtils.exeCmd("gamerule doWeatherCycle true");
         if (g.getEpLength() != 0) {
             (new EpisodeAnnouncer(g.main, g.getEpLength(), g.startT)).schedule();
         }
