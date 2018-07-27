@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>groupId</groupId>
   <artifactId>UHC_Automation</artifactId>
-  <version>1.5-SNAPSHOT</version>
+  <version>1.5.1-SNAPSHOT</version>
   <build>
     <finalName>${project.artifactId}-v${project.version}</finalName>
     <plugins>

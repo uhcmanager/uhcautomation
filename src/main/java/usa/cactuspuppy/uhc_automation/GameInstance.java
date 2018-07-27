@@ -19,10 +19,10 @@ import usa.cactuspuppy.uhc_automation.Listeners.PlayerMoveListener;
 import usa.cactuspuppy.uhc_automation.Tasks.BorderAnnouncer;
 import usa.cactuspuppy.uhc_automation.Tasks.BorderCountdown;
 import usa.cactuspuppy.uhc_automation.Tasks.DelayReactivate;
-import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
 import usa.cactuspuppy.uhc_automation.Tasks.EpisodeAnnouncer;
 import usa.cactuspuppy.uhc_automation.Tasks.LiftOverrideCountdown;
 import usa.cactuspuppy.uhc_automation.Tasks.LoadingChunksCountdown;
+import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
 import usa.cactuspuppy.uhc_automation.Tasks.TimeAnnouncer;
 
 import java.text.SimpleDateFormat;
@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -62,7 +63,7 @@ public class GameInstance {
     private int loadChunksCDID;
     private int teamsRemaining;
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     GameInstance(Main p) {
         main = p;
@@ -104,13 +105,14 @@ public class GameInstance {
         for (Player p : activePlayers.stream().map(Bukkit::getPlayer).collect(Collectors.toList())) {
             p.teleport(spawn);
             p.setGameMode(GameMode.SURVIVAL);
-            UHCUtils.exeCmd("effect " + p.getName() + " minecraft:weakness 1000000 255 true");
+//            UHCUtils.exeCmd("effect " + p.getName() + " minecraft:weakness 1000000 255 true");
         }
         UHCUtils.exeCmd("gamerule spawnRadius 0");
         UHCUtils.exeCmd("gamerule doDaylightCycle false");
         UHCUtils.exeCmd("gamerule doWeatherCycle false");
-        UHCUtils.exeCmd("time set 0");
-        UHCUtils.exeCmd("weather clear");
+        world.setTime(0L);
+        world.setStorm(false);
+        world.setPVP(false);
         UHCUtils.exeCmd("worldborder center 0 0");
         UHCUtils.exeCmd("worldborder set " + initSize);
         UHCUtils.exeCmd("gamerule naturalRegeneration " + !uhcMode);
@@ -124,7 +126,7 @@ public class GameInstance {
         }
         long initT = System.currentTimeMillis();
         UHCUtils.broadcastMessage(this, ChatColor.GREEN + "Game starting!");
-        UHCUtils.exeCmd("clear @a[m=0]");
+        livePlayers.stream().map(Bukkit::getPlayer).forEach(this::prepPlayer);
         UHCUtils.exeCmd("fill -10 253 -10 10 255 10 air");
         boolean spread = UHCUtils.spreadplayers(this);
         if (!spread) {
@@ -135,9 +137,6 @@ public class GameInstance {
         }
         UHCUtils.saveWorldPlayers(main);
         HandlerList.unregisterAll(main.gmcl);
-        UHCUtils.exeCmd("effect @a[m=0] clear");
-        UHCUtils.exeCmd("effect @a[m=0] minecraft:resistance 10 10 true");
-        UHCUtils.exeCmd("gamemode 2 @a[m=0]");
         if (teamMode) {
             teamsRemaining = getNumTeams();
         }
@@ -149,6 +148,13 @@ public class GameInstance {
         loadChunksCDID = (new LoadingChunksCountdown(main, 5)).schedule();
     }
 
+    private void prepPlayer(Player p) {
+        p.getInventory().clear();
+        p.getActivePotionEffects().forEach(e -> p.removePotionEffect(e.getType()));
+        UHCUtils.exeCmd("effect " + p.getName() + " minecraft:resistance 10 10 true");
+        p.setGameMode(GameMode.ADVENTURE);
+    }
+
     public void release() {
         Bukkit.getScheduler().cancelTask(loadChunksCDID);
         startT = System.currentTimeMillis();
@@ -156,6 +162,9 @@ public class GameInstance {
         UHCUtils.exeCmd("gamemode 0 @a[m=2]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
+        world.setPVP(true);
+        world.setStorm(false);
+        world.setWeatherDuration((new Random()).nextInt(48000) + 24000);
         UHCUtils.exeCmd("gamerule doDaylightCycle true");
         UHCUtils.exeCmd("gamerule doWeatherCycle true");
         if (minsToShrink > 0) {
@@ -508,7 +517,7 @@ public class GameInstance {
         if (p.getGameMode() == GameMode.SURVIVAL) {
             livePlayers.add(p.getUniqueId());
             if (!active) {
-                UHCUtils.exeCmd("effect " + p.getName() + " minecraft:weakness 1000000 255 true");
+//                UHCUtils.exeCmd("effect " + p.getName() + " minecraft:weakness 1000000 255 true");
             } else if (teamMode) {
                 teamsRemaining = getNumTeams();
             }
