@@ -100,22 +100,21 @@ public class GameInstance {
         }
         UHCUtils.exeCmd(Bukkit.getServer(), world, "fill -10 253 -10 10 255 10 barrier 0 hollow");
         UHCUtils.exeCmd(Bukkit.getServer(), world, "fill -9 255 -9 9 255 9 air");
-        UHCUtils.exeCmd(Bukkit.getServer(), world, "setworldspawn 0 254 0");
+        world.setSpawnLocation(0, 254, 0);
         Location spawn = new Location(world, 0, 254, 0);
         for (Player p : activePlayers.stream().map(Bukkit::getPlayer).collect(Collectors.toList())) {
             p.teleport(spawn);
             p.setGameMode(GameMode.SURVIVAL);
-//            UHCUtils.exeCmd("effect " + p.getName() + " minecraft:weakness 1000000 255 true");
         }
-        UHCUtils.exeCmd("gamerule spawnRadius 0");
-        UHCUtils.exeCmd("gamerule doDaylightCycle false");
-        UHCUtils.exeCmd("gamerule doWeatherCycle false");
+        world.setGameRuleValue("spawnRadius", "0");
+        world.setGameRuleValue("doDaylightCycle", "false");
+        world.setGameRuleValue("doWeatherCycle", "false");
         world.setTime(0L);
         world.setStorm(false);
         world.setPVP(false);
-        UHCUtils.exeCmd("worldborder center 0 0");
-        UHCUtils.exeCmd("worldborder set " + initSize);
-        UHCUtils.exeCmd("gamerule naturalRegeneration " + !uhcMode);
+        world.getWorldBorder().setCenter(0D, 0D);
+        world.getWorldBorder().setSize(initSize);
+        world.setGameRuleValue("naturalRegenration", String.valueOf(!uhcMode));
     }
 
     public void start(CommandSender s) {
@@ -159,27 +158,24 @@ public class GameInstance {
         Bukkit.getScheduler().cancelTask(loadChunksCDID);
         startT = System.currentTimeMillis();
         UHCUtils.saveAuxData(main);
-        UHCUtils.exeCmd("gamemode 0 @a[m=2]");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
+        world.setGameRuleValue("doDaylightCycle", "true");
+        world.setGameRuleValue("doWeatherCycle", "true");
         world.setPVP(true);
         world.setStorm(false);
         world.setWeatherDuration((new Random()).nextInt(48000) + 24000);
-        UHCUtils.exeCmd("gamerule doDaylightCycle true");
-        UHCUtils.exeCmd("gamerule doWeatherCycle true");
         if (minsToShrink > 0) {
             borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
         } else if (minsToShrink == 0) {
             borderShrinking = true;
-            UHCUtils.exeCmd(Bukkit.getServer(), world,
-                    "worldborder set " + finalSize + " " + calcBorderShrinkTime());
+            world.getWorldBorder().setSize(finalSize, calcBorderShrinkTime());
             main.getLogger().info("Game border shrinking from " + initSize + " to " + finalSize
                     + " over " + calcBorderShrinkTime() + " secs");
             (new BorderAnnouncer(main)).schedule();
-            UHCUtils.exeCmd("gamerule doDaylightCycle false");
-            UHCUtils.exeCmd("gamerule doWeatherCycle false");
-            UHCUtils.exeCmd("weather clear");
-            UHCUtils.exeCmd("time set 6000");
+            world.setGameRuleValue("doDaylightCycle", "false");
+            world.setGameRuleValue("doWeatherCycle", "false");
+            world.setTime(6000L);
         }
         if (epLength != 0) {
             (new EpisodeAnnouncer(main, epLength, startT)).schedule();
@@ -216,8 +212,7 @@ public class GameInstance {
 
     public void startBorderShrink() {
         borderShrinking = true;
-        UHCUtils.exeCmd(Bukkit.getServer(), world,
-                "worldborder set " + finalSize + " " + calcBorderShrinkTime());
+        world.getWorldBorder().setSize(finalSize, calcBorderShrinkTime());
         main.getLogger().info("Game border shrinking from " + initSize + " to " + finalSize
                 + " over " + calcBorderShrinkTime() + " secs");
         Bukkit.getScheduler().cancelTask(borderCountdown);
@@ -226,10 +221,10 @@ public class GameInstance {
         }
         (new BorderAnnouncer(main)).schedule();
         (new LiftOverrideCountdown(120, main)).schedule();
-        UHCUtils.exeCmd("gamerule doDaylightCycle false");
-        UHCUtils.exeCmd("gamerule doWeatherCycle false");
-        UHCUtils.exeCmd("weather clear");
-        UHCUtils.exeCmd("time set 6000");
+        world.setGameRuleValue("doDaylightCycle", "false");
+        world.setGameRuleValue("doWeatherCycle", "false");
+        world.setTime(6000L);
+        world.setStorm(false);
     }
 
     @SuppressWarnings("deprecation")
@@ -322,10 +317,11 @@ public class GameInstance {
         p.sendTitle(ChatColor.GREEN.toString() + ChatColor.BOLD + "GO!", UHCUtils.randomStartMSG(), 0, 80, 40);
         p.playSound(p.getLocation(), "minecraft:block.note.pling", 1F, 1.18F);
         p.playSound(p.getLocation(), "minecraft:entity.enderdragon.growl", 1F, 1F);
-        UHCUtils.exeCmd("effect " + p.getName() + " clear");
+        p.getActivePotionEffects().forEach(e -> p.removePotionEffect(e.getType()));
         p.setFoodLevel(20);
         p.setSaturation(5);
         p.setHealth(20);
+        p.setGameMode(GameMode.SURVIVAL);
         if (giveBoats.contains(p)) {
             p.getInventory().addItem(new ItemStack(Material.BOAT, 1));
             p.sendMessage(ChatColor.GREEN + "Since you spawned in an ocean biome, you have received a boat to reach land faster.");
@@ -516,9 +512,7 @@ public class GameInstance {
         activePlayers.add(p.getUniqueId());
         if (p.getGameMode() == GameMode.SURVIVAL) {
             livePlayers.add(p.getUniqueId());
-            if (!active) {
-//                UHCUtils.exeCmd("effect " + p.getName() + " minecraft:weakness 1000000 255 true");
-            } else if (teamMode) {
+           if (teamMode && active) {
                 teamsRemaining = getNumTeams();
             }
         }
@@ -562,7 +556,7 @@ public class GameInstance {
 
     public void setInitSize(int s) {
         initSize = s;
-        UHCUtils.exeCmd("worldborder set " + s);
+        world.getWorldBorder().setSize(initSize);
     }
 
     public void setFinalSize(int s) {
@@ -587,7 +581,7 @@ public class GameInstance {
 
     public void setUHCMode(boolean um) {
         uhcMode = um;
-        UHCUtils.exeCmd("gamerule naturalRegeneration " + !um);
+        world.setGameRuleValue("naturalRegeneration", String.valueOf(!um));
     }
 
     public void setBorderCountdown(int cd) {

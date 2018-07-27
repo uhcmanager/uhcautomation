@@ -1,14 +1,12 @@
 package usa.cactuspuppy.uhc_automation.Commands;
 
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import usa.cactuspuppy.uhc_automation.Main;
-import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -106,11 +104,7 @@ public class CommandOptions implements CommandExecutor, TabCompleter {
                     main.getConfig().set("game.spread-distance", Integer.valueOf(args[1]));
                 //uhc-mode
                 } else if (args[0].equalsIgnoreCase(OPTIONS[5])) {
-                    if (args[1].equalsIgnoreCase("true")) {
-                        UHCUtils.exeCmd(Bukkit.getServer(), main.gi.getWorld(), "gamerule naturalRegeneration false");
-                    } else if (args[1].equalsIgnoreCase("false")) {
-                        UHCUtils.exeCmd(Bukkit.getServer(), main.gi.getWorld(), "gamerule naturalRegeneration true");
-                    } else {
+                    if (!(args[1].equals("true") || args[1].equals("false"))) {
                         commandSender.sendMessage(ChatColor.RED + "ERROR: Option " + args[1] + " is not true or false.");
                         return true;
                     }
