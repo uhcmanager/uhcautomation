@@ -3,3 +3,4 @@ out/*
 target/
 */META-INF/*
 src/test/
+dependency-reduced-pom.xml
