@@ -19,7 +19,7 @@ public class RestartTasks implements Runnable {
     @Override
     public void run() {
         Bukkit.getScheduler().cancelTasks(Main.getInstance());
-        HandlerList.unregisterAll();
+        HandlerList.unregisterAll(Main.getInstance());
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerConnectionListener(main), main);
         Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(main), main);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(main), main);
