@@ -319,7 +319,7 @@ public class GameInstance {
         p.setHealth(20);
         p.setGameMode(GameMode.SURVIVAL);
         if (giveBoats.contains(p)) {
-            p.getInventory().addItem(new ItemStack(Material.BOAT, 1));
+            p.getInventory().addItem(new ItemStack(Material.OAK_BOAT, 1));
             p.sendMessage(ChatColor.GREEN + "Since you spawned in an ocean biome, you have received a boat to reach land faster.");
         }
     }

@@ -516,9 +516,9 @@ public class UHCUtils {
 
             Location loc = new Location(world, Math.floor(location.getX()) + 0.5D, world.getHighestBlockYAt((int) location.getX(), (int) location.getZ()) - 1, Math.floor(location.getZ()) + 0.5D);
             Material m = world.getBlockAt(loc).getType();
-            if (m.equals(Material.WATER) || m.equals(Material.STATIONARY_WATER)) {
+            if (m.equals(Material.WATER)) {
                 loc.setY(loc.getY() + 1D);
-                loc.getBlock().setType(Material.STEP);
+                loc.getBlock().setType(Material.STONE_BRICK_SLAB);
                 if (isOceanBiome(world.getBiome(loc.getBlockX(), loc.getBlockZ()))) {
                     g.getGiveBoats().add(player);
                 }
