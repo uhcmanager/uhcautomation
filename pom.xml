@@ -6,7 +6,7 @@
 
     <groupId>groupId</groupId>
     <artifactId>UHC_Automation</artifactId>
-    <version>1.6-RELEASE</version>
+    <version>1.6.1-RELEASE</version>
 
     <repositories>
         <!--spigot-->
