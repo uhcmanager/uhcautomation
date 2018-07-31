@@ -20,7 +20,6 @@ import usa.cactuspuppy.uhc_automation.Tasks.BorderAnnouncer;
 import usa.cactuspuppy.uhc_automation.Tasks.BorderCountdown;
 import usa.cactuspuppy.uhc_automation.Tasks.DelayReactivate;
 import usa.cactuspuppy.uhc_automation.Tasks.EpisodeAnnouncer;
-import usa.cactuspuppy.uhc_automation.Tasks.LiftOverrideCountdown;
 import usa.cactuspuppy.uhc_automation.Tasks.LoadingChunksCountdown;
 import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
 import usa.cactuspuppy.uhc_automation.Tasks.TimeAnnouncer;
@@ -125,6 +124,7 @@ public class GameInstance {
         }
         long initT = System.currentTimeMillis();
         UHCUtils.broadcastMessage(this, ChatColor.GREEN + "Game starting!");
+        HandlerList.unregisterAll(main.gmcl);
         livePlayers.stream().map(Bukkit::getPlayer).forEach(this::prepPlayer);
         UHCUtils.exeCmd("fill -10 253 -10 10 255 10 air");
         boolean spread = UHCUtils.spreadplayers(this);
@@ -135,7 +135,6 @@ public class GameInstance {
             return;
         }
         UHCUtils.saveWorldPlayers(main);
-        HandlerList.unregisterAll(main.gmcl);
         if (teamMode) {
             teamsRemaining = getNumTeams();
         }
@@ -184,9 +183,7 @@ public class GameInstance {
         activePlayers.forEach(this::startPlayer);
         giveBoats = null;
         timeAnnouncer.schedule();
-        timeAnnouncer.setOverride(true);
         timeAnnouncer.showBoard();
-        (new LiftOverrideCountdown(120, main)).schedule();
     }
 
     public void stop() {
@@ -220,7 +217,6 @@ public class GameInstance {
             alertPlayerBorder(u);
         }
         (new BorderAnnouncer(main)).schedule();
-        (new LiftOverrideCountdown(120, main)).schedule();
         world.setGameRuleValue("doDaylightCycle", "false");
         world.setGameRuleValue("doWeatherCycle", "false");
         world.setTime(6000L);
@@ -516,8 +512,8 @@ public class GameInstance {
                 teamsRemaining = getNumTeams();
             }
         }
-        if (TimeModeCache.getInstance().getPlayerPref(p.getUniqueId()) == null) {
-            TimeModeCache.getInstance().storePlayerPref(p.getUniqueId(), TimeDisplayMode.CHAT);
+        if (InfoModeCache.getInstance().getPlayerPref(p.getUniqueId()) == null) {
+            InfoModeCache.getInstance().storePlayerPref(p.getUniqueId(), InfoDisplayMode.CHAT);
         }
     }
 
