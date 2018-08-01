@@ -4,17 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import usa.cactuspuppy.uhc_automation.Commands.CommandHelp;
-import usa.cactuspuppy.uhc_automation.Commands.CommandInfo;
-import usa.cactuspuppy.uhc_automation.Commands.CommandOptions;
-import usa.cactuspuppy.uhc_automation.Commands.CommandPrep;
-import usa.cactuspuppy.uhc_automation.Commands.CommandRegister;
-import usa.cactuspuppy.uhc_automation.Commands.CommandReset;
-import usa.cactuspuppy.uhc_automation.Commands.CommandRules;
-import usa.cactuspuppy.uhc_automation.Commands.CommandSetWorld;
-import usa.cactuspuppy.uhc_automation.Commands.CommandStart;
-import usa.cactuspuppy.uhc_automation.Commands.CommandStatus;
-import usa.cactuspuppy.uhc_automation.Commands.CommandUnregister;
+import usa.cactuspuppy.uhc_automation.Commands.CommandDelegator;
 import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
 import usa.cactuspuppy.uhc_automation.Tasks.DelayedPrep;
 import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
@@ -149,17 +139,7 @@ public class Main extends JavaPlugin {
     }
 
     private void registerCommands() {
-        getCommand("uhcstart").setExecutor(new CommandStart());
-        getCommand("uhcoptions").setExecutor(new CommandOptions());
-        getCommand("uhcreset").setExecutor(new CommandReset());
-        getCommand("uhcsetworld").setExecutor(new CommandSetWorld());
-        getCommand("uhcstatus").setExecutor(new CommandStatus());
-        getCommand("uhcprep").setExecutor(new CommandPrep());
-        getCommand("uhcinfo").setExecutor(new CommandInfo());
-        getCommand("uhcreg").setExecutor(new CommandRegister());
-        getCommand("uhcunreg").setExecutor(new CommandUnregister());
-        getCommand("uhcrules").setExecutor(new CommandRules());
-        getCommand("uhchelp").setExecutor(new CommandHelp());
+        getCommand("uhc").setExecutor(new CommandDelegator());
     }
 
     public static Main getInstance() {

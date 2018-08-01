@@ -39,9 +39,7 @@ import java.util.stream.Collectors;
 public class GameInstance {
     @Getter private Main main;
     @Getter @Setter private long startT;
-    @Setter public boolean teamMode;
-
-
+    @Getter @Setter private boolean teamMode;
     @Getter @Setter private boolean active;
     @Getter @Setter private World world;
     @Getter private Set<UUID> livePlayers;
@@ -137,16 +135,23 @@ public class GameInstance {
     }
 
     public void start(CommandSender s) {
-        if (livePlayers.size() <= 1 && !DEBUG) {
+        if (!checkNumPlayers() && !DEBUG) {
             main.getLogger().warning("Not enough players are in the UHC!");
             s.sendMessage(ChatColor.RED + "UHC aborted! Not enough players in the UHC!");
+            UHCUtils.broadcastMessage(this, ChatColor.RED.toString() + ChatColor.BOLD + "Could not start UHC.");
             return;
         }
         long initT = System.currentTimeMillis();
         UHCUtils.broadcastMessage(this, ChatColor.GREEN + "Game starting!");
         HandlerList.unregisterAll(main.getGmcl());
         livePlayers.stream().map(Bukkit::getPlayer).forEach(this::prepPlayer);
-        UHCUtils.exeCmd("fill -10 253 -10 10 255 10 air");
+        for (int x = -10; x <= 10; x++) {
+            for (int y = 253; y <= 255; y++) {
+                for (int z = -10; z <= 10; z++) {
+                    world.getBlockAt(x, y, z).setType(Material.AIR);
+                }
+            }
+        }
         boolean spread = UHCUtils.spreadplayers(this);
         if (!spread) {
             s.sendMessage(ChatColor.RED + "Unable to spread this many players within specified gamespace! Consider decreasing the spread distance between players or increasing the initial size of the border with /uhcoptions. UHC aborted.");
@@ -164,6 +169,13 @@ public class GameInstance {
         freezePlayers = new PlayerMoveListener();
         Bukkit.getServer().getPluginManager().registerEvents(freezePlayers, main);
         loadChunksCDID = (new LoadingChunksCountdown(main, 5)).schedule();
+    }
+
+    private boolean checkNumPlayers() {
+        if (teamMode) {
+            return getNumTeams() >= 2;
+        }
+        return livePlayers.size() >= 2;
     }
 
     private void prepPlayer(Player p) {
@@ -290,10 +302,7 @@ public class GameInstance {
         } else {
             if (livePlayers.size() == 1) {
                 Player winner = livePlayers.stream().findFirst().map(Bukkit::getPlayer).orElse(null);
-                if (winner == null) {
-                    main.getLogger().severe("Unable to find winner. This is probably a bug.");
-                    return;
-                }
+                assert winner != null;
                 UHCUtils.broadcastMessagewithTitle(this, "\n" + ChatColor.GREEN + winner.getDisplayName() + ChatColor.WHITE + " wins!\n"
                         + ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + WordUtils.capitalize(UHCUtils.secsToFormatString((int) timeElapsed)),
                         winner.getDisplayName(), "Wins!", 0, 80, 40);
@@ -301,7 +310,7 @@ public class GameInstance {
                 UHCUtils.broadcastMessagewithTitle(this, ChatColor.RED + "\nWait... what? The game ended in a tie!", ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.YELLOW + "Game ended in a tie!", 0, 80, 40);
             } else {
                 logStatus(Bukkit.getConsoleSender());
-                main.getLogger().severe("Win condition called for game instance running on world " + world.getName() + " under invalid circumstances. Game status dumped to log.");
+                main.getLogger().severe("Win condition called early for game instance running on world " + world.getName() + ". Game status dumped to log.");
             }
         }
         stop();

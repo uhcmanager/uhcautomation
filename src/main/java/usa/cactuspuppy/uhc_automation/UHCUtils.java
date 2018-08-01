@@ -153,7 +153,7 @@ public class UHCUtils {
 
             aDBW.write(String.valueOf(m.getGameInstance().getStartT()));
             aDBW.newLine();
-            aDBW.write(String.valueOf(m.getGameInstance().teamMode));
+            aDBW.write(String.valueOf(m.getGameInstance().isTeamMode()));
             aDBW.close();
         } catch (IOException e) {
             m.getLogger().severe("Could not save aux data to '" + auxDataName + "'!");
@@ -317,24 +317,6 @@ public class UHCUtils {
         return inName.equals(checkName) || inName.equals(checkNether) || inName.equals(checkEnd);
     }
 
-    public static void exeCmd(Server s, World w, String cmd) {
-        /*s.getLogger().log(Level.INFO, "Attempting to run command: '" + cmd + "'");
-        MinecraftServer nmsServer = ((CraftServer) s).getServer();
-        WorldServer nmsWorld = ((CraftWorld) w).getHandle();
-        EntityPlayer ep = new EntityPlayer(nmsServer, nmsWorld, new GameProfile(UUID.randomUUID(), "UHC_Automation"), new PlayerInteractManager(nmsWorld));
-        ep.setLocation(0, 0, 0, 0, 0);
-        CraftPlayer d = new CraftPlayer((CraftServer) s, ep);
-        d.setOp(true);
-        try {
-           d.performCommand(cmd);
-        } catch (CommandException e) { }*/
-        s.dispatchCommand(s.getConsoleSender(), cmd);
-    }
-
-    public static void exeCmd(String cmd) {
-        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
-    }
-
     public static void sendActionBar(Player player, String message){
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message));
     }
@@ -360,7 +342,7 @@ public class UHCUtils {
 
     public static boolean spreadplayers(GameInstance g) {
         double range = g.getInitSize() / 2;
-        boolean teams = g.teamMode && g.isRespectTeams();
+        boolean teams = g.isTeamMode() && g.isRespectTeams();
 
         //May be allowed to be changed in future, TBD
         int x = 0;
@@ -394,7 +376,7 @@ public class UHCUtils {
      * Helper Functions for spreadplayers
      * @source: https://github.com/Attano/Spigot-1.8/blob/9db48bc15e203179554b8d992ca6b0a528c8d300/org/bukkit/command/defaults/SpreadPlayersCommand.java
      */
-    static int range(World world, double distance, double xRangeMin, double zRangeMin, double xRangeMax, double zRangeMax, Location[] locations) {
+    private static int range(World world, double distance, double xRangeMin, double zRangeMin, double xRangeMax, double zRangeMax, Location[] locations) {
         boolean flag = true;
         double max;
 
