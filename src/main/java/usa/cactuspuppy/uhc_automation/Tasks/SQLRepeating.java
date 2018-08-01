@@ -51,4 +51,8 @@ public class SQLRepeating {
             System.out.println("[UHC_Automation] Success! Resuming server shutdown...");
         }
     }
+
+    public static Thread getThread() {
+        return thread;
+    }
 }

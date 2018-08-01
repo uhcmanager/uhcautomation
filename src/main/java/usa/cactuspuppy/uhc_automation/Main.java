@@ -1,9 +1,9 @@
 package usa.cactuspuppy.uhc_automation;
 
-import com.mysql.jdbc.CommunicationsException;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import usa.cactuspuppy.uhc_automation.Commands.CommandHelp;
+import usa.cactuspuppy.uhc_automation.Commands.CommandInfo;
 import usa.cactuspuppy.uhc_automation.Commands.CommandOptions;
 import usa.cactuspuppy.uhc_automation.Commands.CommandPrep;
 import usa.cactuspuppy.uhc_automation.Commands.CommandRegister;
@@ -12,7 +12,6 @@ import usa.cactuspuppy.uhc_automation.Commands.CommandRules;
 import usa.cactuspuppy.uhc_automation.Commands.CommandSetWorld;
 import usa.cactuspuppy.uhc_automation.Commands.CommandStart;
 import usa.cactuspuppy.uhc_automation.Commands.CommandStatus;
-import usa.cactuspuppy.uhc_automation.Commands.CommandTime;
 import usa.cactuspuppy.uhc_automation.Commands.CommandUnregister;
 import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
 import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
@@ -26,17 +25,14 @@ import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.Optional;
 import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
     private static Main instance;
     public GameInstance gi;
     public SQLAPI sqlHandler;
-    private Connection connection;
-    public String host, database, username, password;
-    private int port;
-    protected Statement statement;
+    private ConnectionInfo connectionInfo;
     public GameModeChangeListener gmcl;
 
     @Override
@@ -45,40 +41,22 @@ public class Main extends JavaPlugin {
         instance = this;
         createConfig();
         createRules();
-        (new BukkitRunnable() {
+        createConnectionInfo();
+        new SQLAPI();
+        sqlHandler = SQLAPI.getInstance();
+        sqlHandler.createUHCTimeTable();
+        InfoModeCache.getInstance().addAllToCache(sqlHandler.getPlayerPrefs());
+        new BukkitRunnable() {
             @Override
             public void run() {
-                try {
-                    initSQL();
-                    statement = connection.createStatement();
-
-                    if (!SQLAPI.isInstanced()) {
-                        new SQLAPI(instance, statement);
-                    } else {
-                        SQLAPI.getInstance().rebind(statement);
-                    }
-
-                    sqlHandler = SQLAPI.getInstance();
-                    sqlHandler.createUHCTimeTable();
-                    TimeModeCache.getInstance().addAllToCache(sqlHandler.getPlayerPrefs());
-                } catch (SQLException | ClassNotFoundException e) {
-                    getLogger().warning("Could not establish connection to SQL database. Check that your config.yml is correct.");
-                    e.printStackTrace();
-                }
+                SQLRepeating.start();
             }
-        }).runTaskAsynchronously(this);
+        }.runTaskLater(getInstance(), 1L);
         if (gi == null) {
             gi = new GameInstance(this);
         }
         registerCommands();
         (new RestartTasks(this)).schedule();
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                SQLRepeating.start();
-            }
-        }.runTaskLater(this, 1L);
         getLogger().info("UHC Automation loaded in " + ((System.currentTimeMillis() - start)) + " ms");
     }
 
@@ -147,25 +125,23 @@ public class Main extends JavaPlugin {
         }
     }
 
-    private void initSQL() throws SQLException, ClassNotFoundException {
-        host = getConfig().getString("db.host");
-        port = getConfig().getInt("db.port");
-        database = getConfig().getString("db.database");
-        username = getConfig().getString("db.username");
-        password = getConfig().getString("db.password");
-        if (connection != null && !connection.isClosed()) {
-            return;
-        }
+    private void createConnectionInfo() {
+        connectionInfo = new ConnectionInfo(getConfig().getString("db.host"), getConfig().getString("db.database"), getConfig().getString("db.username"), getConfig().getString("db.password"), getConfig().getInt("db.port"));
+    }
+
+    public Optional<Connection> getConnection() {
         synchronized (this) {
-            if (connection != null && !connection.isClosed()) {
-                return;
-            }
-            Class.forName("com.mysql.jdbc.Driver");
             try {
-                connection = DriverManager.getConnection("jdbc:mysql://" + this.host+ ":" + this.port + "/" + this.database, this.username, this.password);
-            } catch (CommunicationsException e) {
-                getLogger().warning("Could not establish connection to SQL database. Check that your config.yml is correct.");
+                if (connectionInfo == null) {
+                    return Optional.empty();
+                }
+                String connectionURL = "jdbc:mysql://" + connectionInfo.getHost() + ":" + connectionInfo.getPort() + "/" + connectionInfo.getDatabase();
+                return Optional.ofNullable(DriverManager.getConnection(connectionURL, connectionInfo.getUsername(), connectionInfo.getPassword()));
+            } catch (SQLException e) {
+                getLogger().warning("Unable to obtain database connection! Double check your config.yml is correct.");
+                e.printStackTrace();
             }
+            return Optional.empty();
         }
     }
 
@@ -176,7 +152,7 @@ public class Main extends JavaPlugin {
         getCommand("uhcsetworld").setExecutor(new CommandSetWorld(this));
         getCommand("uhcstatus").setExecutor(new CommandStatus(this));
         getCommand("uhcprep").setExecutor(new CommandPrep(this));
-        getCommand("uhctime").setExecutor(new CommandTime(this));
+        getCommand("uhcinfo").setExecutor(new CommandInfo(this));
         getCommand("uhcreg").setExecutor(new CommandRegister(this));
         getCommand("uhcunreg").setExecutor(new CommandUnregister(this));
         getCommand("uhcrules").setExecutor(new CommandRules(this));

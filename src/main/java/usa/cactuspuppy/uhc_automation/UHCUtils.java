@@ -633,7 +633,7 @@ public class UHCUtils {
         return hrs + ":" + mins + "'" + secs +"\"";
     }
 
-    public static void sendPlayerTime(Main m, CommandSender commandSender) {
+    public static void sendPlayerInfo(Main m, CommandSender commandSender) {
         int timeElapsedSecs = getSecsElapsed(m);
         if (timeElapsedSecs == -1) {
             commandSender.sendMessage(ChatColor.RED + "Game has not started yet!");

@@ -9,8 +9,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
-import usa.cactuspuppy.uhc_automation.Tasks.DelayedPlayerRespawn;
 import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.Tasks.DelayedPlayerRespawn;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.util.UUID;
@@ -24,6 +24,8 @@ public class PlayerDeathListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
+        String oldMsg = e.getDeathMessage();
+        e.setDeathMessage(ChatColor.RED.toString() + ChatColor.BOLD + "[DEATH] " + ChatColor.RESET + oldMsg);
         Player p = e.getEntity();
         if (!(m.gi.getLivePlayers().contains(p.getUniqueId())) && m.gi.isActive()) {
             return;
@@ -32,14 +34,13 @@ public class PlayerDeathListener implements Listener {
             Bukkit.getScheduler().scheduleSyncDelayedTask(m, () -> {
                 p.spigot().respawn();
                 p.teleport(new Location(m.gi.getWorld(), 0, 254, 0));
-                UHCUtils.exeCmd("effect " + p.getName() + " minecraft:weakness 1000000 255 true");
             }, 1L);
             return;
         }
         m.getLogger().info(p.getName() + " died at [" + p.getLocation().getWorld().getName() + "] "
                 + p.getLocation().getX() + ", " + p.getLocation().getY() + ", " + p.getLocation().getZ());
         Location drops = p.getLocation();
-        if (m.gi.getWorld().isGameRule("keepInventory")) {
+        if (e.getKeepInventory()) {
             p.getInventory().clear();
         } else {
             for (ItemStack i : p.getInventory()) {
@@ -55,8 +56,8 @@ public class PlayerDeathListener implements Listener {
                 announceDeath(p, p1);
             } catch (NullPointerException f) { }
         }
-        m.gi.checkForWin();
         UHCUtils.saveWorldPlayers(m);
+        m.gi.checkForWin();
     }
 
     private void announceDeath(Player died, Player tell) {

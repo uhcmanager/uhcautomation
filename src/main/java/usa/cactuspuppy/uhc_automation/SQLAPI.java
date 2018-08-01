@@ -2,25 +2,24 @@ package usa.cactuspuppy.uhc_automation;
 
 import org.bukkit.Bukkit;
 
+import java.net.ConnectException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
+import java.util.Optional;
 import java.util.UUID;
 
 public class SQLAPI {
     private static SQLAPI sqlapi;
-    private Statement s;
-    private Main m;
+
     private LinkedList<UUID> uuidQueue;
 
-    public SQLAPI(Main main, Statement statement) {
-        s = statement;
-        m = main;
+    public SQLAPI() {
         sqlapi = this;
         uuidQueue = new LinkedList<>();
     }
@@ -29,76 +28,93 @@ public class SQLAPI {
         return sqlapi;
     }
 
-    public static boolean isInstanced() {
-        return (sqlapi != null);
-    }
-
-    public void rebind(Statement statement) {
-        s = statement;
-    }
-
     public void createUHCTimeTable() {
         try {
             if (noUHCTimeTable()) {
-                Bukkit.getLogger().info("uhctime_mode table does not exist, creating...");
-                s.executeUpdate("CREATE TABLE uhctime_mode (UniqueID VARCHAR(36) NOT NULL, Mode TINYTEXT NOT NULL, Primary Key (UniqueID));");
+                Bukkit.getLogger().info("uhcinfo_mode table does not exist, creating...");
+                Optional<Connection> connection = Main.getInstance().getConnection();
+                if (!connection.isPresent()) {
+                    Main.getInstance().getLogger().warning("Could not get connection to database from connection info! Please check your config.yml.");
+                    return;
+                }
+                PreparedStatement statement = connection.get().prepareStatement("CREATE TABLE uhcinfo_mode (UniqueID VARCHAR(255) NOT NULL, Mode TINYTEXT NOT NULL, Primary Key (UniqueID));");
+                statement.execute();
+                statement.close();
+                connection.get().close();
             } else {
-                Bukkit.getLogger().info("uhctime_mode table exists, using that...");
+                Main.getInstance().getLogger().info("uhcinfo_mode table exists, using that...");
             }
-        } catch (SQLException e) {
-            Bukkit.getLogger().severe("SQLAPI Error: Could not create uhctime_mode table. Error Code: " + e.getErrorCode());
+        } catch (SQLException | ConnectException e) {
+            Bukkit.getLogger().severe("SQLAPI Error: Could not create uhcinfo_mode table.");
             e.printStackTrace();
         }
     }
 
-    public boolean noUHCTimeTable() {
+    public boolean noUHCTimeTable() throws ConnectException {
         try {
-            s.executeQuery("SELECT 1 FROM uhctime_mode LIMIT 1");
-            return false;
+            Optional<Connection> connection = Main.getInstance().getConnection();
+            if (!connection.isPresent()) {
+                Main.getInstance().getLogger().warning("Could not get connection to database from connection info! Please check your config.yml.");
+                throw new ConnectException();
+            }
+            PreparedStatement statement = connection.get().prepareStatement("SHOW TABLES LIKE 'uhcinfo_mode'");
+            ResultSet resultSet = statement.executeQuery();
+            boolean isTable = !resultSet.next();
+            statement.close();
+            connection.get().close();
+            return isTable;
         } catch (SQLException e) {
-            return true;
+            e.printStackTrace();
+            return false;
         }
     }
 
-    public void storePlayerPref(UUID u, TimeDisplayMode tdm) {
+    private void storePlayerPref(UUID u, InfoDisplayMode tdm) {
         try {
             if (noUHCTimeTable()) {
                 createUHCTimeTable();
             }
             if (tdm == null) {
-                tdm = TimeDisplayMode.CHAT;
+                tdm = InfoDisplayMode.CHAT;
             }
-            s.executeUpdate("INSERT INTO uhctime_mode VALUES (" + u.toString() + ", " + tdm.name() + ");");
-        } catch (SQLException e) {
-            Bukkit.getLogger().warning("SQLAPI Error: Could not update player timemode for UUID: " + u.toString() + ". Error Code: " + e.getErrorCode());
-        }
-    }
-
-    public void storeQueue(List<UUID> prefs) {
-        StringJoiner values = new StringJoiner(",\n");
-        for (UUID u : prefs) {
-            values.add("(" + u.toString() + ", " + TimeModeCache.getInstance().getPlayerPref(u) + ")");
-        }
-        try {
-            s.executeUpdate("INSERT INTO uhctime_mode VALUES " + values.toString() + ";");
-        } catch (SQLException e) {
+            Optional<Connection> connection = Main.getInstance().getConnection();
+            if (!connection.isPresent()) {
+                Main.getInstance().getLogger().warning("Could not get connection to database from connection info! Please check your config.yml.");
+                throw new ConnectException();
+            }
+            PreparedStatement statement = connection.get().prepareStatement("INSERT INTO uhcinfo_mode VALUES ('" + u.toString() + "', '" + tdm.name() +"') ON DUPLICATE KEY UPDATE Mode = '" + tdm.name() + "';");
+            statement.execute();
+            statement.close();
+            connection.get().close();
+        } catch (SQLException | ConnectException e) {
+            Bukkit.getLogger().warning("SQLAPI Error: Could not update player timemode for UUID: " + u.toString());
             e.printStackTrace();
         }
     }
 
-    public Map<UUID, TimeDisplayMode> getPlayerPrefs() {
+    public void storeQueue(List<UUID> prefs) {
+        for (UUID u : prefs) {
+            storePlayerPref(u, InfoModeCache.getInstance().getPlayerPref(u));
+        }
+    }
+
+    public Map<UUID, InfoDisplayMode> getPlayerPrefs() {
         try {
-            Map<UUID, TimeDisplayMode> rv = new HashMap<>();
+            Map<UUID, InfoDisplayMode> rv = new HashMap<>();
             if (noUHCTimeTable()) {
                 return rv;
             }
-            ResultSet result = s.executeQuery("SELECT * FROM uhctime_mode;");
+            Optional<Connection> connection = Main.getInstance().getConnection();
+            if (!connection.isPresent()) {
+                throw new ConnectException();
+            }
+            ResultSet result = connection.get().prepareStatement("SELECT * FROM uhcinfo_mode;").executeQuery();
             while (result.next()) {
-                rv.put(UUID.fromString(result.getString("UniqueID")), TimeDisplayMode.fromString(result.getString("Mode")));
+                rv.put(UUID.fromString(result.getString("UniqueID")), InfoDisplayMode.fromString(result.getString("Mode")));
             }
             return rv;
-        } catch (SQLException e) {
-            Bukkit.getLogger().severe("SQLAPI Error: Could not get player timemodes from timetable. Error Code: " + e.getErrorCode());
+        } catch (SQLException | ConnectException e) {
+            Main.getInstance().getLogger().severe("SQLAPI Error: Could not get player timemodes from timetable.");
             e.printStackTrace();
             return new HashMap<>();
         }
@@ -121,6 +137,6 @@ public class SQLAPI {
         if (u == null) {
             return;
         }
-        storePlayerPref(u, TimeModeCache.getInstance().getPlayerPref(u));
+        storePlayerPref(u, InfoModeCache.getInstance().getPlayerPref(u));
     }
 }
