@@ -99,8 +99,26 @@ public class GameInstance {
         if (UHCUtils.isWorldData(main)) {
             UHCUtils.clearWorldData(main);
         }
-        UHCUtils.exeCmd(Bukkit.getServer(), world, "fill -10 253 -10 10 255 10 barrier 0 hollow");
-        UHCUtils.exeCmd(Bukkit.getServer(), world, "fill -9 255 -9 9 255 9 air");
+        //Wall Pair 1
+        for (int x = -10; x <= 10; x++) {
+            for (int y = 253; y <= 255; y++) {
+                world.getBlockAt(x, y, -10).setType(Material.BARRIER);
+                world.getBlockAt(x, y, 10).setType(Material.BARRIER);
+            }
+        }
+        //Wall Pair 2
+        for (int z = -10; z <= 10; z++) {
+            for (int y = 253; y <= 255; y++) {
+                world.getBlockAt(-10, y, z).setType(Material.BARRIER);
+                world.getBlockAt(10, y, z).setType(Material.BARRIER);
+            }
+        }
+        //Floor
+        for (int x = -10; x <= 10; x++) {
+            for (int z = -10; z <= 10; z++) {
+                world.getBlockAt(x, 253, z).setType(Material.BARRIER);
+            }
+        }
         world.setSpawnLocation(0, 254, 0);
         Location spawn = new Location(world, 0, 254, 0);
         for (Player p : activePlayers.stream().map(Bukkit::getPlayer).collect(Collectors.toList())) {
