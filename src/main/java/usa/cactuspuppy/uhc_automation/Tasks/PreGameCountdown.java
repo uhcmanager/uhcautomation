@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 import usa.cactuspuppy.uhc_automation.Main;
 
 public class PreGameCountdown implements Runnable {
-    private Main main;
     private int length;
     private int secs;
     private CommandSender sender;
@@ -16,8 +15,7 @@ public class PreGameCountdown implements Runnable {
     public static boolean instanced;
     public static PreGameCountdown pgc;
 
-    public PreGameCountdown(Main m, int l, CommandSender s) {
-        main = m;
+    public PreGameCountdown(int l, CommandSender s) {
         length = l;
         secs = l;
         instanced = true;
@@ -29,7 +27,7 @@ public class PreGameCountdown implements Runnable {
     public void run() {
         //When time up, unschedule task
         if (secs <= 0) {
-            main.gi.start(sender);
+            Main.getInstance().getGameInstance().start(sender);
             if (assignedID != null) { Bukkit.getScheduler().cancelTask(assignedID); }
             instanced = false;
             pgc = null;
@@ -39,7 +37,7 @@ public class PreGameCountdown implements Runnable {
 
         //Chat message
         if (secs == length) {
-            main.gi.getActivePlayers().forEach((p) -> Bukkit.getPlayer(p).sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "ALERT: " + ChatColor.WHITE + "Game begins in " + length + " seconds!"));
+            Main.getInstance().getGameInstance().getActivePlayers().forEach((p) -> Bukkit.getPlayer(p).sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "ALERT: " + ChatColor.WHITE + "Game begins in " + length + " seconds!"));
         }
 
         //Title announcements
@@ -49,13 +47,13 @@ public class PreGameCountdown implements Runnable {
         } else {
             use = ChatColor.RED;
         }
-        main.gi.getActivePlayers().forEach((p) -> infoPlayer(Bukkit.getPlayer(p), use + "" + secs, ChatColor.WHITE + "until the game starts!", 0, 80, 40));
+        Main.getInstance().getGameInstance().getActivePlayers().forEach((p) -> infoPlayer(Bukkit.getPlayer(p), use + "" + secs, ChatColor.WHITE + "until the game starts!", 0, 80, 40));
 
         secs--;
     }
 
     public void schedule() {
-        assignedID = Bukkit.getScheduler().scheduleSyncRepeatingTask(main, this, 0L, 20L);
+        assignedID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), this, 0L, 20L);
     }
 
     public void instaStart() {

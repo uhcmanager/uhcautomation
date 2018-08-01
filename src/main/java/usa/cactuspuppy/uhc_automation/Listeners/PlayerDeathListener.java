@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.Listeners;
 
+import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -15,29 +16,24 @@ import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.util.UUID;
 
+@NoArgsConstructor
 public class PlayerDeathListener implements Listener {
-    private Main m;
-
-    public PlayerDeathListener(Main main) {
-        m = main;
-    }
-
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         String oldMsg = e.getDeathMessage();
         e.setDeathMessage(ChatColor.RED.toString() + ChatColor.BOLD + "[DEATH] " + ChatColor.RESET + oldMsg);
         Player p = e.getEntity();
-        if (!(m.gi.getLivePlayers().contains(p.getUniqueId())) && m.gi.isActive()) {
+        if (!(Main.getInstance().getGameInstance().getLivePlayers().contains(p.getUniqueId())) && Main.getInstance().getGameInstance().isActive()) {
             return;
         }
-        if (!m.gi.isActive() && m.gi.getActivePlayers().contains(p.getUniqueId())) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(m, () -> {
+        if (!Main.getInstance().getGameInstance().isActive() && Main.getInstance().getGameInstance().getActivePlayers().contains(p.getUniqueId())) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
                 p.spigot().respawn();
-                p.teleport(new Location(m.gi.getWorld(), 0, 254, 0));
+                p.teleport(new Location(Main.getInstance().getGameInstance().getWorld(), 0, 254, 0));
             }, 1L);
             return;
         }
-        m.getLogger().info(p.getName() + " died at [" + p.getLocation().getWorld().getName() + "] "
+        Main.getInstance().getLogger().info(p.getName() + " died at [" + p.getLocation().getWorld().getName() + "] "
                 + p.getLocation().getX() + ", " + p.getLocation().getY() + ", " + p.getLocation().getZ());
         Location drops = p.getLocation();
         if (e.getKeepInventory()) {
@@ -47,17 +43,15 @@ public class PlayerDeathListener implements Listener {
                 drops.getWorld().dropItemNaturally(drops, i);
             }
         }
-        (new DelayedPlayerRespawn(m, p, drops)).schedule();
+        (new DelayedPlayerRespawn(p, drops)).schedule();
         p.setGameMode(GameMode.SPECTATOR);
-        m.gi.removePlayerFromLive(p);
-        for (UUID u : m.gi.getActivePlayers()) {
-            try {
-                Player p1 = Bukkit.getPlayer(u);
-                announceDeath(p, p1);
-            } catch (NullPointerException f) { }
+        Main.getInstance().getGameInstance().removePlayerFromLive(p);
+        for (UUID u : Main.getInstance().getGameInstance().getActivePlayers()) {
+            Player p1 = Bukkit.getPlayer(u);
+            announceDeath(p, p1);
         }
-        UHCUtils.saveWorldPlayers(m);
-        m.gi.checkForWin();
+        UHCUtils.saveWorldPlayers(Main.getInstance());
+        Main.getInstance().getGameInstance().checkForWin();
     }
 
     private void announceDeath(Player died, Player tell) {

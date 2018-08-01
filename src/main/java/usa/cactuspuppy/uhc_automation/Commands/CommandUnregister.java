@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.Commands;
 
+import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -20,12 +21,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.UUID;
 
+@NoArgsConstructor
 public class CommandUnregister implements CommandExecutor {
-    private Main m;
-
-    public CommandUnregister(Main main) {
-        m = main;
-    }
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
@@ -43,10 +40,10 @@ public class CommandUnregister implements CommandExecutor {
                 OfflinePlayer p = Bukkit.getPlayer(name);
                 if (p != null) {
                     UUID u = p.getUniqueId();
-                    m.gi.blacklistPlayer(u);
+                    Main.getInstance().getGameInstance().blacklistPlayer(u);
                     commandSender.sendMessage(ChatColor.GREEN + "Unregistered " + ChatColor.WHITE + p.getName() + ChatColor.GREEN +  " from the UHC.");
                     commandSender.sendMessage(ChatColor.YELLOW + "Remember that this player can now only be readded to the UHC with /uhcreg");
-                    m.getLogger().info("Blacklisted " + p.getName() + " from " + m.gi.getWorld().getName() + "'s UHC");
+                    Main.getInstance().getLogger().info("Blacklisted " + p.getName() + " from " + Main.getInstance().getGameInstance().getWorld().getName() + "'s UHC");
                 } else {
                     commandSender.sendMessage(ChatColor.YELLOW + "Unable to find " + ChatColor.WHITE + name + ChatColor.YELLOW + " in the server database, requesting UUID from Mojang now...");
                     try {
@@ -59,7 +56,7 @@ public class CommandUnregister implements CommandExecutor {
                         int responseCode = connection.getResponseCode();
                         if (responseCode != 200) {
                             commandSender.sendMessage(ChatColor.DARK_RED + "An error occurred while accessing the Mojang Database! Error code: " + ChatColor.RED + responseCode);
-                            m.getLogger().info("Error while accessing Mojang database. Queried Name: " + name + " - Response Code: " + responseCode);
+                            Main.getInstance().getLogger().info("Error while accessing Mojang database. Queried Name: " + name + " - Response Code: " + responseCode);
                         }
                         try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
                             String line = reader.readLine();
@@ -73,20 +70,20 @@ public class CommandUnregister implements CommandExecutor {
                         uuidString = uuidString.replaceAll("(.{8})(.{4})(.{4})(.{4})(.+)", "$1-$2-$3-$4-$5");
                         UUID u = UUID.fromString(uuidString);
                         String name = (String) response.get("name");
-                        m.gi.blacklistPlayer(u);
-                        commandSender.sendMessage(ChatColor.GREEN + "Unregistered " + ChatColor.WHITE + name + ChatColor.GREEN +  " from the " + m.getConfig().getString("event-name"));
+                        Main.getInstance().getGameInstance().blacklistPlayer(u);
+                        commandSender.sendMessage(ChatColor.GREEN + "Unregistered " + ChatColor.WHITE + name + ChatColor.GREEN +  " from the " + Main.getInstance().getConfig().getString("event-name"));
                         commandSender.sendMessage(ChatColor.YELLOW + "Remember that this player can now only be readded to the UHC with /uhcreg");
-                        m.getLogger().info("Blacklisted " + name + " from the " + m.getConfig().getString("event-name"));
-                        UHCUtils.broadcastMessage(m.gi, ChatColor.RED + name + " has been removed from the UHC.");
+                        Main.getInstance().getLogger().info("Blacklisted " + name + " from the " + Main.getInstance().getConfig().getString("event-name"));
+                        UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), ChatColor.RED + name + " has been removed from the UHC.");
                     } catch (IOException | ParseException e) {
                         e.printStackTrace();
                         commandSender.sendMessage(ChatColor.DARK_RED + "An error occurred, please try again later.");
                     }
                 }
-                UHCUtils.saveWorldPlayers(m);
-                m.gi.checkForWin();
+                UHCUtils.saveWorldPlayers(Main.getInstance());
+                Main.getInstance().getGameInstance().checkForWin();
             }
-        }.runTaskAsynchronously(m);
+        }.runTaskAsynchronously(Main.getInstance());
         return true;
     }
 }

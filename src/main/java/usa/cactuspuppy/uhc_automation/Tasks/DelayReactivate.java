@@ -22,43 +22,43 @@ public class DelayReactivate implements Runnable {
 
     @Override
     public void run() {
-        g.setTimeAnnouncer(new TimeAnnouncer(g.main));
-        if (!UHCUtils.isWorldData(g.main)) {
+        g.setTimeAnnouncer(new TimeAnnouncer());
+        if (!UHCUtils.isWorldData(g.getMain())) {
             return;
         }
-        g.main.getLogger().info("Found previous game data, attempting to load...");
-        Map<String, Set<UUID>> playerSets = UHCUtils.loadWorldPlayers(g.main);
+        g.getMain().getLogger().info("Found previous game data, attempting to load...");
+        Map<String, Set<UUID>> playerSets = UHCUtils.loadWorldPlayers(g.getMain());
         if (playerSets.isEmpty()) {
-            g.main.getLogger().info("Failed to load game data, game not restarted.");
+            g.getMain().getLogger().info("Failed to load game data, game not restarted.");
             return;
         } else {
             g.setBlacklistPlayers(playerSets.get("blacklistPlayers"));
             g.setRegPlayers(playerSets.get("regPlayers"));
         }
         g.recalcPlayerSet();
-        Map<String, Object> auxData = UHCUtils.loadAuxData(g.main);
+        Map<String, Object> auxData = UHCUtils.loadAuxData(g.getMain());
         if (auxData.isEmpty()) {
-            g.main.getLogger().info("Failed to load auxiliary data, game not restarted.");
+            g.getMain().getLogger().info("Failed to load auxiliary data, game not restarted.");
             return;
         } else {
             g.setTeamMode((boolean) auxData.get("teamMode"));
-            g.startT = (long) auxData.get("sT");
+            g.setStartT((long) auxData.get("sT"));
         }
-        Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(g.main), g.main);
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(), g.getMain());
         g.getLivePlayers().stream().map(Bukkit::getPlayer).forEach(p -> p.setGameMode(GameMode.SURVIVAL));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
-        g.main.getLogger().info("Game Reinitiate Time - " + sdf.format(new Date(System.currentTimeMillis())));
+        g.getMain().getLogger().info("Game Reinitiate Time - " + sdf.format(new Date(System.currentTimeMillis())));
         if (g.getEpLength() != 0) {
-            (new EpisodeAnnouncer(g.main, g.getEpLength(), g.startT)).schedule();
+            (new EpisodeAnnouncer(g.getEpLength(), g.getStartT())).schedule();
         }
         if (g.getMinsToShrink() > 0) {
-            g.setBorderCountdown((new BorderCountdown(g.main, g.getMinsToShrink() * 60, g.startT)).schedule());
+            g.setBorderCountdown((new BorderCountdown(g.getMinsToShrink() * 60, g.getStartT())).schedule());
         }
         HandlerList.unregisterAll(g.getFreezePlayers());
         g.setActive(true);
     }
 
     public void schedule() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(g.main, this, 1L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(g.getMain(), this, 1L);
     }
 }

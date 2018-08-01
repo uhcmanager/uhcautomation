@@ -10,18 +10,13 @@ import usa.cactuspuppy.uhc_automation.Tasks.PreGameCountdown;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 public class CommandStart implements CommandExecutor {
-    private Main main;
-
-    public CommandStart(Main m) {
-        main = m;
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
-        if (!main.gi.validate(sender)) {
-            UHCUtils.broadcastMessage(main.gi, ChatColor.RED + "Could not start UHC, settings invalid.");
+        if (!Main.getInstance().getGameInstance().validate(sender)) {
+            UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), ChatColor.RED + "Could not start UHC, settings invalid.");
             return true;
-        } else if (main.gi.isActive()) {
+        } else if (Main.getInstance().getGameInstance().isActive()) {
             sender.sendMessage(ChatColor.RED + "A game is already in progress! Use " + ChatColor.RESET + "/uhcreset " + ChatColor.RED + "to stop the game first!");
             return true;
         }
@@ -31,7 +26,7 @@ public class CommandStart implements CommandExecutor {
             } else if (args.length == 1) {
                 Bukkit.getScheduler().cancelTask(PreGameCountdown.getInstance().getID());
                 try {
-                    (new PreGameCountdown(main, Integer.valueOf(args[0]), sender)).schedule();
+                    (new PreGameCountdown(Integer.valueOf(args[0]), sender)).schedule();
                 } catch (NumberFormatException e) {
                     return false;
                 }
@@ -41,12 +36,12 @@ public class CommandStart implements CommandExecutor {
             return true;
         }
         if (args.length == 0) {
-            main.gi.start(sender);
+            Main.getInstance().getGameInstance().start(sender);
             return true;
         } else if (args.length == 1) {
             try {
                 int cdSecs = Integer.valueOf(args[0]);
-                (new PreGameCountdown(main, cdSecs, sender)).schedule();
+                (new PreGameCountdown(cdSecs, sender)).schedule();
             } catch (NumberFormatException e) {
                 return false;
             }

@@ -6,7 +6,7 @@
 
     <groupId>groupId</groupId>
     <artifactId>UHC_Automation</artifactId>
-    <version>1.6.1-RELEASE</version>
+    <version>1.7-SNAPSHOT</version>
 
     <repositories>
         <!--spigot-->
@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.12.2-R0.1-SNAPSHOT</version>
+            <version>1.13-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -31,6 +31,13 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.45</version>
+        </dependency>
+        <!--lombok-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.10</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 
@@ -71,5 +78,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

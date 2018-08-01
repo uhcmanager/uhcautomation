@@ -8,7 +8,6 @@ import usa.cactuspuppy.uhc_automation.Main;
 import java.util.UUID;
 
 public class LoadingChunksCountdown implements Runnable {
-    private Main m;
     private int length;
     private int iter;
 
@@ -17,18 +16,17 @@ public class LoadingChunksCountdown implements Runnable {
     public LoadingChunksCountdown(Main main, int l) {
         iter = l;
         length = l;
-        m = main;
     }
 
     @Override
     public void run() {
         if (iter == 0) {
-            m.gi.release();
+            Main.getInstance().getGameInstance().release();
             if (assignedID != null) { Bukkit.getScheduler().cancelTask(assignedID); }
             return;
         }
 
-        for (UUID u : m.gi.getActivePlayers()) {
+        for (UUID u : Main.getInstance().getGameInstance().getActivePlayers()) {
             Player p = Bukkit.getPlayer(u);
             p.sendTitle(ChatColor.WHITE + "" + iter, ChatColor.RED + "Releasing players in...", 0, 40, 20);
             if (iter > 3) {
@@ -41,7 +39,7 @@ public class LoadingChunksCountdown implements Runnable {
     }
 
     public int schedule() {
-        this.assignedID = Bukkit.getScheduler().scheduleSyncRepeatingTask(m, this, 0L, 20L);
+        this.assignedID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), this, 0L, 20L);
         return assignedID;
     }
 }

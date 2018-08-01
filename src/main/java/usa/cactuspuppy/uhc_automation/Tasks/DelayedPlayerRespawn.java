@@ -7,14 +7,10 @@ import org.bukkit.entity.Player;
 import usa.cactuspuppy.uhc_automation.Main;
 
 public class DelayedPlayerRespawn implements Runnable {
-    private Main m;
     private Player p;
     private Location l;
 
-    public Integer assignedID;
-
-    public DelayedPlayerRespawn(Main main, Player player, Location location) {
-        m = main;
+    public DelayedPlayerRespawn(Player player, Location location) {
         p = player;
         l = location;
     }
@@ -27,6 +23,6 @@ public class DelayedPlayerRespawn implements Runnable {
     }
 
     public void schedule() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(m, this, 1L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), this, 1L);
     }
 }

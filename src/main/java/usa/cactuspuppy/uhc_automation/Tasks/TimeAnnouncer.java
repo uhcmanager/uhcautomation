@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public class TimeAnnouncer implements Runnable {
-    private Main m;
     private Set<UUID> objectivePlayerSet = new HashSet<>();
     private Scoreboard timeScoreboard;
     private Objective obj;
@@ -25,8 +24,7 @@ public class TimeAnnouncer implements Runnable {
 
     private static final String TIME_TEAM_ID = ChatColor.BLACK.toString() + ChatColor.WHITE.toString();
 
-    public TimeAnnouncer(Main main) {
-        m = main;
+    public TimeAnnouncer() {
         timeScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         if (timeScoreboard.getObjective("TimeDisplay") == null) {
             timeScoreboard.registerNewObjective("TimeDisplay", "dummy");
@@ -41,7 +39,7 @@ public class TimeAnnouncer implements Runnable {
             timeScoreboard.registerNewObjective("Health2", "health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
         }
         obj = timeScoreboard.getObjective("TimeDisplay");
-        obj.setDisplayName(ChatColor.GOLD + m.getConfig().getString("event-name"));
+        obj.setDisplayName(ChatColor.GOLD + Main.getInstance().getConfig().getString("event-name"));
         timeDisplay = timeScoreboard.registerNewTeam("Time");
         timeDisplay.addEntry(TIME_TEAM_ID);
         obj.getScore(ChatColor.GREEN + "» Time Elapsed:").setScore(15);
@@ -49,13 +47,13 @@ public class TimeAnnouncer implements Runnable {
     }
 
     public void removePlayerfromObjectiveSet(Player p) {
-        m.gi.bindPlayertoScoreboard(p);
+        Main.getInstance().getGameInstance().bindPlayertoScoreboard(p);
         objectivePlayerSet.remove(p.getUniqueId());
     }
 
     @Override
     public void run() {
-        m.gi.getActivePlayers().stream().map(Bukkit::getPlayer).forEach(this::showTimetoPlayer);
+        Main.getInstance().getGameInstance().getActivePlayers().stream().map(Bukkit::getPlayer).forEach(this::showTimetoPlayer);
     }
 
     private void showTimetoPlayer(Player player) {
@@ -68,12 +66,12 @@ public class TimeAnnouncer implements Runnable {
                 player.setScoreboard(timeScoreboard);
                 objectivePlayerSet.add(player.getUniqueId());
             }
-            timeDisplay.setPrefix(ChatColor.WHITE + UHCUtils.secsToFormatString2(UHCUtils.getSecsElapsed(m)));
+            timeDisplay.setPrefix(ChatColor.WHITE + UHCUtils.secsToFormatString2(UHCUtils.getSecsElapsed(Main.getInstance())));
         }
     }
 
     public void schedule() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(m, this, 0L, 2L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), this, 0L, 2L);
     }
 
     public void showBoard() {

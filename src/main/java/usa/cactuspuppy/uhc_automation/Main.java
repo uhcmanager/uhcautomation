@@ -1,5 +1,7 @@
 package usa.cactuspuppy.uhc_automation;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import usa.cactuspuppy.uhc_automation.Commands.CommandHelp;
@@ -14,6 +16,7 @@ import usa.cactuspuppy.uhc_automation.Commands.CommandStart;
 import usa.cactuspuppy.uhc_automation.Commands.CommandStatus;
 import usa.cactuspuppy.uhc_automation.Commands.CommandUnregister;
 import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
+import usa.cactuspuppy.uhc_automation.Tasks.DelayedPrep;
 import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
 import usa.cactuspuppy.uhc_automation.Tasks.SQLRepeating;
 
@@ -30,10 +33,9 @@ import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
     private static Main instance;
-    public GameInstance gi;
-    public SQLAPI sqlHandler;
+    @Getter private GameInstance gameInstance;
     private ConnectionInfo connectionInfo;
-    public GameModeChangeListener gmcl;
+    @Getter @Setter private GameModeChangeListener gmcl;
 
     @Override
     public void onEnable() {
@@ -43,7 +45,7 @@ public class Main extends JavaPlugin {
         createRules();
         createConnectionInfo();
         new SQLAPI();
-        sqlHandler = SQLAPI.getInstance();
+        SQLAPI sqlHandler = SQLAPI.getInstance();
         sqlHandler.createUHCTimeTable();
         InfoModeCache.getInstance().addAllToCache(sqlHandler.getPlayerPrefs());
         new BukkitRunnable() {
@@ -52,17 +54,18 @@ public class Main extends JavaPlugin {
                 SQLRepeating.start();
             }
         }.runTaskLater(getInstance(), 1L);
-        if (gi == null) {
-            gi = new GameInstance(this);
+        if (gameInstance == null) {
+            gameInstance = new GameInstance(this);
         }
         registerCommands();
-        (new RestartTasks(this)).schedule();
+        (new RestartTasks()).schedule();
+        (new DelayedPrep()).schedule();
         getLogger().info("UHC Automation loaded in " + ((System.currentTimeMillis() - start)) + " ms");
     }
 
     @Override
     public void onDisable() {
-        if (gi.isActive()) {
+        if (gameInstance.isActive()) {
             System.out.println("[UHC_Automation] Game is active, saving game data...");
             UHCUtils.saveWorldPlayers(this);
         }
@@ -146,16 +149,16 @@ public class Main extends JavaPlugin {
     }
 
     private void registerCommands() {
-        getCommand("uhcstart").setExecutor(new CommandStart(this));
-        getCommand("uhcoptions").setExecutor(new CommandOptions(this));
-        getCommand("uhcreset").setExecutor(new CommandReset(this));
-        getCommand("uhcsetworld").setExecutor(new CommandSetWorld(this));
-        getCommand("uhcstatus").setExecutor(new CommandStatus(this));
-        getCommand("uhcprep").setExecutor(new CommandPrep(this));
-        getCommand("uhcinfo").setExecutor(new CommandInfo(this));
-        getCommand("uhcreg").setExecutor(new CommandRegister(this));
-        getCommand("uhcunreg").setExecutor(new CommandUnregister(this));
-        getCommand("uhcrules").setExecutor(new CommandRules(this));
+        getCommand("uhcstart").setExecutor(new CommandStart());
+        getCommand("uhcoptions").setExecutor(new CommandOptions());
+        getCommand("uhcreset").setExecutor(new CommandReset());
+        getCommand("uhcsetworld").setExecutor(new CommandSetWorld());
+        getCommand("uhcstatus").setExecutor(new CommandStatus());
+        getCommand("uhcprep").setExecutor(new CommandPrep());
+        getCommand("uhcinfo").setExecutor(new CommandInfo());
+        getCommand("uhcreg").setExecutor(new CommandRegister());
+        getCommand("uhcunreg").setExecutor(new CommandUnregister());
+        getCommand("uhcrules").setExecutor(new CommandRules());
         getCommand("uhchelp").setExecutor(new CommandHelp());
     }
 

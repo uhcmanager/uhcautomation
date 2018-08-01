@@ -8,7 +8,6 @@ import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 public class EpisodeAnnouncer implements Runnable {
-    private Main m;
     private int length;
     private long startEP;
     private long goalEP;
@@ -16,8 +15,7 @@ public class EpisodeAnnouncer implements Runnable {
 
     public Integer assignedID;
 
-    public EpisodeAnnouncer(Main main, int mins, long startT) {
-        m = main;
+    public EpisodeAnnouncer(int mins, long startT) {
         length = mins;
         long currTime = System.currentTimeMillis();
         if (currTime - startT > 10000) {
@@ -38,8 +36,8 @@ public class EpisodeAnnouncer implements Runnable {
             startEP = goalEP;
             goalEP = startEP + 60000 * length;
             epCount++;
-            m.gi.getActivePlayers().forEach((p) -> markEpisode(Bukkit.getPlayer(p)));
-            m.getLogger().info("Mark Episode " + epCount);
+            Main.getInstance().getGameInstance().getActivePlayers().forEach((p) -> markEpisode(Bukkit.getPlayer(p)));
+            Main.getInstance().getLogger().info("Mark Episode " + epCount);
         }
     }
 
@@ -51,6 +49,6 @@ public class EpisodeAnnouncer implements Runnable {
     }
 
     public void schedule() {
-        this.assignedID = Bukkit.getScheduler().scheduleSyncRepeatingTask(m, this, 0L, 5L);
+        this.assignedID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), this, 0L, 5L);
     }
 }

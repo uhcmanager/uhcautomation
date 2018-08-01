@@ -1,15 +1,16 @@
 name: UHC_Automation
-version: 1.6
+version: 1.7
 author: CactusPuppy
-description: Automates the handling of UHC events
+description: Automates the handling of UHC-style events
 main: usa.cactuspuppy.uhc_automation.Main
+api-version: 1.13
 
 commands:
   uhcprep:
     description: Performs the setup to create a lobby.
     aliases: [prep, uhcp]
   uhcstart:
-    description: Starts the UHC. No big surprises.
+    description: Starts the event. No big surprises.
     aliases: [start, uhcs]
     usage: /<command> [secs to start]
     permission: uhca.admin
@@ -24,7 +25,7 @@ commands:
     usage: /<command>
     permission: uhca.admin
   uhcsetworld:
-    description: Sets the world the executor is in to be where the UHC is occurring
+    description: Sets the event world to be the one specified, else uses the world the player is in.
     aliases: [setworld, uhcworld]
     usage: /<command>
     permission: uhca.admin

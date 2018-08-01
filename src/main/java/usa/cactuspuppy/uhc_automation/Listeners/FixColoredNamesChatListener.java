@@ -1,19 +1,15 @@
 package usa.cactuspuppy.uhc_automation.Listeners;
 
+import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.scoreboard.Team;
-import usa.cactuspuppy.uhc_automation.Main;
 
+@NoArgsConstructor
 public class FixColoredNamesChatListener implements Listener {
-    private Main main;
-
-    public FixColoredNamesChatListener(Main m) {
-        main = m;
-    }
 
     /**
      * setFormat from https://github.com/quat1024/FixNameColors/releases/tag/v0.2
