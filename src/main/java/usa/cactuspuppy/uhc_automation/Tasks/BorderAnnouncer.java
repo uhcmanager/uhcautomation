@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.Tasks;
 
+import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -8,28 +9,23 @@ import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.util.UUID;
 
+@NoArgsConstructor
 public class BorderAnnouncer implements Runnable {
-    private Main m;
-
-    public BorderAnnouncer(Main main) {
-        m = main;
-    }
-
     @Override
     public void run() {
-        for (UUID u : m.gi.getActivePlayers()) {
+        for (UUID u : Main.getInstance().getGameInstance().getActivePlayers()) {
             Player p = Bukkit.getPlayer(u);
             int playerX = p.getLocation().getBlockX();
             int playerZ = p.getLocation().getBlockZ();
             int mostSigCoord = Math.max(Math.abs(playerX), Math.abs(playerZ));
-            int distToBorder = ((int) m.gi.getWorld().getWorldBorder().getSize() / 2) - mostSigCoord;
+            int distToBorder = ((int) Main.getInstance().getGameInstance().getWorld().getWorldBorder().getSize() / 2) - mostSigCoord;
 
             String color = ChatColor.RED.toString();
             if (distToBorder <= 10) {
                 color = ChatColor.DARK_RED.toString() + ChatColor.BOLD;
             }
 
-            UHCUtils.sendActionBar(p, ChatColor.GOLD.toString() + ChatColor.BOLD + "[Border] " + ChatColor.RESET + "±" + (int) m.gi.getWorld().getWorldBorder().getSize() / 2 + color + " (" + distToBorder + distToString(Math.abs(distToBorder)) + " away)");
+            UHCUtils.sendActionBar(p, ChatColor.GOLD.toString() + ChatColor.BOLD + "[Border] " + ChatColor.RESET + "±" + (int) Main.getInstance().getGameInstance().getWorld().getWorldBorder().getSize() / 2 + color + " (" + distToBorder + distToString(Math.abs(distToBorder)) + " away)");
         }
     }
 
@@ -42,6 +38,6 @@ public class BorderAnnouncer implements Runnable {
     }
 
     public void schedule() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(m, this, 0L, 5L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), this, 0L, 5L);
     }
 }

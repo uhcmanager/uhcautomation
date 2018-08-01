@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.Tasks;
 
+import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import usa.cactuspuppy.uhc_automation.Listeners.FixColoredNamesChatListener;
@@ -9,27 +10,22 @@ import usa.cactuspuppy.uhc_automation.Listeners.PlayerDeathListener;
 import usa.cactuspuppy.uhc_automation.Listeners.WorldChangeListener;
 import usa.cactuspuppy.uhc_automation.Main;
 
+@NoArgsConstructor
 public class RestartTasks implements Runnable {
-    private Main main;
-
-    public RestartTasks(Main m) {
-        main = m;
-    }
-
     @Override
     public void run() {
         Bukkit.getScheduler().cancelTasks(Main.getInstance());
         HandlerList.unregisterAll(Main.getInstance());
-        Bukkit.getServer().getPluginManager().registerEvents(new PlayerConnectionListener(main), main);
-        Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(main), main);
-        Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(main), main);
-        main.gmcl = new GameModeChangeListener(main);
-        Bukkit.getServer().getPluginManager().registerEvents(main.gmcl, main);
-        Bukkit.getServer().getPluginManager().registerEvents(new FixColoredNamesChatListener(main), main);
-        (new FixTabNameTask(main)).schedule();
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayerConnectionListener(), Main.getInstance());
+        Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(), Main.getInstance());
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(), Main.getInstance());
+        Main.getInstance().setGmcl(new GameModeChangeListener());
+        Bukkit.getServer().getPluginManager().registerEvents(Main.getInstance().getGmcl(), Main.getInstance());
+        Bukkit.getServer().getPluginManager().registerEvents(new FixColoredNamesChatListener(), Main.getInstance());
+        (new FixTabNameTask(Main.getInstance())).schedule();
     }
 
     public void schedule() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(main, this, 1L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), this, 1L);
     }
 }

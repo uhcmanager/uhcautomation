@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.Commands;
 
+import lombok.NoArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -7,21 +8,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import usa.cactuspuppy.uhc_automation.InfoDisplayMode;
-import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.InfoModeCache;
+import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor
 public class CommandInfo implements CommandExecutor, TabCompleter {
-    private Main m;
-
-    public CommandInfo(Main main) {
-        m = main;
-    }
-
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
         if (args.length > 1) {
@@ -31,12 +27,12 @@ public class CommandInfo implements CommandExecutor, TabCompleter {
                 Player p = (Player) commandSender;
                 InfoDisplayMode tdm = InfoModeCache.getInstance().getPlayerPref(p.getUniqueId());
                 if (tdm == InfoDisplayMode.CHAT) {
-                    UHCUtils.sendPlayerInfo(m, commandSender);
+                    UHCUtils.sendPlayerInfo(Main.getInstance(), commandSender);
                 } else {
                     p.sendMessage(ChatColor.YELLOW + "Your current info display option is not set to chat. Use " + ChatColor.RESET + ChatColor.ITALIC + "/uhcinfo chat" + ChatColor.RESET.toString() + ChatColor.YELLOW + " to make chat your info display preference.");
                 }
             } else {
-                UHCUtils.sendPlayerInfo(m, commandSender);
+                UHCUtils.sendPlayerInfo(Main.getInstance(), commandSender);
             }
         } else {
             Player p;
@@ -56,7 +52,7 @@ public class CommandInfo implements CommandExecutor, TabCompleter {
                 if (curr == next) {
                     return true;
                 } else if (curr == InfoDisplayMode.SCOREBOARD) {
-                    m.gi.getTimeAnnouncer().removePlayerfromObjectiveSet(p);
+                    Main.getInstance().getGameInstance().getTimeAnnouncer().removePlayerfromObjectiveSet(p);
                 }
                 InfoModeCache.getInstance().storePlayerPref(p.getUniqueId(), next);
                 commandSender.sendMessage(ChatColor.GREEN + "Changed info display preference to " + ChatColor.RESET + next.name().toLowerCase());
@@ -78,7 +74,9 @@ public class CommandInfo implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return Arrays.stream(InfoDisplayMode.values()).map(Enum::name).map(String::toLowerCase).filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
+            List<String> options = Arrays.stream(InfoDisplayMode.values()).map(Enum::name).map(String::toLowerCase).collect(Collectors.toList());
+            options.add("toggle");
+            return options.stream().filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
         }
         return null;
     }

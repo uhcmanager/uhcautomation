@@ -151,9 +151,9 @@ public class UHCUtils {
             FileWriter aDFW = new FileWriter(auxDataName);
             BufferedWriter aDBW = new BufferedWriter(aDFW);
 
-            aDBW.write(String.valueOf(m.gi.startT));
+            aDBW.write(String.valueOf(m.getGameInstance().getStartT()));
             aDBW.newLine();
-            aDBW.write(String.valueOf(m.gi.teamMode));
+            aDBW.write(String.valueOf(m.getGameInstance().teamMode));
             aDBW.close();
         } catch (IOException e) {
             m.getLogger().severe("Could not save aux data to '" + auxDataName + "'!");
@@ -240,8 +240,8 @@ public class UHCUtils {
     }
 
     public static void saveWorldPlayers(Main m) {
-        Set<UUID> regPlayers = m.gi.getRegPlayers();
-        Set<UUID> blacklistPlayers = m.gi.getBlacklistPlayers();
+        Set<UUID> regPlayers = m.getGameInstance().getRegPlayers();
+        Set<UUID> blacklistPlayers = m.getGameInstance().getBlacklistPlayers();
         String location =  m.getDataFolder() + "/" + m.getConfig().getString("data-location").replaceAll("<worldname>", m.getConfig().getString("world"));
         File dataFolder = new File(location);
         if (!dataFolder.exists()) {
@@ -571,10 +571,10 @@ public class UHCUtils {
 
     public static int getSecsElapsed(Main m) {
         long currTime = System.currentTimeMillis();
-        if (!(m.gi.isStarted())) {
+        if (!(m.getGameInstance().isStarted())) {
             return -1;
         }
-        long timeElapsed = currTime - m.gi.startT;
+        long timeElapsed = currTime - m.getGameInstance().getStartT();
         return (int) timeElapsed / 1000;
     }
 

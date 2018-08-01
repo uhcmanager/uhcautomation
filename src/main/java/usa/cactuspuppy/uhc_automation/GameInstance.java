@@ -1,5 +1,7 @@
 package usa.cactuspuppy.uhc_automation;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -35,36 +37,36 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class GameInstance {
-    public Main main;
-    public long startT;
-    public boolean teamMode;
+    @Getter private Main main;
+    @Getter @Setter private long startT;
+    @Setter public boolean teamMode;
 
 
-    private boolean active;
-    private World world;
-    private Set<UUID> livePlayers;
-    private Set<UUID> activePlayers;
-    private Set<UUID> regPlayers;
-    private Set<UUID> blacklistPlayers;
-    private int minsToShrink;
-    private int initSize;
-    private int finalSize;
-    private int spreadDistance;
-    private int epLength;
-    private boolean respectTeams;
+    @Getter @Setter private boolean active;
+    @Getter @Setter private World world;
+    @Getter private Set<UUID> livePlayers;
+    @Getter private Set<UUID> activePlayers;
+    @Getter @Setter private Set<UUID> regPlayers;
+    @Getter @Setter private Set<UUID> blacklistPlayers;
+    @Getter @Setter private int minsToShrink;
+    @Getter private int initSize;
+    @Getter @Setter private int finalSize;
+    @Getter @Setter private int spreadDistance;
+    @Getter @Setter private int epLength;
+    @Getter @Setter private boolean respectTeams;
     private boolean uhcMode;
-    private Scoreboard scoreboard;
-    private int borderCountdown;
+    @Getter private Scoreboard scoreboard;
+    @Setter private int borderCountdown;
     private boolean borderShrinking;
-    private PlayerMoveListener freezePlayers;
-    private TimeAnnouncer timeAnnouncer;
-    private Set<Player> giveBoats;
+    @Getter private PlayerMoveListener freezePlayers;
+    @Getter @Setter private TimeAnnouncer timeAnnouncer;
+    @Getter @Setter private Set<Player> giveBoats;
     private int loadChunksCDID;
     private int teamsRemaining;
 
     public static final boolean DEBUG = true;
 
-    GameInstance(Main p) {
+    public GameInstance(Main p) {
         main = p;
         startT = 0;
         teamsRemaining = 0;
@@ -86,10 +88,10 @@ public class GameInstance {
         (new DelayReactivate(this)).schedule();
         scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         if (scoreboard.getObjective("Health") == null) {
-            scoreboard.registerNewObjective("Health", "health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
+            scoreboard.registerNewObjective("Health", "health", ChatColor.RED + "Health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
         } else if (!scoreboard.getObjective("Health").getCriteria().equals("health")) {
             scoreboard.getObjective("Health").unregister();
-            scoreboard.registerNewObjective("Health", "health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
+            scoreboard.registerNewObjective("Health", "health", ChatColor.RED + "Health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
         }
     }
 
@@ -124,7 +126,7 @@ public class GameInstance {
         }
         long initT = System.currentTimeMillis();
         UHCUtils.broadcastMessage(this, ChatColor.GREEN + "Game starting!");
-        HandlerList.unregisterAll(main.gmcl);
+        HandlerList.unregisterAll(main.getGmcl());
         livePlayers.stream().map(Bukkit::getPlayer).forEach(this::prepPlayer);
         UHCUtils.exeCmd("fill -10 253 -10 10 255 10 air");
         boolean spread = UHCUtils.spreadplayers(this);
@@ -141,7 +143,7 @@ public class GameInstance {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Initiate Time - " + sdf.format(new Date(initT)));
         active = true;
-        freezePlayers = new PlayerMoveListener(main);
+        freezePlayers = new PlayerMoveListener();
         Bukkit.getServer().getPluginManager().registerEvents(freezePlayers, main);
         loadChunksCDID = (new LoadingChunksCountdown(main, 5)).schedule();
     }
@@ -165,19 +167,19 @@ public class GameInstance {
         world.setStorm(false);
         world.setWeatherDuration((new Random()).nextInt(48000) + 24000);
         if (minsToShrink > 0) {
-            borderCountdown = (new BorderCountdown(main, minsToShrink * 60, startT)).schedule();
+            borderCountdown = (new BorderCountdown(minsToShrink * 60, startT)).schedule();
         } else if (minsToShrink == 0) {
             borderShrinking = true;
             world.getWorldBorder().setSize(finalSize, calcBorderShrinkTime());
             main.getLogger().info("Game border shrinking from " + initSize + " to " + finalSize
                     + " over " + calcBorderShrinkTime() + " secs");
-            (new BorderAnnouncer(main)).schedule();
+            (new BorderAnnouncer()).schedule();
             world.setGameRuleValue("doDaylightCycle", "false");
             world.setGameRuleValue("doWeatherCycle", "false");
             world.setTime(6000L);
         }
         if (epLength != 0) {
-            (new EpisodeAnnouncer(main, epLength, startT)).schedule();
+            (new EpisodeAnnouncer(epLength, startT)).schedule();
         }
         HandlerList.unregisterAll(freezePlayers);
         activePlayers.forEach(this::startPlayer);
@@ -187,7 +189,7 @@ public class GameInstance {
     }
 
     public void stop() {
-        (new RestartTasks(main)).schedule();
+        (new RestartTasks()).schedule();
         timeAnnouncer.clearBoard();
         long stopT = System.currentTimeMillis();
         long timeElapsed;
@@ -216,7 +218,7 @@ public class GameInstance {
         for (UUID u : activePlayers) {
             alertPlayerBorder(u);
         }
-        (new BorderAnnouncer(main)).schedule();
+        (new BorderAnnouncer()).schedule();
         world.setGameRuleValue("doDaylightCycle", "false");
         world.setGameRuleValue("doWeatherCycle", "false");
         world.setTime(6000L);
@@ -448,60 +450,9 @@ public class GameInstance {
         p.setScoreboard(scoreboard);
     }
 
-    /**
-     * Getters and setters
-     */
-
-    public int getInitSize() { return initSize; }
-
-    public int getFinalSize() { return finalSize; }
-
-    public World getWorld() { return world; }
-
-    public Set<UUID> getLivePlayers() { return livePlayers; }
-
-    public Set<UUID> getActivePlayers() { return activePlayers; }
-
-    public Set<UUID> getRegPlayers() { return regPlayers; }
-
-    public Set<UUID> getBlacklistPlayers() { return blacklistPlayers; }
-
-    public TimeAnnouncer getTimeAnnouncer() { return timeAnnouncer; }
-
-    public int getMinsToShrink() { return minsToShrink; }
-
-    public int getSpreadDistance() {
-        return spreadDistance;
-    }
-
-    public int getEpLength() {
-        return epLength;
-    }
-
-    public PlayerMoveListener getFreezePlayers() {
-        return freezePlayers;
-    }
-
-    public Set<Player> getGiveBoats() {
-        return giveBoats;
-    }
-
-    public Scoreboard getScoreboard() {
-        return scoreboard;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
     public boolean isStarted() {
         return startT != 0;
     }
-
-    public boolean isRespectTeams() {
-        return respectTeams;
-    }
-
 
     public void registerPlayer(Player p) {
         regPlayers.add(p.getUniqueId());
@@ -538,65 +489,13 @@ public class GameInstance {
         livePlayers.remove(u);
     }
 
-    public void setActive(boolean a) {
-        active = a;
-    }
-
-    public void setEpLength(int el) {
-        epLength = el;
-    }
-
-    public void setGameWorld(String worldname) {
-        world = UHCUtils.getWorldFromString(main, Bukkit.getServer(), worldname);
-    }
-
     public void setInitSize(int s) {
         initSize = s;
         world.getWorldBorder().setSize(initSize);
     }
 
-    public void setFinalSize(int s) {
-        finalSize = s;
-    }
-
-    public void setTimeToShrink(int minutes) {
-        minsToShrink = minutes;
-    }
-
-    public void setTeamMode(boolean b) {
-        teamMode = b;
-    }
-
-    public void setSpreadDistance(int sd) {
-        spreadDistance = sd;
-    }
-
-    public void setRespectTeams(boolean rt) {
-        respectTeams = rt;
-    }
-
     public void setUHCMode(boolean um) {
         uhcMode = um;
         world.setGameRuleValue("naturalRegeneration", String.valueOf(!um));
-    }
-
-    public void setBorderCountdown(int cd) {
-        borderCountdown = cd;
-    }
-
-    public void setBlacklistPlayers(Set<UUID> bP) {
-        blacklistPlayers = bP;
-    }
-
-    public void setRegPlayers(Set<UUID> rP) {
-        regPlayers = rP;
-    }
-
-    public void setGiveBoats(Set<Player> giveBoats) {
-        this.giveBoats = giveBoats;
-    }
-
-    public void setTimeAnnouncer(TimeAnnouncer timeAnnouncer) {
-        this.timeAnnouncer = timeAnnouncer;
     }
 }
