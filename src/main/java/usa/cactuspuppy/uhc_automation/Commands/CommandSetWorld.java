@@ -22,6 +22,10 @@ public class CommandSetWorld implements CommandExecutor, TabCompleter {
         if (args.length > 1) {
             return false;
         }
+        if (Main.getInstance().getGameInstance().isActive()) {
+            sender.sendMessage(ChatColor.RED + "Game is currently active! Stop the game first before changing the game world.");
+            return true;
+        }
         if (args.length == 0) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage(ChatColor.RED + "Must be a player to use command this way!");
