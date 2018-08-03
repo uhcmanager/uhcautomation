@@ -12,7 +12,7 @@ import usa.cactuspuppy.uhc_automation.UHCUtils;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
-public class CommandDelegator implements CommandExecutor {
+public class CommandHandler implements CommandExecutor {
     private static final String[] SUBCOMMANDS = {"help", "info", "options", "prep", "register", "reset", "rules", "setworld", "start", "status", "unregister"};
     private static final String[] REGISTER_ALIASES = {"reg", "join", "add"};
     private static final String[] UNREGISTER_ALIASES = {"unreg", "remove", "rm"};
@@ -37,10 +37,10 @@ public class CommandDelegator implements CommandExecutor {
 
         //alias handling
         if (Arrays.asList(REGISTER_ALIASES).contains(subcommand)) {
-            (new CommandRegister()).onCommand(sender, command, args[0], Arrays.copyOfRange(args, 1, args.length));
+//            (new CommandRegister()).onCommand(sender, command, args[0], Arrays.copyOfRange(args, 1, args.length));
         }
         if (Arrays.asList(UNREGISTER_ALIASES).contains(subcommand)) {
-            (new CommandRegister()).onCommand(sender, command, args[0], Arrays.copyOfRange(args, 1, args.length));
+//            (new CommandRegister()).onCommand(sender, command, args[0], Arrays.copyOfRange(args, 1, args.length));
         }
 
     }
