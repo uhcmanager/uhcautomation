@@ -3,8 +3,14 @@ package usa.cactuspuppy.uhc_automation;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.annotation.command.Command;
+import org.bukkit.plugin.java.annotation.permission.Permission;
+import org.bukkit.plugin.java.annotation.plugin.Description;
+import org.bukkit.plugin.java.annotation.plugin.LogPrefix;
+import org.bukkit.plugin.java.annotation.plugin.Plugin;
+import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import org.bukkit.scheduler.BukkitRunnable;
-import usa.cactuspuppy.uhc_automation.Commands.CommandDelegator;
+import usa.cactuspuppy.uhc_automation.Commands.CommandHandler;
 import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
 import usa.cactuspuppy.uhc_automation.Tasks.DelayedPrep;
 import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
@@ -21,6 +27,13 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.logging.Level;
 
+
+@Plugin(name = "UHC_Automation", version = "1.7")
+@Description("Automates the process of running a UHC")
+@Author("CactusPuppy")
+@LogPrefix("UHC")
+@Command(name = "uhc", desc = "Access UHC Automation's functionality.", usage = "/<command> <subcommand> [args]")
+@Permission(name = "uhc.admin", desc = "Allows initiation, halting, and modification of the event")
 public class Main extends JavaPlugin {
     private static Main instance;
     @Getter private GameInstance gameInstance;
@@ -139,7 +152,7 @@ public class Main extends JavaPlugin {
     }
 
     private void registerCommands() {
-        getCommand("uhc").setExecutor(new CommandDelegator());
+        getCommand("uhc").setExecutor(new CommandHandler());
     }
 
     public static Main getInstance() {

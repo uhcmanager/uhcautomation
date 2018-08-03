@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
+import org.bukkit.block.CommandBlock;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
@@ -355,7 +356,7 @@ public class UHCUtils {
 
         List<Player> players = g.getLivePlayers().stream().map(Bukkit::getPlayer).collect(toList());
 
-        final int spreadSize = teams ? getTeams(players) : players.size();
+        final int spreadSize = teams ? getNumTeams(players) : players.size();
 
         final Location[] locations = getSpreadLocations(g.getWorld(), spreadSize, xRangeMin, zRangeMin, xRangeMax, zRangeMax);
         final int rangeSpread = range(g.getWorld(), g.getSpreadDistance(), xRangeMin, zRangeMin, xRangeMax, zRangeMax, locations);
@@ -525,7 +526,7 @@ public class UHCUtils {
     }
 
     @SuppressWarnings("deprecation")
-    private static int getTeams(List<Player> players) {
+    private static int getNumTeams(List<Player> players) {
         Set<Team> teams = Sets.newHashSet();
 
         for (Player player : players) {
@@ -616,6 +617,7 @@ public class UHCUtils {
     }
 
     public static void sendPlayerInfo(Main m, CommandSender commandSender) {
+        //TODO: Expand info given
         int timeElapsedSecs = getSecsElapsed(m);
         if (timeElapsedSecs == -1) {
             commandSender.sendMessage(ChatColor.RED + "Game has not started yet!");
@@ -650,6 +652,29 @@ public class UHCUtils {
             m.getLogger().severe("Error while reading from rules file " + rulesLocation);
             e.printStackTrace();
             return "";
+        }
+    }
+
+    public static void sendPluginInfo(CommandSender sender) {
+        sender.sendMessage(ChatColor.AQUA + "UHC Automation by CactusPuppy\n"
+                + "v" + Main.getInstance().getDescription().getVersion() + "\n"
+                + ChatColor.GREEN + "For command usage, type " + ChatColor.WHITE + ChatColor.ITALIC + "/uhc help");
+    }
+
+    public static void sendHelpMessage(CommandSender sender) {
+        if (sender instanceof CommandBlock && !Main.getInstance().getConfig().getBoolean("allow-command-blocks", false)) { return; }
+        if (!(sender instanceof Player)) {
+
+        }
+        if (sender.hasPermission("uhc.admin")) {
+            //TODO: Add click and hover events
+            sender.sendMessage(ChatColor.GREEN + "<" + ChatColor.WHITE + "--------------" + ChatColor.GOLD + "UHC_Automation Help" + ChatColor.WHITE + "--------------" + ChatColor.GREEN + ">\n"
+                    + ChatColor.GRAY + "Hover and click events coming soon!"
+                    + ChatColor.YELLOW + "Commands:\n"
+                    + ChatColor.GREEN + "Info: " + ChatColor.AQUA + "/uhc info [toggle/scoreboard/chat]\n"
+                    + ChatColor.GREEN + "Options: " + ChatColor.AQUA + "/uhc options <option> <value>\n"
+                    + ChatColor.GREEN + "Prep: " + ChatColor.AQUA + "/uhc prep\n"
+                    + ChatColor.GREEN + "Register/Add Player: " + ChatColor.AQUA + "/uhc ");
         }
     }
 

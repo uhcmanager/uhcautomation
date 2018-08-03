@@ -9,3 +9,7 @@ commands:
   uhc:
     description: Access UHC_Automation's functionality.
     usage: /<command> <subcommand> [args]
+permissions:
+  uhc.admin:
+    default: op
+    description: Allows holder to start, stop, and modify the UHC

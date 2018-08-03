@@ -181,7 +181,7 @@ public class GameInstance {
     private void prepPlayer(Player p) {
         p.getInventory().clear();
         p.getActivePotionEffects().forEach(e -> p.removePotionEffect(e.getType()));
-        UHCUtils.exeCmd("effect " + p.getName() + " minecraft:resistance 10 10 true");
+        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "effect " + p.getName() + " minecraft:resistance 10 10 true");
         p.setGameMode(GameMode.ADVENTURE);
     }
 
