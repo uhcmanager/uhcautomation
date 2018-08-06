@@ -12,11 +12,12 @@ import usa.cactuspuppy.uhc_automation.UHCUtils;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
+@org.bukkit.plugin.java.annotation.command.Command(name = "uhc", desc = "Accesses the functionality of the UHC plugin", usage = "/uhc <subcommand> [args]")
 public class CommandHandler implements CommandExecutor {
     private static final String[] SUBCOMMANDS = {"help", "info", "options", "prep", "register", "reset", "rules", "setworld", "start", "status", "unregister"};
     private static final String[] REGISTER_ALIASES = {"reg", "join", "add"};
     private static final String[] UNREGISTER_ALIASES = {"unreg", "remove", "rm"};
-    private static final String[] OPTIONS_ALIASES = {"optn", "option"};
+    private static final String[] OPTIONS_ALIASES = {"opt", "optn", "option"};
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
@@ -37,18 +38,27 @@ public class CommandHandler implements CommandExecutor {
 
         //alias handling
         if (Arrays.asList(REGISTER_ALIASES).contains(subcommand)) {
+            //TODO: register subcommand
 //            (new CommandRegister()).onCommand(sender, command, args[0], Arrays.copyOfRange(args, 1, args.length));
         }
         if (Arrays.asList(UNREGISTER_ALIASES).contains(subcommand)) {
+            //TODO: unregister subcommand
 //            (new CommandRegister()).onCommand(sender, command, args[0], Arrays.copyOfRange(args, 1, args.length));
         }
+        if (Arrays.asList(OPTIONS_ALIASES).contains(subcommand)) {
+            //TODO: options subcommand
+        }
 
+        if (subcommand.equalsIgnoreCase("help")) {
+            help(sender, command, subcommand, Arrays.copyOfRange(args, 1, args.length));
+        }
+
+        return true;
     }
 
     private void help(CommandSender sender, Command command, String alias, String[] args) {
         if (sender instanceof Player) {
             UHCUtils.sendHelpMessage(sender);
-            sender.sendMessage(ChatColor.GOLD + "Also be sure to check out the wiki!");
             UHCUtils.sendPlayerGithubWiki((Player) sender);
         } else {
             UHCUtils.sendHelpMessage(sender);

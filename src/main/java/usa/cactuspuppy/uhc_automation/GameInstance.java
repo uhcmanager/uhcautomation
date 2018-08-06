@@ -434,7 +434,7 @@ public class GameInstance {
                 s.sendMessage("  " + Bukkit.getPlayer(u).getName());
             }
         }
-        s.sendMessage("Unregistered Players (Blacklisted):");
+        s.sendMessage("Dead/Excluded Players (UUIDs):");
         if (blacklistPlayers.isEmpty()) {
             s.sendMessage("  " + "NONE");
         } else {

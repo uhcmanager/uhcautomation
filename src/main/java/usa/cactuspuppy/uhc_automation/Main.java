@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.command.Command;
 import org.bukkit.plugin.java.annotation.permission.Permission;
+import org.bukkit.plugin.java.annotation.plugin.ApiVersion;
 import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.LogPrefix;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
@@ -32,8 +33,9 @@ import java.util.logging.Level;
 @Description("Automates the process of running a UHC")
 @Author("CactusPuppy")
 @LogPrefix("UHC")
-@Command(name = "uhc", desc = "Access UHC Automation's functionality.", usage = "/<command> <subcommand> [args]")
-@Permission(name = "uhc.admin", desc = "Allows initiation, halting, and modification of the event")
+@Command(name = "uhc", desc = "Accesses the functionality of the UHC plugin", usage = "/uhc <subcommand> [args]")
+@Permission(name = "uhc.admin", desc = "Allows access to operation of the UHC")
+@ApiVersion(ApiVersion.Target.v1_13)
 public class Main extends JavaPlugin {
     private static Main instance;
     @Getter private GameInstance gameInstance;
