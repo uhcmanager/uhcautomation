@@ -469,7 +469,7 @@ public class GameInstance {
     }
 
     private int calcBorderShrinkTime() {
-        double slowFactor = 2.0;
+        double slowFactor = 1.5;
         return (int) ((initSize - finalSize) * slowFactor);
     }
 

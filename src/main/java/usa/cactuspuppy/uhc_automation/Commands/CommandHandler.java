@@ -1,5 +1,10 @@
 package usa.cactuspuppy.uhc_automation.Commands;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.command.Command;
@@ -18,6 +23,43 @@ public class CommandHandler implements CommandExecutor {
     private static final String[] REGISTER_ALIASES = {"reg", "join", "add"};
     private static final String[] UNREGISTER_ALIASES = {"unreg", "remove", "rm"};
     private static final String[] OPTIONS_ALIASES = {"opt", "optn", "option"};
+    private static ComponentBuilder message;
+
+    public CommandHandler() {
+        rebuildHelpMsg();
+    }
+
+    public void rebuildHelpMsg() {
+        message = new ComponentBuilder("<").color(net.md_5.bungee.api.ChatColor.GOLD).append("--------------").color(net.md_5.bungee.api.ChatColor.WHITE).append("UHC_Automation Help").color(net.md_5.bungee.api.ChatColor.GOLD).append("--------------").color(net.md_5.bungee.api.ChatColor.WHITE).append(">\n").color(net.md_5.bungee.api.ChatColor.GOLD);
+        BaseComponent[] infoHeader = new ComponentBuilder("Hovering over a command provides more info, clicking puts the command into your chat.\n<option> denotes a required value, [option] is an optional value.\n").color(net.md_5.bungee.api.ChatColor.GRAY).create();
+        BaseComponent[] listHeader = new ComponentBuilder("Commands:\n").color(net.md_5.bungee.api.ChatColor.YELLOW).create();
+
+        BaseComponent helpInteract = new TextComponent("/uhc help\n");
+        helpInteract.setColor(net.md_5.bungee.api.ChatColor.AQUA);
+        helpInteract.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Shows this help page").color(net.md_5.bungee.api.ChatColor.GREEN).create()));
+        helpInteract.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/uhc help"));
+        BaseComponent[] help = new ComponentBuilder("- ").color(net.md_5.bungee.api.ChatColor.RED).append("Info: ").color(net.md_5.bungee.api.ChatColor.GREEN).append(helpInteract).create();
+
+        BaseComponent infoInteract = new TextComponent("/uhc info [toggle:chat:scoreboard]\n");
+        infoInteract.setColor(net.md_5.bungee.api.ChatColor.AQUA);
+        infoInteract.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Displays information to the player or modifies how that information is shown").color(net.md_5.bungee.api.ChatColor.GREEN).create()));
+        infoInteract.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/uhc info "));
+        BaseComponent[] info = new ComponentBuilder("- ").color(net.md_5.bungee.api.ChatColor.RED).append("Info: ").color(net.md_5.bungee.api.ChatColor.GREEN).append(infoInteract).create();
+
+        BaseComponent optionInteract = new TextComponent("/uhc options <option> <value>\n");
+        optionInteract.setColor(net.md_5.bungee.api.ChatColor.AQUA);
+        optionInteract.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Modifies game options such as world size, whether natural regeneration is on or not, what the game name is, and so on. Full list can be found via tab complete (just click me and press tab)").color(net.md_5.bungee.api.ChatColor.GREEN).create()));
+        optionInteract.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/uhc options "));
+        BaseComponent[] option = new ComponentBuilder("- ").color(net.md_5.bungee.api.ChatColor.RED).append("Options: ").color(net.md_5.bungee.api.ChatColor.GREEN).append(optionInteract).create();
+
+        BaseComponent prepInteract = new TextComponent("/uhc prep\n");
+        prepInteract.setColor(net.md_5.bungee.api.ChatColor.AQUA);
+        prepInteract.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Re-prepares the game world for the game.\n\n").color(net.md_5.bungee.api.ChatColor.GREEN).append("nogen").color(net.md_5.bungee.api.ChatColor.AQUA).append(" - ").color(net.md_5.bungee.api.ChatColor.GRAY).append("No attempt any world generation\n").color(net.md_5.bungee.api.ChatColor.WHITE).append("gen").color(net.md_5.bungee.api.ChatColor.GREEN).append(" - ").color(net.md_5.bungee.api.ChatColor.GRAY).append("Generates any chunks within the initial play area that haven not yet been generated.\n").color(net.md_5.bungee.api.ChatColor.WHITE).create()));
+        prepInteract.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/uhc prep [nogen:gen]"));
+        BaseComponent[] prep = new ComponentBuilder("- ").color(net.md_5.bungee.api.ChatColor.RED).append("Prep: ").color(net.md_5.bungee.api.ChatColor.GREEN).append(prepInteract).create();
+
+        message.append(infoHeader).append(listHeader).append(help).append(info).append(option).append(prep);
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
@@ -39,24 +81,40 @@ public class CommandHandler implements CommandExecutor {
         //alias handling
         if (Arrays.asList(REGISTER_ALIASES).contains(subcommand)) {
             //TODO: register subcommand
-//            (new CommandRegister()).onCommand(sender, command, args[0], Arrays.copyOfRange(args, 1, args.length));
         }
         if (Arrays.asList(UNREGISTER_ALIASES).contains(subcommand)) {
             //TODO: unregister subcommand
-//            (new CommandRegister()).onCommand(sender, command, args[0], Arrays.copyOfRange(args, 1, args.length));
         }
         if (Arrays.asList(OPTIONS_ALIASES).contains(subcommand)) {
             //TODO: options subcommand
         }
 
         if (subcommand.equalsIgnoreCase("help")) {
-            help(sender));
+            help(sender);
         }
 
         return true;
     }
 
     private void help(CommandSender sender) {
-        UHCUtils.sendHelpMessage(sender);
+        if (sender instanceof CommandBlock && !Main.getInstance().getConfig().getBoolean("allow-command-blocks", false)) { return; }
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(ChatColor.GREEN + "<" + ChatColor.WHITE + "--------------" + ChatColor.GOLD + "UHC_Automation Help" + ChatColor.WHITE + "--------------" + ChatColor.GREEN + ">\n"
+                    + ChatColor.GRAY + "<option> is a required option, [option] is an optional option\n"
+                    + ChatColor.YELLOW + "Commands:\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Info: " + ChatColor.AQUA + "/uhc info [toggle:chat:scoreboard]\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Options: " + ChatColor.AQUA + "/uhc options <option> <value>\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Prep: " + ChatColor.AQUA + "/uhc prep\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Player Registration: " + ChatColor.AQUA + "/uhc register <player>\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Reset/Stop Game: " + ChatColor.AQUA + "/uhc reset\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Rules: " + ChatColor.AQUA + "/uhc rules\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Set Game World: " + ChatColor.AQUA + "/uhc setworld [world name]\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Start Game: " + ChatColor.AQUA + "/uhc start [secs to countdown]\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Status: " + ChatColor.AQUA + "/uhc status");
+            return;
+        }
+        if (sender.hasPermission("uhc.admin")) {
+            sender.spigot().sendMessage(message.create());
+        }
     }
 }

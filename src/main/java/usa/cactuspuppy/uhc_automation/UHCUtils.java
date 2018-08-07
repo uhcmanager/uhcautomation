@@ -3,10 +3,6 @@ package usa.cactuspuppy.uhc_automation;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -16,11 +12,9 @@ import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
-import org.bukkit.block.CommandBlock;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
-import usa.cactuspuppy.uhc_automation.Commands.CommandRules;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -632,13 +626,17 @@ public class UHCUtils {
     }
 
     public static String getRules(Main m) {
+        String numDelimiter = ") ";
+        String rulesTitlePrefix = "\n" + ChatColor.GOLD.toString() + ChatColor.BOLD.toString();
+        String ruleNumPrefix = ChatColor.GREEN.toString();
+
         String rulesLocation = m.getDataFolder() + "/rules.txt";
         File rulesFile = new File(rulesLocation);
         if (!rulesFile.isFile()) {
             m.getLogger().info("Could not find rules file at: " + rulesLocation + ". Generating rules.txt for you now.");
             Main.getInstance().createRules();
         }
-        String rulesTitle = CommandRules.rulesTitlePrefix + "Rules:";
+        String rulesTitle = rulesTitlePrefix + "Rules:";
         StringJoiner rules = new StringJoiner("\n");
         rules.add(rulesTitle);
         try {
@@ -649,7 +647,7 @@ public class UHCUtils {
 
             while ((line = rulesBuffR.readLine()) != null) {
                 ruleNum++;
-                rules.add(CommandRules.ruleNumPrefix + ruleNum + CommandRules.numDelimiter + ChatColor.RESET + line);
+                rules.add(ruleNumPrefix + ruleNum + numDelimiter + ChatColor.RESET + line);
             }
             return rules.toString();
         } catch (IOException e) {
@@ -661,65 +659,7 @@ public class UHCUtils {
 
     public static void sendPluginInfo(CommandSender sender) {
         sender.sendMessage(ChatColor.AQUA + "UHC Automation by CactusPuppy\n"
-                + "v" + Main.getInstance().getDescription().getVersion() + "\n"
+                + "Version " + Main.getInstance().getDescription().getVersion() + "\n"
                 + ChatColor.GREEN + "For command usage, type " + ChatColor.WHITE + ChatColor.ITALIC + "/uhc help");
-    }
-
-    public static void sendHelpMessage(CommandSender sender) {
-        if (sender instanceof CommandBlock && !Main.getInstance().getConfig().getBoolean("allow-command-blocks", false)) { return; }
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.GREEN + "<" + ChatColor.WHITE + "--------------" + ChatColor.GOLD + "UHC_Automation Help" + ChatColor.WHITE + "--------------" + ChatColor.GREEN + ">\n"
-                    + ChatColor.GRAY + "<option> is a required option, [option] is an optional option\n"
-                    + ChatColor.YELLOW + "Commands:\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Info: " + ChatColor.AQUA + "/uhc info [toggle:chat:scoreboard]\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Options: " + ChatColor.AQUA + "/uhc options <option> <value>\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Prep: " + ChatColor.AQUA + "/uhc prep\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Player Registration: " + ChatColor.AQUA + "/uhc register <player>\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Reset/Stop Game: " + ChatColor.AQUA + "/uhc reset\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Rules: " + ChatColor.AQUA + "/uhc rules\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Set Game World: " + ChatColor.AQUA + "/uhc setworld [world name]\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Start Game: " + ChatColor.AQUA + "/uhc start [secs to countdown]\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Status: " + ChatColor.AQUA + "/uhc status");
-            return;
-        }
-        if (sender.hasPermission("uhc.admin")) {
-            //TODO: Add click and hover events
-            ComponentBuilder message = new ComponentBuilder("<").color(net.md_5.bungee.api.ChatColor.GOLD).append("--------------").color(net.md_5.bungee.api.ChatColor.WHITE).append("UHC_Automation Help").color(net.md_5.bungee.api.ChatColor.GOLD).append("--------------").color(net.md_5.bungee.api.ChatColor.WHITE).append(">\n").color(net.md_5.bungee.api.ChatColor.GOLD);
-            BaseComponent[] infoHeader = new ComponentBuilder("Hovering over a command provides more info, clicking puts the command into your chat.\n<option> denotes a required value, [option] is an optional value.\n").color(net.md_5.bungee.api.ChatColor.GRAY).create();
-            BaseComponent[] listHeader = new ComponentBuilder("Commands:\n").color(net.md_5.bungee.api.ChatColor.YELLOW).create();
-
-            BaseComponent infoInteract = new TextComponent("/uhc info [toggle:chat:scoreboard]");
-            infoInteract.setColor(net.md_5.bungee.api.ChatColor.AQUA);
-            infoInteract.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Displays information to the player or modifies how that information is shown").color(net.md_5.bungee.api.ChatColor.GREEN).create()));
-            infoInteract.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/uhc info "));
-            BaseComponent[] info = new ComponentBuilder("- ").color(net.md_5.bungee.api.ChatColor.RED).append("Info: ").color(net.md_5.bungee.api.ChatColor.GREEN).append(infoInteract).create();
-
-            message.append(infoHeader).append(listHeader).append(info);
-
-            /*sender.sendMessage(ChatColor.GREEN + "<" + ChatColor.WHITE + "--------------" + ChatColor.GOLD + "UHC_Automation Help" + ChatColor.WHITE + "--------------" + ChatColor.GREEN + ">\n"
-                    + ChatColor.GRAY + "Hover and click events coming soon! <option> is a required option, [option] is an optional option\n"
-                    + ChatColor.YELLOW + "Commands:\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Info: " + info + "\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Options: " + ChatColor.AQUA + "/uhc options <option> <value>\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Prep: " + ChatColor.AQUA + "/uhc prep\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Player Registration: " + ChatColor.AQUA + "/uhc register <player>\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Reset/Stop Game: " + ChatColor.AQUA + "/uhc reset\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Rules: " + ChatColor.AQUA + "/uhc rules\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Set Game World: " + ChatColor.AQUA + "/uhc setworld [world name]\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Start Game: " + ChatColor.AQUA + "/uhc start [secs to countdown]\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Status: " + ChatColor.AQUA + "/uhc status");*/
-        }
-    }
-
-    public static void sendPlayerGithubWiki(Player player) {
-        TextComponent message = new TextComponent("Also be sure to check the wiki for full instructions! ");
-        message.setColor(net.md_5.bungee.api.ChatColor.GOLD);
-        message.setBold(true);
-        TextComponent message2 = new TextComponent("Wiki Link");
-        message2.setColor(net.md_5.bungee.api.ChatColor.WHITE);
-        message2.setUnderlined(true);
-        message2.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/cactuspuppy/uhcautomation/wiki"));
-        message.addExtra(message2);
-        player.spigot().sendMessage(message);
     }
 }
