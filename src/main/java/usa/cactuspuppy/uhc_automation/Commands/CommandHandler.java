@@ -50,19 +50,13 @@ public class CommandHandler implements CommandExecutor {
         }
 
         if (subcommand.equalsIgnoreCase("help")) {
-            help(sender, command, subcommand, Arrays.copyOfRange(args, 1, args.length));
+            help(sender));
         }
 
         return true;
     }
 
-    private void help(CommandSender sender, Command command, String alias, String[] args) {
-        if (sender instanceof Player) {
-            UHCUtils.sendHelpMessage(sender);
-            UHCUtils.sendPlayerGithubWiki((Player) sender);
-        } else {
-            UHCUtils.sendHelpMessage(sender);
-            sender.sendMessage("Go to https://github.com/CactusPuppy/uhcautomation/wiki for help.");
-        }
+    private void help(CommandSender sender) {
+        UHCUtils.sendHelpMessage(sender);
     }
 }
