@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.io.FileUtils;
@@ -667,20 +668,36 @@ public class UHCUtils {
     public static void sendHelpMessage(CommandSender sender) {
         if (sender instanceof CommandBlock && !Main.getInstance().getConfig().getBoolean("allow-command-blocks", false)) { return; }
         if (!(sender instanceof Player)) {
-
+            sender.sendMessage(ChatColor.GREEN + "<" + ChatColor.WHITE + "--------------" + ChatColor.GOLD + "UHC_Automation Help" + ChatColor.WHITE + "--------------" + ChatColor.GREEN + ">\n"
+                    + ChatColor.GRAY + "<option> is a required option, [option] is an optional option\n"
+                    + ChatColor.YELLOW + "Commands:\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Info: " + ChatColor.AQUA + "/uhc info [toggle:chat:scoreboard]\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Options: " + ChatColor.AQUA + "/uhc options <option> <value>\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Prep: " + ChatColor.AQUA + "/uhc prep\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Player Registration: " + ChatColor.AQUA + "/uhc register <player>\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Reset/Stop Game: " + ChatColor.AQUA + "/uhc reset\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Rules: " + ChatColor.AQUA + "/uhc rules\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Set Game World: " + ChatColor.AQUA + "/uhc setworld [world name]\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Start Game: " + ChatColor.AQUA + "/uhc start [secs to countdown]\n"
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Status: " + ChatColor.AQUA + "/uhc status");
+            return;
         }
         if (sender.hasPermission("uhc.admin")) {
             //TODO: Add click and hover events
-            TextComponent info = new TextComponent("/uhc info [toggle/scoreboard/chat]");
-            info.setColor(net.md_5.bungee.api.ChatColor.AQUA);
-            TextComponent infoHover1 = new TextComponent("Shows/gives information about the current game, if active.");
-            infoHover1.setColor(net.md_5.bungee.api.ChatColor.GREEN);
-            BaseComponent[] infoHover = {infoHover1};
-            info.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, infoHover));
-            info.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/uhc info "));
+            ComponentBuilder message = new ComponentBuilder("<").color(net.md_5.bungee.api.ChatColor.GOLD).append("--------------").color(net.md_5.bungee.api.ChatColor.WHITE).append("UHC_Automation Help").color(net.md_5.bungee.api.ChatColor.GOLD).append("--------------").color(net.md_5.bungee.api.ChatColor.WHITE).append(">\n").color(net.md_5.bungee.api.ChatColor.GOLD);
+            BaseComponent[] infoHeader = new ComponentBuilder("Hovering over a command provides more info, clicking puts the command into your chat.\n<option> denotes a required value, [option] is an optional value.\n").color(net.md_5.bungee.api.ChatColor.GRAY).create();
+            BaseComponent[] listHeader = new ComponentBuilder("Commands:\n").color(net.md_5.bungee.api.ChatColor.YELLOW).create();
 
-            sender.sendMessage(ChatColor.GREEN + "<" + ChatColor.WHITE + "--------------" + ChatColor.GOLD + "UHC_Automation Help" + ChatColor.WHITE + "--------------" + ChatColor.GREEN + ">\n"
-                    + ChatColor.GRAY + "Hover and click events coming soon! <option> is a required option, [option] is an optional option"
+            BaseComponent infoInteract = new TextComponent("/uhc info [toggle:chat:scoreboard]");
+            infoInteract.setColor(net.md_5.bungee.api.ChatColor.AQUA);
+            infoInteract.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Displays information to the player or modifies how that information is shown").color(net.md_5.bungee.api.ChatColor.GREEN).create()));
+            infoInteract.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/uhc info "));
+            BaseComponent[] info = new ComponentBuilder("- ").color(net.md_5.bungee.api.ChatColor.RED).append("Info: ").color(net.md_5.bungee.api.ChatColor.GREEN).append(infoInteract).create();
+
+            message.append(infoHeader).append(listHeader).append(info);
+
+            /*sender.sendMessage(ChatColor.GREEN + "<" + ChatColor.WHITE + "--------------" + ChatColor.GOLD + "UHC_Automation Help" + ChatColor.WHITE + "--------------" + ChatColor.GREEN + ">\n"
+                    + ChatColor.GRAY + "Hover and click events coming soon! <option> is a required option, [option] is an optional option\n"
                     + ChatColor.YELLOW + "Commands:\n"
                     + ChatColor.RED + "- " + ChatColor.GREEN + "Info: " + info + "\n"
                     + ChatColor.RED + "- " + ChatColor.GREEN + "Options: " + ChatColor.AQUA + "/uhc options <option> <value>\n"
@@ -690,7 +707,7 @@ public class UHCUtils {
                     + ChatColor.RED + "- " + ChatColor.GREEN + "Rules: " + ChatColor.AQUA + "/uhc rules\n"
                     + ChatColor.RED + "- " + ChatColor.GREEN + "Set Game World: " + ChatColor.AQUA + "/uhc setworld [world name]\n"
                     + ChatColor.RED + "- " + ChatColor.GREEN + "Start Game: " + ChatColor.AQUA + "/uhc start [secs to countdown]\n"
-                    + ChatColor.RED + "- " + ChatColor.GREEN + "Status: " + ChatColor.AQUA + "/uhc status");
+                    + ChatColor.RED + "- " + ChatColor.GREEN + "Status: " + ChatColor.AQUA + "/uhc status");*/
         }
     }
 

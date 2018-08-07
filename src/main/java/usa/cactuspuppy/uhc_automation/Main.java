@@ -2,8 +2,10 @@ package usa.cactuspuppy.uhc_automation;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.command.Command;
+import org.bukkit.plugin.java.annotation.permission.ChildPermission;
 import org.bukkit.plugin.java.annotation.permission.Permission;
 import org.bukkit.plugin.java.annotation.plugin.ApiVersion;
 import org.bukkit.plugin.java.annotation.plugin.Description;
@@ -34,7 +36,8 @@ import java.util.logging.Level;
 @Author("CactusPuppy")
 @LogPrefix("UHC")
 @Command(name = "uhc", desc = "Accesses the functionality of the UHC plugin", usage = "/uhc <subcommand> [args]")
-@Permission(name = "uhc.admin", desc = "Allows access to operation of the UHC")
+@Permission(name = "uhc.admin", desc = "Allows operator access to the UHC plugin", defaultValue = PermissionDefault.OP)
+@Permission(name = "uhc.*", desc = "Wildcard permission", defaultValue = PermissionDefault.OP, children = {@ChildPermission(name = "uhc.admin")})
 @ApiVersion(ApiVersion.Target.v1_13)
 public class Main extends JavaPlugin {
     private static Main instance;
