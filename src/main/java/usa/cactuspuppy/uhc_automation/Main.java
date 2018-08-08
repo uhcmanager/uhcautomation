@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import org.bukkit.scheduler.BukkitRunnable;
 import usa.cactuspuppy.uhc_automation.Commands.CommandHandler;
+import usa.cactuspuppy.uhc_automation.Commands.TabCompleteHelper;
 import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
 import usa.cactuspuppy.uhc_automation.Tasks.DelayedPrep;
 import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
@@ -158,6 +159,7 @@ public class Main extends JavaPlugin {
 
     private void registerCommands() {
         getCommand("uhc").setExecutor(new CommandHandler());
+        getCommand("uhc").setTabCompleter(new TabCompleteHelper());
     }
 
     public static Main getInstance() {
