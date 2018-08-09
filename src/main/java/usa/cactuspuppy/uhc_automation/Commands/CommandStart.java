@@ -14,7 +14,7 @@ public class CommandStart implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
         if (!Main.getInstance().getGameInstance().validate(sender)) {
-            UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), ChatColor.RED + "Could not start UHC, settings invalid.");
+            UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), ChatColor.RED + "Game aborted.");
             return true;
         } else if (Main.getInstance().getGameInstance().isActive()) {
             sender.sendMessage(ChatColor.RED + "A game is already in progress! Use " + ChatColor.RESET + "/uhcreset " + ChatColor.RED + "to stop the game first!");

@@ -16,7 +16,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import usa.cactuspuppy.uhc_automation.Commands.CommandHandler;
 import usa.cactuspuppy.uhc_automation.Commands.TabCompleteHelper;
 import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
-import usa.cactuspuppy.uhc_automation.Tasks.DelayedPrep;
 import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
 import usa.cactuspuppy.uhc_automation.Tasks.SQLRepeating;
 
@@ -68,7 +67,6 @@ public class Main extends JavaPlugin {
         }
         registerCommands();
         (new RestartTasks()).schedule();
-        (new DelayedPrep()).schedule();
         getLogger().info("UHC Automation loaded in " + ((System.currentTimeMillis() - start)) + " ms");
     }
 

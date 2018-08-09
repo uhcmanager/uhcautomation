@@ -2,20 +2,17 @@ world: GameWorld
 event-name: Event Name
 # Where to store game data
 data-location: data/<worldname>
-game-start-tips: true
+game-start-tips: false
 tips: false
 allow-command-blocks: false
 
-### World Detection Settings ###
-# Will also consider players in the game world's Nether and End by looking at prefixes. This is best explained by an example.
-#
+# The plugin will also consider players in the game world's Nether and End by looking at suffixes if this is true. This is best explained by an example.
 # EXAMPLE:
 # Game World: world001
 # Plugin will also include players in world001_nether and world001_the_end
 extended-world-detection: true
-# Custom world detection
 
-### Base Game Details ###
+### Game Options ###
 game:
   init-size: 4001
   final-size: 101
