@@ -36,23 +36,27 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
         BaseComponent FILLIN_Interact = new TextComponent("/uhc SUBCOMMAND\n");
         FILLIN_Interact.setColor(net.md_5.bungee.api.ChatColor.AQUA);
         FILLIN_Interact.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("DESCRIPTION OF SUBCOMMAND\n").color(net.md_5.bungee.api.ChatColor.WHITE)
-                .append("Requires uhc.admin: ").color(net.md_5.bungee.api.ChatColor.YELLOW).append("YES/NO").color(net.md_5.bungee.api.ChatColor.CHANGEME).bold(true)
+                .append("Requires uhc.admin: ").color(net.md_5.bungee.api.ChatColor.GOLD).append("YES/NO").color(net.md_5.bungee.api.ChatColor.CHANGEME).bold(true)
                 .append("\nConsole: ").color(net.md_5.bungee.api.ChatColor.GOLD).bold(false).append("YES/NO").color(net.md_5.bungee.api.ChatColor.CHANGEME).bold(true).create()));
         FILLIN_Interact.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/uhc SUBCOMMAND\n"));
         BaseComponent[] FILLIN = new ComponentBuilder("- ").color(net.md_5.bungee.api.ChatColor.RED).append(FILLIN_Interact).append(" DESCRIPTION").color(net.md_5.bungee.api.ChatColor.GREEN).create();
 
         BaseComponent helpInteract = new TextComponent("/uhc help\n");
         helpInteract.setColor(net.md_5.bungee.api.ChatColor.AQUA);
-        helpInteract.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Shows this help page\n").color(net.md_5.bungee.api.ChatColor.WHITE)
+        helpInteract.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Displays this help page to the user who requested it.\nOnly displays command requester can access.\n").color(net.md_5.bungee.api.ChatColor.WHITE)
                 .append("Requires uhc.admin: ").color(net.md_5.bungee.api.ChatColor.YELLOW).append("NO").color(net.md_5.bungee.api.ChatColor.RED).bold(true)
                 .append("\nConsole: ").color(net.md_5.bungee.api.ChatColor.GOLD).bold(false).append("YES").color(net.md_5.bungee.api.ChatColor.GREEN).bold(true).create()));
         helpInteract.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/uhc help"));
         BaseComponent[] help = new ComponentBuilder("- ").color(net.md_5.bungee.api.ChatColor.RED).append(helpInteract).append(" Shows this help page").color(net.md_5.bungee.api.ChatColor.GREEN).create();
 
-        BaseComponent infoInteract = new TextComponent("/uhc info [toggle:chat:scoreboard]\n");
+        BaseComponent infoInteract = new TextComponent("/uhc info [Display Arguments - toggle:chat:scoreboard]\n");
         infoInteract.setColor(net.md_5.bungee.api.ChatColor.AQUA);
-        infoInteract.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Displays game information to the player when game is active.\n\n").color(net.md_5.bungee.api.ChatColor.WHITE)
-                .append("toggle ").color().append("Requires uhc.admin: ").color(net.md_5.bungee.api.ChatColor.YELLOW).append("NO").color(net.md_5.bungee.api.ChatColor.RED).bold(true).append("\nConsole: ").color(net.md_5.bungee.api.ChatColor.GOLD).bold(false).append("YES (optional arguments not supported)").color(net.md_5.bungee.api.ChatColor.GREEN).bold(true).create()));
+        infoInteract.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Displays game information to the player, or changes\nhow that information is shown, if given a second argument.\n").color(net.md_5.bungee.api.ChatColor.WHITE)
+                .append("Will not display information if the game is not active.\n").color(net.md_5.bungee.api.ChatColor.RED)
+                .append("Arguments:\n").color(net.md_5.bungee.api.ChatColor.BLUE).underlined(true).bold(true)
+                .append("toggle ").color(net.md_5.bungee.api.ChatColor.GOLD).underlined(false).bold(true).append("- ").color(net.md_5.bungee.api.ChatColor.DARK_GRAY).bold(false).append("Switches to other display mode")
+                .append("Requires uhc.admin: ").color(net.md_5.bungee.api.ChatColor.GOLD).append("NO").color(net.md_5.bungee.api.ChatColor.RED).bold(true)
+                .append("\nConsole: ").color(net.md_5.bungee.api.ChatColor.GOLD).bold(false).append("YES (display arguments not supported)").color(net.md_5.bungee.api.ChatColor.GREEN).bold(true).create()));
         BaseComponent[] info = new ComponentBuilder("- ").color(net.md_5.bungee.api.ChatColor.RED).append(infoInteract).append(" DESCRIPTION").color(net.md_5.bungee.api.ChatColor.GREEN).create();
 
 
