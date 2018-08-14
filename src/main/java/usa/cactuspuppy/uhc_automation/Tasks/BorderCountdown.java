@@ -25,9 +25,8 @@ public class BorderCountdown implements Runnable {
         long timeDiff = l * 1000;
         end = s + timeDiff;
         warningTimes = new LinkedList<>();
-        int[] times = {1,2,3,4,5,6,7,8,9,10,15,20,30,45,60,120,180,300,600,900,1200,1800,3600};
-        for (int i = 0; i < times.length; i++) {
-            long add = times[i];
+        long[] times = {1,2,3,4,5,6,7,8,9,10,15,20,30,45,60,120,180,300,600,900,1200,1800,3600};
+        for (long add : times) {
             if (add > l) {
                 break;
             }

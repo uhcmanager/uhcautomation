@@ -311,6 +311,7 @@ public class GameInstance {
             } else {
                 logStatus(Bukkit.getConsoleSender());
                 main.getLogger().severe("Win condition called early for game instance running on world " + world.getName() + ". Game status dumped to log.");
+                return;
             }
         }
         stop();
@@ -434,7 +435,7 @@ public class GameInstance {
                 s.sendMessage("  " + Bukkit.getPlayer(u).getName());
             }
         }
-        s.sendMessage("Dead/Excluded Players (UUIDs):");
+        s.sendMessage("Dead/Blacklisted Players (UUIDs):");
         if (blacklistPlayers.isEmpty()) {
             s.sendMessage("  " + "NONE");
         } else {
@@ -482,11 +483,20 @@ public class GameInstance {
     }
 
     public void registerPlayer(Player p) {
+        registerPlayerSilent(p);
+        if (p.getGameMode() == GameMode.SURVIVAL) {
+            UHCUtils.announcePlayerJoin(p);
+        } else {
+            UHCUtils.announcePlayerSpectate(p);
+        }
+    }
+
+    public void registerPlayerSilent(Player p) {
         regPlayers.add(p.getUniqueId());
         activePlayers.add(p.getUniqueId());
         if (p.getGameMode() == GameMode.SURVIVAL) {
             livePlayers.add(p.getUniqueId());
-           if (teamMode && active) {
+            if (teamMode && active) {
                 teamsRemaining = getNumTeams();
             }
         }

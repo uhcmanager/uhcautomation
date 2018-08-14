@@ -662,4 +662,12 @@ public class UHCUtils {
                 + "Version " + Main.getInstance().getDescription().getVersion() + "\n"
                 + ChatColor.GREEN + "For command usage, type " + ChatColor.WHITE + ChatColor.ITALIC + "/uhc help");
     }
+
+    public static void announcePlayerJoin(Player p) {
+        UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), "[" + ChatColor.GOLD + ChatColor.BOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.BOLD + p.getDisplayName() + ChatColor.GREEN +  ChatColor.ITALIC + " has joined the game!");
+    }
+
+    public static void announcePlayerSpectate(Player p) {
+        UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), "[" + ChatColor.GOLD + ChatColor.BOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.BOLD + p.getDisplayName() + ChatColor.YELLOW +  ChatColor.ITALIC + " is now spectating.");
+    }
 }

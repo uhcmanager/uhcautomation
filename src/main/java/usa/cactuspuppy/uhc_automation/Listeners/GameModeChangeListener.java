@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 @NoArgsConstructor
 public class GameModeChangeListener implements Listener {
@@ -17,8 +18,10 @@ public class GameModeChangeListener implements Listener {
         if (Main.getInstance().getGameInstance().getActivePlayers().contains(p.getUniqueId())) {
             if (Main.getInstance().getGameInstance().getLivePlayers().contains(p.getUniqueId()) && e.getNewGameMode() != GameMode.SURVIVAL) {
                 Main.getInstance().getGameInstance().removePlayerFromLive(p);
+                UHCUtils.announcePlayerSpectate(p);
             } else if (!Main.getInstance().getGameInstance().getLivePlayers().contains(p.getUniqueId()) && e.getNewGameMode() == GameMode.SURVIVAL) {
                 Main.getInstance().getGameInstance().addPlayerToLive(p);
+                UHCUtils.announcePlayerJoin(p);
             }
         }
     }

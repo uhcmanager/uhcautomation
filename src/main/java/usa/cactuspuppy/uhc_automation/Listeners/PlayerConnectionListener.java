@@ -21,16 +21,16 @@ public class PlayerConnectionListener implements Listener {
         if (UHCUtils.worldEqualsExt(p.getWorld(), Main.getInstance().getGameInstance().getWorld())) {
             Main.getInstance().getGameInstance().bindPlayertoScoreboard(p);
             if (Main.getInstance().getGameInstance().getBlacklistPlayers().contains(p.getUniqueId())) {
-                p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "You have joined the game as a spectator. Ask an administrator if you think you should be in the game.");
+                p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "You have joined the game as a spectator. Contact an administrator if you think you should be in the game.");
                 p.setGameMode(GameMode.SPECTATOR);
                 Main.getInstance().getGameInstance().registerPlayer(p);
                 return;
             }
             if (Main.getInstance().getGameInstance().isActive()) {
                 if (Main.getInstance().getGameInstance().getRegPlayers().contains(p.getUniqueId())) {
-                    Main.getInstance().getGameInstance().registerPlayer(p);
+                    Main.getInstance().getGameInstance().registerPlayerSilent(p);
                 } else {
-                    p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "You have joined the game as a spectator. Ask an administrator if you think you should be in the game.");
+                    p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "You have joined the game as a spectator. Contact an administrator if you think you should be in the game.");
                     p.setGameMode(GameMode.SPECTATOR);
                     Main.getInstance().getGameInstance().registerPlayer(p);
                 }
