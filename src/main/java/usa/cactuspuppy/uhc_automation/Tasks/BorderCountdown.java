@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class BorderCountdown implements Runnable {
@@ -25,7 +26,12 @@ public class BorderCountdown implements Runnable {
         long timeDiff = l * 1000;
         end = s + timeDiff;
         warningTimes = new LinkedList<>();
-        long[] times = {1,2,3,4,5,6,7,8,9,10,15,20,30,45,60,120,180,300,600,900,1200,1800,3600};
+        ArrayList<Long> times = new ArrayList<>();
+        if (Main.getInstance().getConfig().getString("warning-times.border") != null) {
+            times =
+        } else {
+
+        }
         for (long add : times) {
             if (add > l) {
                 break;

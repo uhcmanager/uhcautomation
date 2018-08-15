@@ -1,7 +1,6 @@
 package usa.cactuspuppy.uhc_automation;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.command.Command;
@@ -15,15 +14,10 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import org.bukkit.scheduler.BukkitRunnable;
 import usa.cactuspuppy.uhc_automation.Commands.CommandHandler;
 import usa.cactuspuppy.uhc_automation.Commands.TabCompleteHelper;
-import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
 import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
 import usa.cactuspuppy.uhc_automation.Tasks.SQLRepeating;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.Reader;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -43,7 +37,6 @@ public class Main extends JavaPlugin {
     private static Main instance;
     @Getter private GameInstance gameInstance;
     private ConnectionInfo connectionInfo;
-    @Getter @Setter private GameModeChangeListener gmcl;
 
     @Override
     public void onEnable() {
@@ -85,9 +78,10 @@ public class Main extends JavaPlugin {
     private void createConfig() {
         try {
             if (!getDataFolder().exists()) {
+                getLogger().info("Data folder not found, creating...");
                 boolean created = getDataFolder().mkdirs();
                 if (!created) {
-                    getLogger().log(Level.SEVERE, "Could not create config folder!");
+                    getLogger().log(Level.SEVERE, "Could not create data folder!");
                 }
             }
             File config = new File(getDataFolder(), "config.yml");
@@ -105,6 +99,7 @@ public class Main extends JavaPlugin {
     void createRules() {
         try {
             if (!getDataFolder().exists()) {
+                getLogger().info("Data folder not found, creating...");
                 boolean created = getDataFolder().mkdirs();
                 if (!created) {
                     getLogger().log(Level.SEVERE, "Could not create config folder!");

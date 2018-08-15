@@ -5,31 +5,14 @@ import com.google.common.collect.Sets;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.io.FileUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Server;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.io.*;
+import java.util.*;
 import java.util.logging.Level;
 
 import static java.util.stream.Collectors.toList;
@@ -669,5 +652,12 @@ public class UHCUtils {
 
     public static void announcePlayerSpectate(Player p) {
         UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), "[" + ChatColor.GOLD + ChatColor.BOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.BOLD + p.getDisplayName() + ChatColor.YELLOW +  ChatColor.ITALIC + " is now spectating.");
+    }
+
+    public static Optional<List<Long>> getConfigCSV(String path) {
+        String list = Main.getInstance().getConfig().getString(path);
+        if (list == null) { return Optional.empty(); }
+        List<Long> longs = new ArrayList<>();
+
     }
 }

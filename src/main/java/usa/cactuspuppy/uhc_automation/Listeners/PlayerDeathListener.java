@@ -45,12 +45,12 @@ public class PlayerDeathListener implements Listener {
         }
         (new DelayedPlayerRespawn(p, drops)).schedule();
         p.setGameMode(GameMode.SPECTATOR);
-        Main.getInstance().getGameInstance().removePlayerFromLive(p);
         for (UUID u : Main.getInstance().getGameInstance().getActivePlayers()) {
             Player p1 = Bukkit.getPlayer(u);
             announceDeath(p, p1);
         }
         UHCUtils.saveWorldPlayers(Main.getInstance());
+        Main.getInstance().getGameInstance().removePlayerFromLive(p);
         Main.getInstance().getGameInstance().checkForWin();
     }
 

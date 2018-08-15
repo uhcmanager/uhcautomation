@@ -7,6 +7,7 @@ import usa.cactuspuppy.uhc_automation.Main;
 
 public class PVPEnableCountdown implements Runnable {
     private long enableTime;
+    private long nextAnnounce;
 
     public PVPEnableCountdown(int secs) {
         enableTime = System.currentTimeMillis() + secs * 1000;

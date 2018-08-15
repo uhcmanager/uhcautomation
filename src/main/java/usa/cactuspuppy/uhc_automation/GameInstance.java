@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
 import usa.cactuspuppy.uhc_automation.Listeners.PlayerMoveListener;
 import usa.cactuspuppy.uhc_automation.Tasks.BorderAnnouncer;
 import usa.cactuspuppy.uhc_automation.Tasks.BorderCountdown;
@@ -143,7 +144,7 @@ public class GameInstance {
         }
         long initT = System.currentTimeMillis();
         UHCUtils.broadcastMessage(this, ChatColor.GREEN + "Game starting!");
-        HandlerList.unregisterAll(main.getGmcl());
+        HandlerList.unregisterAll(GameModeChangeListener.getInstance());
         livePlayers.stream().map(Bukkit::getPlayer).forEach(this::prepPlayer);
         for (int x = -10; x <= 10; x++) {
             for (int y = 253; y <= 255; y++) {
@@ -507,11 +508,13 @@ public class GameInstance {
 
     public void addPlayerToLive(Player p) {
         livePlayers.add(p.getUniqueId());
+        UHCUtils.announcePlayerJoin(p);
     }
 
     public void removePlayerFromLive(Player p) {
         livePlayers.remove(p.getUniqueId());
         blacklistPlayers.add(p.getUniqueId());
+        UHCUtils.announcePlayerSpectate(p);
     }
 
     public void lostConnectPlayer(OfflinePlayer p) {
