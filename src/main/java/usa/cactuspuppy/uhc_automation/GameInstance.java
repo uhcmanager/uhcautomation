@@ -73,6 +73,7 @@ public class GameInstance {
         spreadDistance = p.getConfig().getInt("game.spread-distance");
         uhcMode = p.getConfig().getBoolean("game.uhc-mode");
         epLength = p.getConfig().getInt("game.episode-length");
+        secsToPVP = p.getConfig().getLong("game.secs-to-pvp");
         livePlayers = new HashSet<>();
         activePlayers = new HashSet<>();
         regPlayers = new HashSet<>();
@@ -341,8 +342,8 @@ public class GameInstance {
     public void startPlayer(UUID u) {
         Player p = Bukkit.getPlayer(u);
         p.sendTitle(ChatColor.GREEN.toString() + ChatColor.BOLD + "GO!", UHCUtils.randomStartMSG(), 0, 80, 40);
-        p.playSound(p.getLocation(), "minecraft:block.note.pling", 1F, 1.18F);
-        p.playSound(p.getLocation(), "minecraft:entity.enderdragon.growl", 1F, 1F);
+        p.playSound(p.getLocation(), "minecraft:block.note_block.pling", 1F, 1.18F);
+        p.playSound(p.getLocation(), "minecraft:entity.ender_dragon.growl", 1F, 1F);
         p.getActivePotionEffects().forEach(e -> p.removePotionEffect(e.getType()));
         p.setFoodLevel(20);
         p.setSaturation(5);
@@ -361,7 +362,7 @@ public class GameInstance {
         }
         p.sendMessage(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nBorder shrinking!");
         p.sendTitle(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Border Shrinking!", "", 0, 80, 40);
-        p.playSound(p.getLocation(), "minecraft:entity.enderdragon.death", 1F, 1F);
+        p.playSound(p.getLocation(), "minecraft:entity.ender_dragon.death", 1F, 1F);
     }
 
     public boolean validate(CommandSender s) {

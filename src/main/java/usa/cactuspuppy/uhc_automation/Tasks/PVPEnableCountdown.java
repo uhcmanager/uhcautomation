@@ -2,7 +2,6 @@ package usa.cactuspuppy.uhc_automation.Tasks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
@@ -45,7 +44,7 @@ public class PVPEnableCountdown implements Runnable {
                 nextAnnounce = announceTimes.removeLast();
             }
             if (timeTo <= 10) {
-                UHCUtils.broadcastMessagewithSoundandTitle(Main.getInstance().getGameInstance(), ChatColor.RED.toString() + ChatColor.BOLD + "[Alert] " + ChatColor.RESET + "PVP enabled in " + UHCUtils.secsToFormatString(timeTo), String.valueOf(timeTo), ChatColor.RED + "secs until PVP enabled", 0, 80, 40, "minecraft:block.note.chime", (float) (0.5 + (10 - timeTo) / 40), 1.18F);
+                UHCUtils.broadcastMessagewithSoundandTitle(Main.getInstance().getGameInstance(), ChatColor.RED.toString() + ChatColor.BOLD + "[Alert] " + ChatColor.RESET + "PVP enabled in " + UHCUtils.secsToFormatString(timeTo), String.valueOf(timeTo), ChatColor.RED + "secs until PVP enabled", 0, 80, 40, "minecraft:block.note_block.chime", (float) (0.5 + (10 - timeTo) / 40), 1.18F);
             } else {
                 UHCUtils.broadcastMessagewithSound(Main.getInstance().getGameInstance(), ChatColor.YELLOW.toString() + ChatColor.BOLD + "[Warning] " + ChatColor.RESET + "PVP enabled in " + UHCUtils.secsToFormatString(timeTo), "minecraft:entity.player.levelup", 0.5F, 0.4F);
             }

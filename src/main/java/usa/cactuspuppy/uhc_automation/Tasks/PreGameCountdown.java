@@ -71,6 +71,6 @@ public class PreGameCountdown implements Runnable {
 
     private void infoPlayer(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
         player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
-        player.playSound(player.getLocation(), "minecraft:block.note.pling", (float) 1, (float) 1.18);
+        player.playSound(player.getLocation(), "minecraft:block.note_block.pling", (float) 1, (float) 1.18);
     }
 }
