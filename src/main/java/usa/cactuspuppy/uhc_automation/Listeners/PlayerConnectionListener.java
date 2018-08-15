@@ -20,21 +20,15 @@ public class PlayerConnectionListener implements Listener {
         Player p = e.getPlayer();
         if (UHCUtils.worldEqualsExt(p.getWorld(), Main.getInstance().getGameInstance().getWorld())) {
             Main.getInstance().getGameInstance().bindPlayertoScoreboard(p);
-            if (Main.getInstance().getGameInstance().getBlacklistPlayers().contains(p.getUniqueId())) {
-                p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "You have joined the game as a spectator. Ask an administrator if you think you should be in the game.");
-                p.setGameMode(GameMode.SPECTATOR);
-                Main.getInstance().getGameInstance().registerPlayer(p);
-                return;
-            }
             if (Main.getInstance().getGameInstance().isActive()) {
-                if (Main.getInstance().getGameInstance().getRegPlayers().contains(p.getUniqueId())) {
-                    Main.getInstance().getGameInstance().registerPlayer(p);
+                if (!Main.getInstance().getGameInstance().getBlacklistPlayers().contains(p.getUniqueId()) && Main.getInstance().getGameInstance().getRegPlayers().contains(p.getUniqueId())) {
+                    Main.getInstance().getGameInstance().registerPlayerSilent(p);
                 } else {
-                    p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "You have joined the game as a spectator. Ask an administrator if you think you should be in the game.");
+                    p.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "You have joined the game as a spectator. Contact an administrator if you think you should be in the game.");
                     p.setGameMode(GameMode.SPECTATOR);
                     Main.getInstance().getGameInstance().registerPlayer(p);
                 }
-            } else if (!Main.getInstance().getGameInstance().getActivePlayers().contains(p.getUniqueId())) {
+            } else {
                 p.sendTitle(ChatColor.GOLD + "Welcome", "to the " + Main.getInstance().getConfig().getString("event-name"), 20, 60, 20);
                 p.setHealth(19);
                 p.setHealth(20);

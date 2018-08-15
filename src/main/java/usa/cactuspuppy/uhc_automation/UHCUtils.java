@@ -5,33 +5,16 @@ import com.google.common.collect.Sets;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.io.FileUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Server;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
-import usa.cactuspuppy.uhc_automation.Commands.CommandRules;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.io.*;
+import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -153,7 +136,7 @@ public class UHCUtils {
 
             aDBW.write(String.valueOf(m.getGameInstance().getStartT()));
             aDBW.newLine();
-            aDBW.write(String.valueOf(m.getGameInstance().teamMode));
+            aDBW.write(String.valueOf(m.getGameInstance().isTeamMode()));
             aDBW.close();
         } catch (IOException e) {
             m.getLogger().severe("Could not save aux data to '" + auxDataName + "'!");
@@ -317,24 +300,6 @@ public class UHCUtils {
         return inName.equals(checkName) || inName.equals(checkNether) || inName.equals(checkEnd);
     }
 
-    public static void exeCmd(Server s, World w, String cmd) {
-        /*s.getLogger().log(Level.INFO, "Attempting to run command: '" + cmd + "'");
-        MinecraftServer nmsServer = ((CraftServer) s).getServer();
-        WorldServer nmsWorld = ((CraftWorld) w).getHandle();
-        EntityPlayer ep = new EntityPlayer(nmsServer, nmsWorld, new GameProfile(UUID.randomUUID(), "UHC_Automation"), new PlayerInteractManager(nmsWorld));
-        ep.setLocation(0, 0, 0, 0, 0);
-        CraftPlayer d = new CraftPlayer((CraftServer) s, ep);
-        d.setOp(true);
-        try {
-           d.performCommand(cmd);
-        } catch (CommandException e) { }*/
-        s.dispatchCommand(s.getConsoleSender(), cmd);
-    }
-
-    public static void exeCmd(String cmd) {
-        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
-    }
-
     public static void sendActionBar(Player player, String message){
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message));
     }
@@ -360,7 +325,7 @@ public class UHCUtils {
 
     public static boolean spreadplayers(GameInstance g) {
         double range = g.getInitSize() / 2;
-        boolean teams = g.teamMode && g.isRespectTeams();
+        boolean teams = g.isTeamMode() && g.isRespectTeams();
 
         //May be allowed to be changed in future, TBD
         int x = 0;
@@ -373,7 +338,7 @@ public class UHCUtils {
 
         List<Player> players = g.getLivePlayers().stream().map(Bukkit::getPlayer).collect(toList());
 
-        final int spreadSize = teams ? getTeams(players) : players.size();
+        final int spreadSize = teams ? getNumTeams(players) : players.size();
 
         final Location[] locations = getSpreadLocations(g.getWorld(), spreadSize, xRangeMin, zRangeMin, xRangeMax, zRangeMax);
         final int rangeSpread = range(g.getWorld(), g.getSpreadDistance(), xRangeMin, zRangeMin, xRangeMax, zRangeMax, locations);
@@ -394,7 +359,7 @@ public class UHCUtils {
      * Helper Functions for spreadplayers
      * @source: https://github.com/Attano/Spigot-1.8/blob/9db48bc15e203179554b8d992ca6b0a528c8d300/org/bukkit/command/defaults/SpreadPlayersCommand.java
      */
-    static int range(World world, double distance, double xRangeMin, double zRangeMin, double xRangeMax, double zRangeMax, Location[] locations) {
+    private static int range(World world, double distance, double xRangeMin, double zRangeMin, double xRangeMax, double zRangeMax, Location[] locations) {
         boolean flag = true;
         double max;
 
@@ -543,7 +508,7 @@ public class UHCUtils {
     }
 
     @SuppressWarnings("deprecation")
-    private static int getTeams(List<Player> players) {
+    private static int getNumTeams(List<Player> players) {
         Set<Team> teams = Sets.newHashSet();
 
         for (Player player : players) {
@@ -579,16 +544,24 @@ public class UHCUtils {
     }
 
     public static Map<String, Integer> secsToHMS(int secs) {
+        return secsToHMS(secs);
+    }
+
+    public static Map<String, Integer> secsToHMS(long secs) {
         Map<String, Integer> hms = new HashMap<>();
 
-        hms.put("hrs", secs / 3600);
-        hms.put("mins", (secs / 60) % 60);
-        hms.put("secs", secs % 60);
+        hms.put("hrs", (int) (secs / 3600));
+        hms.put("mins", (int) ((secs / 60) % 60));
+        hms.put("secs", (int) (secs % 60));
 
         return hms;
     }
 
     public static String secsToFormatString(int secs) {
+        return secsToFormatString((long) secs);
+    }
+
+    public static String secsToFormatString(long secs) {
         Map<String, Integer> hms = secsToHMS(secs);
         return hmsToFormatString(hms.get("hrs"), hms.get("mins"), hms.get("secs"));
     }
@@ -634,6 +607,7 @@ public class UHCUtils {
     }
 
     public static void sendPlayerInfo(Main m, CommandSender commandSender) {
+        //TODO: Expand info given
         int timeElapsedSecs = getSecsElapsed(m);
         if (timeElapsedSecs == -1) {
             commandSender.sendMessage(ChatColor.RED + "Game has not started yet!");
@@ -644,13 +618,17 @@ public class UHCUtils {
     }
 
     public static String getRules(Main m) {
+        String numDelimiter = ") ";
+        String rulesTitlePrefix = "\n" + ChatColor.GOLD.toString() + ChatColor.BOLD.toString();
+        String ruleNumPrefix = ChatColor.GREEN.toString();
+
         String rulesLocation = m.getDataFolder() + "/rules.txt";
         File rulesFile = new File(rulesLocation);
         if (!rulesFile.isFile()) {
             m.getLogger().info("Could not find rules file at: " + rulesLocation + ". Generating rules.txt for you now.");
             Main.getInstance().createRules();
         }
-        String rulesTitle = CommandRules.rulesTitlePrefix + "Rules:";
+        String rulesTitle = rulesTitlePrefix + "Rules:";
         StringJoiner rules = new StringJoiner("\n");
         rules.add(rulesTitle);
         try {
@@ -661,7 +639,7 @@ public class UHCUtils {
 
             while ((line = rulesBuffR.readLine()) != null) {
                 ruleNum++;
-                rules.add(CommandRules.ruleNumPrefix + ruleNum + CommandRules.numDelimiter + ChatColor.RESET + line);
+                rules.add(ruleNumPrefix + ruleNum + numDelimiter + ChatColor.RESET + line);
             }
             return rules.toString();
         } catch (IOException e) {
@@ -671,7 +649,38 @@ public class UHCUtils {
         }
     }
 
-    public static void sendPlayerGithubWiki(Player player) {
-        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " {\"text\":\"Wiki Link\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://github.com/CactusPuppy/uhcautomation/wiki\"},\"italic\":\"true\",\"bold\":\"true\",\"underlined\":\"true\",\"color\":\"green\"}");
+    public static void sendPluginInfo(CommandSender sender) {
+        sender.sendMessage(ChatColor.AQUA + "\nUHC Automation by CactusPuppy\n"
+                + "Version " + Main.getInstance().getDescription().getVersion() + "\n"
+                + ChatColor.GREEN + "For command usage, type " + ChatColor.WHITE + ChatColor.ITALIC + "/uhc help");
+    }
+
+    public static void announcePlayerJoin(Player p) {
+        UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), "[" + ChatColor.GOLD + ChatColor.BOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.BOLD + p.getDisplayName() + ChatColor.GREEN +  ChatColor.ITALIC + " has joined the game!");
+    }
+
+    public static void announcePlayerSpectate(Player p) {
+        UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), "[" + ChatColor.GOLD + ChatColor.BOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.BOLD + p.getDisplayName() + ChatColor.YELLOW +  ChatColor.ITALIC + " is now spectating.");
+    }
+
+    public static Optional<List<Long>> getConfigCSLongs(String path) {
+        String list = Main.getInstance().getConfig().getString(path);
+        if (list == null) { return Optional.empty(); }
+        List<Long> longs = new ArrayList<>();
+        List<String> strings = Arrays.asList(list.split("\\s*,\\s*"));
+        try {
+            strings.stream().map(Long::valueOf).sorted().forEachOrdered(longs::add);
+        } catch (NumberFormatException e) {
+            Main.getInstance().getLogger().warning("List at " + path + " contains something other than numbers!");
+            return Optional.empty();
+        }
+        return Optional.of(longs);
+    }
+
+    public static List<Long> getDefaultTimes() {
+        long[] defaultTimes = {1,2,3,4,5,6,7,8,9,10,15,20,30,45,60,120,180,300,600,900,1200,1800,3600};
+        ArrayList<Long> times = new ArrayList<>();
+        Arrays.stream(defaultTimes).forEach(times::add);
+        return times;
     }
 }

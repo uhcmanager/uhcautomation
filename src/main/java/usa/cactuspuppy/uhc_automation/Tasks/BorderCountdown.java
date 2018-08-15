@@ -6,12 +6,13 @@ import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class BorderCountdown implements Runnable {
-    private long start;
     private long end;
     private LinkedList<Long> warningTimes;
     private long nextWarn;
+    private boolean silent;
 
     private Integer assignedID;
 
@@ -20,14 +21,12 @@ public class BorderCountdown implements Runnable {
      * @param l length of time to shrink (in seconds)
      * @param s start time of game
      */
-    public BorderCountdown(int l, long s) {
-        start = s;
-        long timeDiff = l * 1000;
-        end = s + timeDiff;
+    public BorderCountdown(int l, long s, boolean announce) {
+        end = s + l * 1000;
+        silent = !announce;
         warningTimes = new LinkedList<>();
-        int[] times = {1,2,3,4,5,6,7,8,9,10,15,20,30,45,60,120,180,300,600,900,1200,1800,3600};
-        for (int i = 0; i < times.length; i++) {
-            long add = times[i];
+        List<Long> times = UHCUtils.getConfigCSLongs("warning-times.border").orElseGet(UHCUtils::getDefaultTimes);
+        for (long add : times) {
             if (add > l) {
                 break;
             }
@@ -44,13 +43,14 @@ public class BorderCountdown implements Runnable {
             if (assignedID != null) { Bukkit.getScheduler().cancelTask(assignedID); }
             return;
         }
+        if (silent) return;
         if (System.currentTimeMillis() >= end - nextWarn * 1000) {
             int timeTo = (int) nextWarn;
             if (!warningTimes.isEmpty()) {
                 nextWarn = warningTimes.removeLast();
             }
             if (timeTo <= 10) {
-                UHCUtils.broadcastMessagewithSoundandTitle(Main.getInstance().getGameInstance(), ChatColor.RED.toString() + ChatColor.BOLD + "[Alert] " + ChatColor.RESET + "Border shrinks in " + UHCUtils.secsToFormatString(timeTo), String.valueOf(timeTo), ChatColor.RED + "secs to border shrink", 0, 80, 40, "minecraft:block.note.chime", (float) (0.5 + (10 - timeTo) / 40), 1.18F);
+                UHCUtils.broadcastMessagewithSoundandTitle(Main.getInstance().getGameInstance(), ChatColor.RED.toString() + ChatColor.BOLD + "[Alert] " + ChatColor.RESET + "Border shrinks in " + UHCUtils.secsToFormatString(timeTo), String.valueOf(timeTo), ChatColor.RED + "secs to border shrink", 0, 80, 40, "minecraft:block.note_block.chime", (float) (0.5 + (10 - timeTo) / 40), 1.18F);
             } else {
                 UHCUtils.broadcastMessagewithSound(Main.getInstance().getGameInstance(), ChatColor.YELLOW.toString() + ChatColor.BOLD + "[Warning] " + ChatColor.RESET + "Border shrinks in " + UHCUtils.secsToFormatString(timeTo), "minecraft:entity.player.levelup", 0.5F, 0.4F);
             }

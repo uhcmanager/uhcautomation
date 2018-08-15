@@ -1,36 +1,23 @@
 package usa.cactuspuppy.uhc_automation;
 
 import lombok.Getter;
-import lombok.Setter;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.command.Command;
+import org.bukkit.plugin.java.annotation.permission.ChildPermission;
 import org.bukkit.plugin.java.annotation.permission.Permission;
+import org.bukkit.plugin.java.annotation.plugin.ApiVersion;
 import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.LogPrefix;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import org.bukkit.scheduler.BukkitRunnable;
-import usa.cactuspuppy.uhc_automation.Commands.CommandHelp;
-import usa.cactuspuppy.uhc_automation.Commands.CommandInfo;
-import usa.cactuspuppy.uhc_automation.Commands.CommandOptions;
-import usa.cactuspuppy.uhc_automation.Commands.CommandPrep;
-import usa.cactuspuppy.uhc_automation.Commands.CommandRegister;
-import usa.cactuspuppy.uhc_automation.Commands.CommandReset;
-import usa.cactuspuppy.uhc_automation.Commands.CommandRules;
-import usa.cactuspuppy.uhc_automation.Commands.CommandSetWorld;
-import usa.cactuspuppy.uhc_automation.Commands.CommandStart;
-import usa.cactuspuppy.uhc_automation.Commands.CommandStatus;
-import usa.cactuspuppy.uhc_automation.Commands.CommandUnregister;
-import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
-import usa.cactuspuppy.uhc_automation.Tasks.DelayedPrep;
+import usa.cactuspuppy.uhc_automation.Commands.CommandHandler;
+import usa.cactuspuppy.uhc_automation.Commands.TabCompleteHelper;
 import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
 import usa.cactuspuppy.uhc_automation.Tasks.SQLRepeating;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.Reader;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -41,13 +28,13 @@ import java.util.logging.Level;
 @Description("Automates the process of running a UHC")
 @Author("CactusPuppy")
 @LogPrefix("UHC")
-@Command(name = "uhc", desc = "Access UHC Automation's functionality.", usage = "/<command> <subcommand> [args]")
-@Permission(name = "uhc.admin", desc = "Allows initiation, halting, and modification of the event")
+@Permission(name = "uhc.admin", desc = "Allows operator access to the UHC plugin", defaultValue = PermissionDefault.OP)
+@Permission(name = "uhc.*", desc = "Wildcard permission", defaultValue = PermissionDefault.OP, children = {@ChildPermission(name = "uhc.admin")})
+@ApiVersion(ApiVersion.Target.v1_13)
 public class Main extends JavaPlugin {
     private static Main instance;
     @Getter private GameInstance gameInstance;
     private ConnectionInfo connectionInfo;
-    @Getter @Setter private GameModeChangeListener gmcl;
 
     @Override
     public void onEnable() {
@@ -71,7 +58,6 @@ public class Main extends JavaPlugin {
         }
         registerCommands();
         (new RestartTasks()).schedule();
-        (new DelayedPrep()).schedule();
         getLogger().info("UHC Automation loaded in " + ((System.currentTimeMillis() - start)) + " ms");
     }
 
@@ -90,9 +76,10 @@ public class Main extends JavaPlugin {
     private void createConfig() {
         try {
             if (!getDataFolder().exists()) {
+                getLogger().info("Data folder not found, creating...");
                 boolean created = getDataFolder().mkdirs();
                 if (!created) {
-                    getLogger().log(Level.SEVERE, "Could not create config folder!");
+                    getLogger().log(Level.SEVERE, "Could not create data folder!");
                 }
             }
             File config = new File(getDataFolder(), "config.yml");
@@ -110,6 +97,7 @@ public class Main extends JavaPlugin {
     void createRules() {
         try {
             if (!getDataFolder().exists()) {
+                getLogger().info("Data folder not found, creating...");
                 boolean created = getDataFolder().mkdirs();
                 if (!created) {
                     getLogger().log(Level.SEVERE, "Could not create config folder!");
@@ -161,17 +149,8 @@ public class Main extends JavaPlugin {
     }
 
     private void registerCommands() {
-        getCommand("uhcstart").setExecutor(new CommandStart());
-        getCommand("uhcoptions").setExecutor(new CommandOptions());
-        getCommand("uhcreset").setExecutor(new CommandReset());
-        getCommand("uhcsetworld").setExecutor(new CommandSetWorld());
-        getCommand("uhcstatus").setExecutor(new CommandStatus());
-        getCommand("uhcprep").setExecutor(new CommandPrep());
-        getCommand("uhcinfo").setExecutor(new CommandInfo());
-        getCommand("uhcreg").setExecutor(new CommandRegister());
-        getCommand("uhcunreg").setExecutor(new CommandUnregister());
-        getCommand("uhcrules").setExecutor(new CommandRules());
-        getCommand("uhchelp").setExecutor(new CommandHelp());
+        getCommand("uhc").setExecutor(new CommandHandler());
+        getCommand("uhc").setTabCompleter(new TabCompleteHelper());
     }
 
     public static Main getInstance() {

@@ -32,7 +32,7 @@ public class LoadingChunksCountdown implements Runnable {
             if (iter > 3) {
                 p.playSound(p.getLocation(), "minecraft:block.stone_button.click_on", (float) 1, (float) 1);
             } else {
-                p.playSound(p.getLocation(), "minecraft:block.note.pling", (float) 1, (float) 0.59);
+                p.playSound(p.getLocation(), "minecraft:block.note_block.pling", (float) 1, (float) 0.59);
             }
         }
         iter--;

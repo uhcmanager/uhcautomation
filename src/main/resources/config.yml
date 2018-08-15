@@ -1,16 +1,46 @@
 world: GameWorld
 event-name: Event Name
+# Where to store game data
 data-location: data/<worldname>
+game-start-tips: false
 tips: false
+allow-command-blocks: false
+
+# The plugin will also consider players in the game world's Nether and End by looking at suffixes if this is true. This is best explained by an example.
+# EXAMPLE:
+# Game World: world001
+# Plugin will also include players in world001_nether and world001_the_end
+extended-world-detection: true
+# By default, the plugin prevents games from being held in Nether or End Worlds.
+# Change this value to false to disable that.
+nether-end-exclusion: true
+
+### Game Options ###
 game:
   init-size: 4001
   final-size: 101
   episode-length: 20
   mins-to-shrink: 120
+  secs-to-pvp: 1200
   team-mode: false
   respect-teams: true
   uhc-mode: true
   spread-distance: 150
+
+### Warnings ###
+warnings:
+  border: true
+  pvp: true
+# Times should be listed in seconds, comma-separated (spaces ok), in ascending order.
+# If the times are not integers or not comma separated, loading of warning
+# times will default to the following values:
+#
+# 1,2,3,4,5,6,7,8,9,10,15,20,30,45,60,120,180,300,600,900,1200,1800,3600
+warning-times:
+  border: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 45, 60, 120, 180, 300, 600, 900, 1200, 1800, 3600
+  pvp: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 45, 60, 120, 180, 300, 600, 900, 1200, 1800, 3600
+
+### Optional Database Information ###
 db:
   host: localhost
   port: 3306

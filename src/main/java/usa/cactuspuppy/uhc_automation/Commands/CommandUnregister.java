@@ -22,17 +22,16 @@ import java.net.URL;
 import java.util.UUID;
 
 @NoArgsConstructor
-public class CommandUnregister implements CommandExecutor {
+public class CommandUnregister {
 
-    @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
+    public static void onCommand(CommandSender commandSender, String alias, String[] args) {
         if (args.length != 1) {
-            return false;
+            commandSender.sendMessage(ChatColor.RED + "Usage: /uhc " + alias + " <player>");
         }
         String name = args[0];
         if (!UHCUtils.validUsername(name)) {
             commandSender.sendMessage(ChatColor.RED + name + " is not a valid username!");
-            return true;
+            return;
         }
         new BukkitRunnable() {
             @Override
@@ -84,6 +83,6 @@ public class CommandUnregister implements CommandExecutor {
                 Main.getInstance().getGameInstance().checkForWin();
             }
         }.runTaskAsynchronously(Main.getInstance());
-        return true;
+        return;
     }
 }

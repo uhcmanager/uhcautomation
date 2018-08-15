@@ -21,7 +21,6 @@ public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         String oldMsg = e.getDeathMessage();
-        e.setDeathMessage(ChatColor.RED.toString() + ChatColor.BOLD + "[DEATH] " + ChatColor.RESET + oldMsg);
         Player p = e.getEntity();
         if (!(Main.getInstance().getGameInstance().getLivePlayers().contains(p.getUniqueId())) && Main.getInstance().getGameInstance().isActive()) {
             return;
@@ -33,6 +32,7 @@ public class PlayerDeathListener implements Listener {
             }, 1L);
             return;
         }
+        e.setDeathMessage("[" + ChatColor.RED.toString() + ChatColor.BOLD + "DEATH" + ChatColor.RESET + "] " + oldMsg);
         Main.getInstance().getLogger().info(p.getName() + " died at [" + p.getLocation().getWorld().getName() + "] "
                 + p.getLocation().getX() + ", " + p.getLocation().getY() + ", " + p.getLocation().getZ());
         Location drops = p.getLocation();
@@ -45,16 +45,17 @@ public class PlayerDeathListener implements Listener {
         }
         (new DelayedPlayerRespawn(p, drops)).schedule();
         p.setGameMode(GameMode.SPECTATOR);
-        Main.getInstance().getGameInstance().removePlayerFromLive(p);
         for (UUID u : Main.getInstance().getGameInstance().getActivePlayers()) {
             Player p1 = Bukkit.getPlayer(u);
             announceDeath(p, p1);
         }
         UHCUtils.saveWorldPlayers(Main.getInstance());
+        Main.getInstance().getGameInstance().removePlayerFromLive(p);
         Main.getInstance().getGameInstance().checkForWin();
     }
 
     private void announceDeath(Player died, Player tell) {
+        assert died != null && tell != null;
         tell.sendTitle(died.getDisplayName(), ChatColor.RED + "has been eliminated!", 0, 80, 40);
         tell.playSound(tell.getLocation(), "minecraft:entity.wither.death", 0.5F, 1F);
     }

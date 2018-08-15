@@ -6,51 +6,10 @@ main: usa.cactuspuppy.uhc_automation.Main
 api-version: 1.13
 
 commands:
-  uhcprep:
-    description: Performs the setup to create a lobby.
-    aliases: [prep, uhcp]
-  uhcstart:
-    description: Starts the event. No big surprises.
-    aliases: [start, uhcs]
-    usage: /<command> [secs to start]
-    permission: uhca.admin
-  uhcoptions:
-    description: Edits options regarding the game. See wiki for more details.
-    aliases: [options, uhco]
-    usage: /<command> <option> <value>
-    permission: uhca.admin
-  uhcreset:
-    description: Stops the game and resets everything.
-    aliases: [reset, uhcr, uhcstop]
-    usage: /<command>
-    permission: uhca.admin
-  uhcsetworld:
-    description: Sets the event world to be the one specified, else uses the world the player is in.
-    aliases: [setworld, uhcworld]
-    usage: /<command>
-    permission: uhca.admin
-  uhcstatus:
-    description: Tells user the game status
-    aliases: [status]
-    usage: /<command>
-    permission: uhca.admin
-  uhcinfo:
-    description: Tells user information about the game
-    usage: /<command> ["toggle"/"chat"/"scoreboard"]
-  uhcunreg:
-    description: Unregsiters a player from the database. Player cannot be registered again unless /uhcreg is used.
-    aliases: [unreg, unregsiter, uhcunregister]
-    usage: /<command> <player>
-    permission: uhca.admin
-  uhcreg:
-    description: Registers an online player in the database
-    aliases: [reg, register, uhcregister]
-    usage: /<command> <player>
-    permission: uhca.admin
-  uhcrules:
-    description: Tells the rules to the player
-    aliases: [rules]
-    usage: /<command>
-  uhchelp:
-    description: Links to the GitHub wiki
-    usage: /<command>
+  uhc:
+    description: Access UHC_Automation's functionality.
+    usage: /<command> <subcommand> [args]
+permissions:
+  uhc.admin:
+    default: op
+    description: Allows holder to start, stop, and modify the UHC

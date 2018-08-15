@@ -15,26 +15,25 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @NoArgsConstructor
-public class CommandOptions implements CommandExecutor, TabCompleter {
+public class CommandOptions {
     private static final String[] OPTIONS =
             {"init-size", "final-size", "mins-to-shrink", "team-mode", "spread-distance", "uhc-mode", "respect-teams", "episode-length", "event-name"};
 
-    @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
+    public static void onCommand(CommandSender commandSender, String alias, String[] args) {
         if (args.length == 0) {
-            return false;
+            commandSender.sendMessage(ChatColor.RED + "Usage: /uhc " + alias + " <option> <value>");
         //event-name handling
         } else if (args[0].equalsIgnoreCase(OPTIONS[8])) {
             if (args.length < 2) {
-                return false;
+                commandSender.sendMessage(ChatColor.RED + "Usage: /uhc " + alias + " event-name <value>");
             }
             String eventName = StringUtils.join(Arrays.copyOfRange(args, 1, args.length), " ");
             Main.getInstance().getConfig().set("event-name", eventName);
             Main.getInstance().saveConfig();
             commandSender.sendMessage("Successfully set " + args[0] + " to be " + eventName);
-            return true;
+            return;
         } else if (args.length != 2) {
-            return false;
+            commandSender.sendMessage(ChatColor.RED + "Usage: /uhc " + alias + " <option> <value>");
         }
         if (Arrays.asList(OPTIONS).contains(args[0])) {
             try {
@@ -44,11 +43,11 @@ public class CommandOptions implements CommandExecutor, TabCompleter {
                         commandSender.sendMessage(ChatColor.RED + "ERROR: Requested initial border size " + ChatColor.RESET + Integer.valueOf(args[1])
                                         + ChatColor.RED + " is not larger than current final border size "
                                         + ChatColor.RESET + Main.getInstance().getGameInstance().getFinalSize());
-                        return true;
+                        return;
                     } else if (Integer.valueOf(args[1]) < 0) {
                         commandSender.sendMessage(ChatColor.RED + "ERROR: Requested initial border size " + ChatColor.RESET + Integer.valueOf(args[1])
                                 + ChatColor.RED + " is not greater than or equal to zero.");
-                        return true;
+                        return;
                     }
                     int initSize = Integer.valueOf(args[1]);
                     if (initSize > 60000000 || initSize == 0) { initSize = 60000000; }
@@ -60,11 +59,11 @@ public class CommandOptions implements CommandExecutor, TabCompleter {
                         commandSender.sendMessage(ChatColor.RED + "ERROR: Requested final border size " + ChatColor.RESET + Integer.valueOf(args[1])
                                         + ChatColor.RED + " is not smaller than current initial border size "
                                         + ChatColor.RESET + Main.getInstance().getGameInstance().getInitSize());
-                        return true;
+                        return;
                     } else if (Integer.valueOf(args[1]) < 0) {
                         commandSender.sendMessage(ChatColor.RED + "ERROR: Requested minutes to border shrink " + ChatColor.RESET + Integer.valueOf(args[1])
                                 + ChatColor.RED + " is not greater than or equal to zero.");
-                        return true;
+                        return;
                     }
                     int finalSize = Integer.valueOf(args[1]);
                     if (finalSize > 59999999 || finalSize == 0) { finalSize = 59999999; }
@@ -75,7 +74,7 @@ public class CommandOptions implements CommandExecutor, TabCompleter {
                     if (Integer.valueOf(args[1]) < -1) {
                         commandSender.sendMessage(ChatColor.RED + "ERROR: Requested final border size " + ChatColor.RESET + Integer.valueOf(args[1])
                                 + ChatColor.RED + " is not positive, 0, or -1.");
-                        return true;
+                        return;
                     }
                     Main.getInstance().getGameInstance().setMinsToShrink(Integer.valueOf(args[1]));
                     Main.getInstance().getConfig().set("game.mins-to-shrink", Integer.valueOf(args[1]));
@@ -87,7 +86,7 @@ public class CommandOptions implements CommandExecutor, TabCompleter {
                         Main.getInstance().getGameInstance().setTeamMode(false);
                     } else {
                         commandSender.sendMessage(ChatColor.RED + "ERROR: Option " + args[1] + " is not true or false.");
-                        return true;
+                        return;
                     }
                     Main.getInstance().getConfig().set("game.team-mode", Boolean.valueOf(args[1]));
                 //spread-distance
@@ -95,7 +94,7 @@ public class CommandOptions implements CommandExecutor, TabCompleter {
                     if (Integer.valueOf(args[1]) < 0) {
                         commandSender.sendMessage(ChatColor.RED + "ERROR: Requested initial separation distance " + ChatColor.RESET + Integer.valueOf(args[1])
                                 + ChatColor.RED + " is not greater than or equal to zero.");
-                        return true;
+                        return;
                     }
                     Main.getInstance().getGameInstance().setSpreadDistance(Integer.valueOf(args[1]));
                     Main.getInstance().getConfig().set("game.spread-distance", Integer.valueOf(args[1]));
@@ -103,7 +102,7 @@ public class CommandOptions implements CommandExecutor, TabCompleter {
                 } else if (args[0].equalsIgnoreCase(OPTIONS[5])) {
                     if (!(args[1].equals("true") || args[1].equals("false"))) {
                         commandSender.sendMessage(ChatColor.RED + "ERROR: Option " + args[1] + " is not true or false.");
-                        return true;
+                        return;
                     }
                     Main.getInstance().getGameInstance().setUHCMode(Boolean.valueOf(args[1]));
                     Main.getInstance().getConfig().set("game.uhc-mode", Boolean.valueOf(args[1]));
@@ -115,7 +114,7 @@ public class CommandOptions implements CommandExecutor, TabCompleter {
                         Main.getInstance().getGameInstance().setRespectTeams(false);
                     } else {
                         commandSender.sendMessage(ChatColor.RED + "ERROR: Option " + args[1] + " is not true or false.");
-                        return true;
+                        return;
                     }
                     Main.getInstance().getConfig().set("game.respect-teams", Boolean.valueOf(args[1]));
                 //episode-length
@@ -123,26 +122,25 @@ public class CommandOptions implements CommandExecutor, TabCompleter {
                     if (Integer.valueOf(args[1]) < 0) {
                         commandSender.sendMessage(ChatColor.RED + "ERROR: Requested episode length " + ChatColor.RESET + Integer.valueOf(args[1])
                                 + ChatColor.RED + " is not greater than or equal to zero.");
-                        return true;
+                        return;
                     }
                     Main.getInstance().getGameInstance().setEpLength(Integer.valueOf(args[1]));
                     Main.getInstance().getConfig().set("game.episode-length", Integer.valueOf(args[1]));
                 }
                 Main.getInstance().saveConfig();
                 commandSender.sendMessage("Successfully set " + args[0] + " to be " + args[1]);
-                return true;
+                return;
             } catch (NumberFormatException e) {
                 commandSender.sendMessage(ChatColor.RED + "ERROR: Option " + args[0] + " only accepts integers. If you typed a number, it may be too large or too small. Try a number closer to zero.");
-                return false;
+                return;
             }
         } else {
             commandSender.sendMessage(ChatColor.RED + "ERROR: Option " + args[0] + " not recognized.\nValid options: " + ChatColor.RESET + StringUtils.join(OPTIONS, ", "));
-            return true;
+            return;
         }
     }
 
-    @Override
-    public List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] args) {
+    public static List<String> onTabComplete(String[] args) {
         if (args.length == 1) {
             return Arrays.stream(OPTIONS).filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
         } else if (args.length == 2) {
@@ -157,7 +155,7 @@ public class CommandOptions implements CommandExecutor, TabCompleter {
         return null;
     }
 
-    private boolean isBooleanOption(String s) {
+    private static boolean isBooleanOption(String s) {
         String[] booleans = {"team-mode", "uhc-mode", "respect-teams"};
         return Arrays.asList(booleans).contains(s);
     }

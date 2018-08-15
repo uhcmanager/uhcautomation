@@ -1,11 +1,7 @@
 package usa.cactuspuppy.uhc_automation.Commands;
 
-import lombok.NoArgsConstructor;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import usa.cactuspuppy.uhc_automation.InfoDisplayMode;
 import usa.cactuspuppy.uhc_automation.InfoModeCache;
@@ -16,12 +12,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor
-public class CommandInfo implements CommandExecutor, TabCompleter {
-    @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
+public class CommandInfo {
+    public static void onCommand(CommandSender commandSender, String[] args) {
         if (args.length > 1) {
-            return false;
+            commandSender.sendMessage(ChatColor.RED + "Usage: /uhc info [toggle:chat:scoreboard]");
         } else if (args.length == 0) {
             if (commandSender instanceof Player) {
                 Player p = (Player) commandSender;
@@ -47,10 +41,10 @@ public class CommandInfo implements CommandExecutor, TabCompleter {
                 }
                 if (next == null) {
                     p.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Requested info display mode " + ChatColor.RESET + args[0] + ChatColor.RED.toString() + ChatColor.BOLD + " not found. Acceptable options: " + ChatColor.RESET + "chat, scoreboard");
-                    return true;
+                    return;
                 }
                 if (curr == next) {
-                    return true;
+                    return;
                 } else if (curr == InfoDisplayMode.SCOREBOARD) {
                     Main.getInstance().getGameInstance().getTimeAnnouncer().removePlayerfromObjectiveSet(p);
                 }
@@ -58,26 +52,20 @@ public class CommandInfo implements CommandExecutor, TabCompleter {
                 commandSender.sendMessage(ChatColor.GREEN + "Changed info display preference to " + ChatColor.RESET + next.name().toLowerCase());
             } else {
                 commandSender.sendMessage(ChatColor.RED + "Custom info display options are only allowed for in-game players!");
-                return true;
             }
         }
-        return true;
     }
 
-    private InfoDisplayMode toggleTDM(InfoDisplayMode tdm) {
+    private static InfoDisplayMode toggleTDM(InfoDisplayMode tdm) {
         if (tdm == InfoDisplayMode.CHAT) {
             return InfoDisplayMode.SCOREBOARD;
         }
         return InfoDisplayMode.CHAT;
     }
 
-    @Override
-    public List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] args) {
-        if (args.length == 1) {
-            List<String> options = Arrays.stream(InfoDisplayMode.values()).map(Enum::name).map(String::toLowerCase).collect(Collectors.toList());
-            options.add("toggle");
-            return options.stream().filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
-        }
-        return null;
+    public static List<String> onTabComplete(String[] args) {
+        List<String> options = Arrays.stream(InfoDisplayMode.values()).map(Enum::name).map(String::toLowerCase).collect(Collectors.toList());
+        options.add("toggle");
+        return options.stream().filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
     }
 }
