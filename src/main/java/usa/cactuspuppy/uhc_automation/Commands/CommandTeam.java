@@ -5,20 +5,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import usa.cactuspuppy.uhc_automation.Main;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandTeam implements CommandExecutor, TabCompleter {
-    private Main m;
 
     public static final String[] SUBCOMMANDS = {"add", "remove", "join", "leave", "option"};
-
-    public CommandTeam(Main main) {
-        m = main;
-    }
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {

@@ -9,16 +9,14 @@ import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.Tasks.PreGameCountdown;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
-public class CommandStart implements CommandExecutor {
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
+public class CommandStart {
+    public static void onCommand(CommandSender sender, String[] args) {
         if (!Main.getInstance().getGameInstance().validate(sender)) {
             UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), ChatColor.RED + "Game aborted.");
-            return true;
+            return;
         } else if (Main.getInstance().getGameInstance().isActive()) {
             sender.sendMessage(ChatColor.RED + "A game is already in progress! Use " + ChatColor.RESET + "/uhcreset " + ChatColor.RED + "to stop the game first!");
-            return true;
+            return;
         }
         if (PreGameCountdown.instanced) {
             if (args.length == 0) {
@@ -28,25 +26,24 @@ public class CommandStart implements CommandExecutor {
                 try {
                     (new PreGameCountdown(Integer.valueOf(args[0]), sender)).schedule();
                 } catch (NumberFormatException e) {
-                    return false;
+                    sender.sendMessage(ChatColor.RED + "Usage: /uhc start [secs]");
                 }
             } else {
-                return false;
+                sender.sendMessage(ChatColor.RED + "Usage: /uhc start [secs]");
             }
-            return true;
+            return;
         }
         if (args.length == 0) {
             Main.getInstance().getGameInstance().start(sender);
-            return true;
+            return;
         } else if (args.length == 1) {
             try {
                 int cdSecs = Integer.valueOf(args[0]);
                 (new PreGameCountdown(cdSecs, sender)).schedule();
             } catch (NumberFormatException e) {
-                return false;
+                sender.sendMessage(ChatColor.RED + "Usage: /uhc start [secs]");
             }
-            return true;
         }
-        return false;
+        sender.sendMessage(ChatColor.RED + "Usage: /uhc start [secs]");
     }
 }

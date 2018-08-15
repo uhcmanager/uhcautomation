@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.Commands;
 
+import lombok.Getter;
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.ChatColor;
 import org.bukkit.block.CommandBlock;
@@ -17,10 +18,10 @@ import java.util.stream.Collectors;
 
 @org.bukkit.plugin.java.annotation.command.Command(name = "uhc", desc = "Accesses the functionality of the UHC plugin", usage = "/uhc <subcommand> [args]")
 public class CommandHandler implements CommandExecutor, TabCompleter {
-    private static final String[] SUBCOMMANDS = {"help", "info", "options", "prep", "register", "reset", "rules", "setworld", "start", "status", "unregister"};
-    private static final String[] REGISTER_ALIASES = {"reg", "join", "add"};
-    private static final String[] UNREGISTER_ALIASES = {"unreg", "remove", "rm"};
-    private static final String[] OPTIONS_ALIASES = {"opt", "optn", "option"};
+    @Getter private static final String[] SUBCOMMANDS = {"help", "info", "options", "prep", "register", "reset", "rules", "setworld", "start", "status", "unregister"};
+    @Getter private static final String[] REGISTER_ALIASES = {"reg", "join", "add"};
+    @Getter private static final String[] UNREGISTER_ALIASES = {"unreg", "remove", "rm"};
+    @Getter private static final String[] OPTIONS_ALIASES = {"opt", "optn", "option"};
 
     public static boolean validSubcommand(String subcommand) { return Arrays.asList(SUBCOMMANDS).contains(subcommand); }
 
@@ -54,12 +55,16 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 
         if (subcommand.equalsIgnoreCase("help")) {
             help(sender);
+        } else if (subcommand.equalsIgnoreCase("info")) {
+            CommandInfo.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
         }
 
         return true;
     }
 
-    private void help(CommandSender sender) { sender.spigot().sendMessage(buildHelpMsg(sender.hasPermission("uhc.admin"))); }
+    private void help(CommandSender sender) {
+        sender.spigot().sendMessage(buildHelpMsg(sender.hasPermission("uhc.admin")));
+    }
 
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         return Arrays.stream(SUBCOMMANDS).filter(s -> s.startsWith(args[0])).map(String::toLowerCase).collect(Collectors.toList());
