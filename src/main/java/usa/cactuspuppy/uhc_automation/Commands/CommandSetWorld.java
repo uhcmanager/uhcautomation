@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandSetWorld {
-    public static void onCommand(CommandSender sender, Command command, String alias, String[] args) {
+    public static void onCommand(CommandSender sender, String[] args) {
         if (args.length > 1) {
             sender.sendMessage(ChatColor.RED + "Usage: /uhc setworld [world name]");
         }

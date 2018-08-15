@@ -44,19 +44,35 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 
         //alias handling
         if (Arrays.asList(REGISTER_ALIASES).contains(subcommand)) {
-            //TODO: register subcommand
+            CommandRegister.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
         }
         if (Arrays.asList(UNREGISTER_ALIASES).contains(subcommand)) {
-            //TODO: unregister subcommand
+            CommandUnregister.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
         }
         if (Arrays.asList(OPTIONS_ALIASES).contains(subcommand)) {
-            //TODO: options subcommand
+            CommandOptions.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
         }
 
         if (subcommand.equalsIgnoreCase("help")) {
             help(sender);
         } else if (subcommand.equalsIgnoreCase("info")) {
             CommandInfo.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
+        } else if (subcommand.equalsIgnoreCase("options")) {
+            CommandOptions.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
+        } else if (subcommand.equalsIgnoreCase("prep")) {
+            CommandPrep.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
+        } else if (subcommand.equalsIgnoreCase("register")) {
+            CommandRegister.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
+        } else if (subcommand.equalsIgnoreCase("reset") || subcommand.equalsIgnoreCase("stop")) {
+            CommandReset.onCommand(sender);
+        } else if (subcommand.equalsIgnoreCase("rules")) {
+            CommandRules.onCommand(sender);
+        } else if (subcommand.equalsIgnoreCase("setworld")) {
+            CommandSetWorld.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
+        } else if (subcommand.equalsIgnoreCase("status")) {
+            CommandStatus.onCommand(sender);
+        } else if (subcommand.equalsIgnoreCase("unregister")) {
+            CommandUnregister.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
         }
 
         return true;

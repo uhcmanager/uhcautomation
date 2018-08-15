@@ -7,7 +7,7 @@ import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 public class CommandRules {
 
-    public static void onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
+    public static void onCommand(CommandSender commandSender) {
         commandSender.sendMessage(UHCUtils.getRules(Main.getInstance()));
         return;
     }

@@ -24,9 +24,9 @@ import java.util.UUID;
 @NoArgsConstructor
 public class CommandUnregister {
 
-    public static void onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
+    public static void onCommand(CommandSender commandSender, String alias, String[] args) {
         if (args.length != 1) {
-            commandSender.sendMessage(ChatColor.RED + "Usage: /uhc unregister <player>");
+            commandSender.sendMessage(ChatColor.RED + "Usage: /uhc " + alias + " <player>");
         }
         String name = args[0];
         if (!UHCUtils.validUsername(name)) {

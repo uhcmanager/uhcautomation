@@ -8,7 +8,7 @@ import usa.cactuspuppy.uhc_automation.UHCUtils;
 import java.util.logging.Level;
 
 public class CommandReset {
-    public static void onCommand(CommandSender commandSender, String[] args) {
+    public static void onCommand(CommandSender commandSender) {
         if (Main.getInstance().getGameInstance().isActive()) {
             UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), ChatColor.RED.toString() + ChatColor.BOLD + "Stopping game!");
             Main.getInstance().getLogger().log(Level.INFO, commandSender.getName() + " initiated command to halt game");
@@ -18,6 +18,5 @@ public class CommandReset {
             Main.getInstance().getLogger().log(Level.INFO, commandSender.getName() + " initiated command to reset the game");
         }
         Main.getInstance().getGameInstance().prep();
-        return;
     }
 }
