@@ -29,7 +29,6 @@ import java.util.logging.Level;
 @Description("Automates the process of running a UHC")
 @Author("CactusPuppy")
 @LogPrefix("UHC")
-@Command(name = "uhc", desc = "Accesses the functionality of the UHC plugin", usage = "/uhc <subcommand> [args]")
 @Permission(name = "uhc.admin", desc = "Allows operator access to the UHC plugin", defaultValue = PermissionDefault.OP)
 @Permission(name = "uhc.*", desc = "Wildcard permission", defaultValue = PermissionDefault.OP, children = {@ChildPermission(name = "uhc.admin")})
 @ApiVersion(ApiVersion.Target.v1_13)

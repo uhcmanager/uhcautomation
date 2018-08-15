@@ -5,6 +5,7 @@ import org.bukkit.GameMode;
 import org.bukkit.event.HandlerList;
 import usa.cactuspuppy.uhc_automation.GameInstance;
 import usa.cactuspuppy.uhc_automation.Listeners.PlayerDeathListener;
+import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.text.SimpleDateFormat;
@@ -52,7 +53,12 @@ public class DelayReactivate implements Runnable {
             (new EpisodeAnnouncer(g.getEpLength(), g.getStartT())).schedule();
         }
         if (g.getMinsToShrink() > 0) {
-            g.setBorderCountdown((new BorderCountdown(g.getMinsToShrink() * 60, g.getStartT())).schedule());
+            g.setBorderCountdown((new BorderCountdown(g.getMinsToShrink() * 60, g.getStartT(), Main.getInstance().getConfig().getBoolean("warnings.border", true))).schedule());
+        }
+        if (g.getSecsToPVP() == 0) {
+            g.getWorld().setPVP(true);
+        } else if (g.getSecsToPVP() > 0) {
+            (new PVPEnableCountdown(g.getSecsToPVP(), g.getStartT(), Main.getInstance().getConfig().getBoolean("warnings.pvp", true))).schedule();
         }
         HandlerList.unregisterAll(g.getFreezePlayers());
         g.setActive(true);

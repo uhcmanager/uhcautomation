@@ -24,7 +24,12 @@ game:
   uhc-mode: true
   spread-distance: 150
 
-### Warning Times ###
+### Warnings ###
+
+warnings:
+  border: true
+  pvp: true
+
 # Times should be listed in seconds, comma-separated (spaces ok), in ascending order.
 # If the times are not integers or not comma separated, loading of warning
 # times will default to the following values:

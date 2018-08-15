@@ -19,13 +19,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
 import usa.cactuspuppy.uhc_automation.Listeners.PlayerMoveListener;
-import usa.cactuspuppy.uhc_automation.Tasks.BorderAnnouncer;
-import usa.cactuspuppy.uhc_automation.Tasks.BorderCountdown;
-import usa.cactuspuppy.uhc_automation.Tasks.DelayReactivate;
-import usa.cactuspuppy.uhc_automation.Tasks.EpisodeAnnouncer;
-import usa.cactuspuppy.uhc_automation.Tasks.LoadingChunksCountdown;
-import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
-import usa.cactuspuppy.uhc_automation.Tasks.TimeAnnouncer;
+import usa.cactuspuppy.uhc_automation.Tasks.*;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,6 +42,7 @@ public class GameInstance {
     @Getter @Setter private Set<UUID> regPlayers;
     @Getter @Setter private Set<UUID> blacklistPlayers;
     @Getter @Setter private int minsToShrink;
+    @Getter @Setter private long secsToPVP;
     @Getter private int initSize;
     @Getter @Setter private int finalSize;
     @Getter @Setter private int spreadDistance;
@@ -194,11 +189,10 @@ public class GameInstance {
         main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
         world.setGameRuleValue("doDaylightCycle", "true");
         world.setGameRuleValue("doWeatherCycle", "true");
-        world.setPVP(true);
         world.setStorm(false);
         world.setWeatherDuration((new Random()).nextInt(48000) + 24000);
         if (minsToShrink > 0) {
-            borderCountdown = (new BorderCountdown(minsToShrink * 60, startT)).schedule();
+            borderCountdown = (new BorderCountdown(minsToShrink * 60, startT, Main.getInstance().getConfig().getBoolean("warnings.border", true))).schedule();
         } else if (minsToShrink == 0) {
             borderShrinking = true;
             world.getWorldBorder().setSize(finalSize, calcBorderShrinkTime());
@@ -211,6 +205,11 @@ public class GameInstance {
         }
         if (epLength != 0) {
             (new EpisodeAnnouncer(epLength, startT)).schedule();
+        }
+        if (secsToPVP == 0) {
+            world.setPVP(true);
+        } else if (secsToPVP > 0) {
+            (new PVPEnableCountdown(secsToPVP, startT, Main.getInstance().getConfig().getBoolean("warnings.pvp", true))).schedule();
         }
         HandlerList.unregisterAll(freezePlayers);
         activePlayers.forEach(this::startPlayer);

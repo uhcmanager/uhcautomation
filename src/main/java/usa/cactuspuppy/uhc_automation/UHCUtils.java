@@ -14,6 +14,7 @@ import org.bukkit.scoreboard.Team;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -543,16 +544,24 @@ public class UHCUtils {
     }
 
     public static Map<String, Integer> secsToHMS(int secs) {
+        return secsToHMS(secs);
+    }
+
+    public static Map<String, Integer> secsToHMS(long secs) {
         Map<String, Integer> hms = new HashMap<>();
 
-        hms.put("hrs", secs / 3600);
-        hms.put("mins", (secs / 60) % 60);
-        hms.put("secs", secs % 60);
+        hms.put("hrs", (int) (secs / 3600));
+        hms.put("mins", (int) ((secs / 60) % 60));
+        hms.put("secs", (int) (secs % 60));
 
         return hms;
     }
 
     public static String secsToFormatString(int secs) {
+        return secsToFormatString((long) secs);
+    }
+
+    public static String secsToFormatString(long secs) {
         Map<String, Integer> hms = secsToHMS(secs);
         return hmsToFormatString(hms.get("hrs"), hms.get("mins"), hms.get("secs"));
     }
@@ -654,10 +663,24 @@ public class UHCUtils {
         UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), "[" + ChatColor.GOLD + ChatColor.BOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.BOLD + p.getDisplayName() + ChatColor.YELLOW +  ChatColor.ITALIC + " is now spectating.");
     }
 
-    public static Optional<List<Long>> getConfigCSV(String path) {
+    public static Optional<List<Long>> getConfigCSLongs(String path) {
         String list = Main.getInstance().getConfig().getString(path);
         if (list == null) { return Optional.empty(); }
         List<Long> longs = new ArrayList<>();
+        List<String> strings = Arrays.asList(list.split("\\s*,\\s*"));
+        try {
+            strings.stream().map(Long::valueOf).sorted().forEachOrdered(longs::add);
+        } catch (NumberFormatException e) {
+            Main.getInstance().getLogger().warning("List at " + path + " contains something other than numbers!");
+            return Optional.empty();
+        }
+        return Optional.of(longs);
+    }
 
+    public static List<Long> getDefaultTimes() {
+        long[] defaultTimes = {1,2,3,4,5,6,7,8,9,10,15,20,30,45,60,120,180,300,600,900,1200,1800,3600};
+        ArrayList<Long> times = new ArrayList<>();
+        Arrays.stream(defaultTimes).forEach(times::add);
+        return times;
     }
 }

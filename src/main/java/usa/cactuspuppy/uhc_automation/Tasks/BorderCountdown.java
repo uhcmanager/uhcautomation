@@ -5,14 +5,14 @@ import org.bukkit.ChatColor;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class BorderCountdown implements Runnable {
-    private long start;
     private long end;
     private LinkedList<Long> warningTimes;
     private long nextWarn;
+    private boolean silent;
 
     private Integer assignedID;
 
@@ -21,17 +21,11 @@ public class BorderCountdown implements Runnable {
      * @param l length of time to shrink (in seconds)
      * @param s start time of game
      */
-    public BorderCountdown(int l, long s) {
-        start = s;
-        long timeDiff = l * 1000;
-        end = s + timeDiff;
+    public BorderCountdown(int l, long s, boolean announce) {
+        end = s + l * 1000;
+        silent = !announce;
         warningTimes = new LinkedList<>();
-        ArrayList<Long> times = new ArrayList<>();
-        if (Main.getInstance().getConfig().getString("warning-times.border") != null) {
-            times =
-        } else {
-
-        }
+        List<Long> times = UHCUtils.getConfigCSLongs("warning-times.border").orElseGet(UHCUtils::getDefaultTimes);
         for (long add : times) {
             if (add > l) {
                 break;
@@ -49,6 +43,7 @@ public class BorderCountdown implements Runnable {
             if (assignedID != null) { Bukkit.getScheduler().cancelTask(assignedID); }
             return;
         }
+        if (silent) return;
         if (System.currentTimeMillis() >= end - nextWarn * 1000) {
             int timeTo = (int) nextWarn;
             if (!warningTimes.isEmpty()) {
