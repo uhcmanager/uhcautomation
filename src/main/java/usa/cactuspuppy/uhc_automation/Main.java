@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.logging.Level;
 
-
 @Plugin(name = "UHC_Automation", version = "1.7")
 @Description("Automates the process of running a UHC")
 @Author("CactusPuppy")
