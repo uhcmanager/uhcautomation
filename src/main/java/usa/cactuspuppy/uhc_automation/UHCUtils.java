@@ -650,7 +650,7 @@ public class UHCUtils {
     }
 
     public static void sendPluginInfo(CommandSender sender) {
-        sender.sendMessage(ChatColor.AQUA + "UHC Automation by CactusPuppy\n"
+        sender.sendMessage(ChatColor.AQUA + "\nUHC Automation by CactusPuppy\n"
                 + "Version " + Main.getInstance().getDescription().getVersion() + "\n"
                 + ChatColor.GREEN + "For command usage, type " + ChatColor.WHITE + ChatColor.ITALIC + "/uhc help");
     }
