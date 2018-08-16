@@ -10,6 +10,8 @@ import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
+import usa.cactuspuppy.uhc_automation.Tasks.BorderCountdown;
+import usa.cactuspuppy.uhc_automation.Tasks.PVPEnableCountdown;
 
 import java.io.*;
 import java.util.*;
@@ -608,15 +610,30 @@ public class UHCUtils {
     public static void sendPlayerInfo(Main m, CommandSender commandSender) {
         //TODO: Expand info given
         int timeElapsedSecs = getSecsElapsed(m);
+        long currTime = System.currentTimeMillis();
         if (timeElapsedSecs == -1) {
             commandSender.sendMessage(ChatColor.RED + "Game has not started yet!");
             return;
         }
         StringBuilder message = new StringBuilder();
-        message.append(ChatColor.GOLD.toString()).append(ChatColor.BOLD.toString()).append(ChatColor.UNDERLINE).append("\nCURRENT GAME STATUS:\n")
-                .append(ChatColor.GREEN.toString()).append(ChatColor.BOLD).append("Time Elapsed: ").append(ChatColor.RESET).append(secsToFormatString(timeElapsedSecs))
-                .append(ChatColor.GREEN.toString()).append(ChatColor.BOLD).append(m.getGameInstance().isTeamMode() ? "\nTeams Remaining: " : "\nPlayers Remaining: ").append(ChatColor.RESET).append(m.getGameInstance().isTeamMode() ? m.getGameInstance().getNumTeams() : m.getGameInstance().getLivePlayers().size())
-                .append(ChatColor.YELLOW.toString()).append(ChatColor.BOLD).append("PVP Enabled: ").append(m.getGameInstance().getWorld().getPVP() ? ChatColor.GREEN : ChatColor.RED).append(m.getGameInstance().getWorld().getPVP());
+        boolean pvp = m.getGameInstance().getWorld().getPVP();
+        boolean border = m.getGameInstance().isBorderShrinking();
+        message.append(ChatColor.GOLD).append(ChatColor.BOLD).append(ChatColor.UNDERLINE).append("\n").append(m.getConfig().getString("even-name", "CURRENT GAME:")).append("\n")
+                .append(ChatColor.DARK_GREEN).append(ChatColor.BOLD).append("Time Elapsed: ").append(ChatColor.RESET).append(secsToFormatString(timeElapsedSecs))
+                .append(ChatColor.AQUA).append(ChatColor.BOLD).append(m.getGameInstance().isTeamMode() ? "\nTeams Remaining: " : "\nPlayers Remaining: ").append(ChatColor.RESET).append(m.getGameInstance().isTeamMode() ? m.getGameInstance().getNumTeams() : m.getGameInstance().getLivePlayers().size());
+        if (pvp) {
+            message.append(ChatColor.DARK_RED).append(ChatColor.BOLD).append("\nPVP is Enabled");
+        } else {
+            long timeToPVP = PVPEnableCountdown.getInstance().getEnableTime() - currTime;
+            message.append(ChatColor.YELLOW).append(ChatColor.BOLD).append("\nPVP Enabled in ").append(ChatColor.RESET).append(secsToHMS(timeToPVP / 1000));
+        }
+        if (border) {
+            message.append(ChatColor.DARK_PURPLE).append(ChatColor.BOLD).append("\nWorld border shrinking!");
+        } else {
+            long timeToBorder = BorderCountdown.getInstance().getEnd() - currTime;
+            message.append(ChatColor.GREEN).append(ChatColor.BOLD).append("\nBorder begins shrinking in ").append(ChatColor.RESET).append(secsToHMS(timeToBorder));
+        }
+        commandSender.sendMessage(message.toString());
     }
 
     public static String getRules(Main m) {

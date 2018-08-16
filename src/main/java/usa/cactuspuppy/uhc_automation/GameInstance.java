@@ -51,7 +51,7 @@ public class GameInstance {
     private boolean uhcMode;
     @Getter private Scoreboard scoreboard;
     @Setter private int borderCountdown;
-    private boolean borderShrinking;
+    @Getter private boolean borderShrinking;
     @Getter private PlayerMoveListener freezePlayers;
     @Getter @Setter private InfoAnnouncer infoAnnouncer;
     @Getter @Setter private Set<Player> giveBoats;
