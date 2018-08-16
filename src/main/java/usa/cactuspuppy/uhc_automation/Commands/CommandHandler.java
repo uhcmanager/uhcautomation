@@ -93,6 +93,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
         BaseComponent[] infoHeader = new ComponentBuilder("Hovering over a command provides more info, clicking inserts the command into your chat.\nAfter inserting a command into chat, pressing TAB will bring up a list of acceptable values, if possible.\n<...> denotes a required value, [...] is an optional value.\n").color(net.md_5.bungee.api.ChatColor.GRAY).create();
         BaseComponent[] listHeader = new ComponentBuilder("Commands:\n").color(net.md_5.bungee.api.ChatColor.YELLOW).create();
 
+        //Template
         /*BaseComponent FILLIN_Interact = new TextComponent("/uhc SUBCOMMAND");
         FILLIN_Interact.setColor(net.md_5.bungee.api.ChatColor.AQUA);
         FILLIN_Interact.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("DESCRIPTION OF SUBCOMMAND\n").color(net.md_5.bungee.api.ChatColor.WHITE)
@@ -133,7 +134,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
         optionInteract.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/uhc options "));
         BaseComponent[] option = new ComponentBuilder("- ").color(net.md_5.bungee.api.ChatColor.RED).append(optionInteract).append(" Modifies game options\n").retain(ComponentBuilder.FormatRetention.NONE).color(net.md_5.bungee.api.ChatColor.GREEN).create();
 
-        BaseComponent prepInteract = new TextComponent("/uhc prep [noload:load]");
+        BaseComponent prepInteract = new TextComponent("/uhc prep [noload:load:cancel]");
         prepInteract.setColor(net.md_5.bungee.api.ChatColor.AQUA);
         prepInteract.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Prepares the game world for the game. If no second argument\nis specified, defaults to noload.\n").color(net.md_5.bungee.api.ChatColor.WHITE)
                 .append("Arguments:\n").color(net.md_5.bungee.api.ChatColor.BLUE).underlined(true).bold(true)

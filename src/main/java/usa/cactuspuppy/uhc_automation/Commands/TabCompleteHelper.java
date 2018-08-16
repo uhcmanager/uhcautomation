@@ -23,6 +23,8 @@ public class TabCompleteHelper implements TabCompleter {
             return CommandInfo.onTabComplete(Arrays.copyOfRange(args, 1, args.length));
         } else if (subcommand.equalsIgnoreCase("options") || Arrays.asList(CommandHandler.getOPTIONS_ALIASES()).contains(subcommand)) {
             return CommandOptions.onTabComplete(Arrays.copyOfRange(args, 1, args.length));
+        } else if (subcommand.equalsIgnoreCase("prep")) {
+            return CommandPrep.onTabComplete(Arrays.copyOfRange(args, 1, args.length));
         } else if (subcommand.equalsIgnoreCase("setworld")) {
             return CommandSetWorld.onTabComplete(Arrays.copyOfRange(args, 1, args.length));
         } else if (subcommand.equalsIgnoreCase("register") || Arrays.asList(CommandHandler.getREGISTER_ALIASES()).contains(subcommand) || subcommand.equalsIgnoreCase("unregister") || Arrays.asList(CommandHandler.getUNREGISTER_ALIASES()).contains(subcommand)) {

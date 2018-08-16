@@ -2,10 +2,9 @@ package usa.cactuspuppy.uhc_automation.Commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.Tasks.GenerateChunksHelper;
 import usa.cactuspuppy.uhc_automation.Tasks.PreGameCountdown;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
@@ -18,7 +17,9 @@ public class CommandStart {
             sender.sendMessage(ChatColor.RED + "A game is already in progress! Use " + ChatColor.RESET + "/uhcreset " + ChatColor.RED + "to stop the game first!");
             return;
         }
-        if ()
+        if (GenerateChunksHelper.getInstance() != null) {
+            sender.sendMessage(ChatColor.RED + "Chunk pre-generation is currently in progress! Please wait for it to complete or cancel it with " + ChatColor.RESET + "/uhc prep cancel");
+        }
         if (PreGameCountdown.instanced) {
             if (args.length == 0) {
                 PreGameCountdown.getInstance().instaStart();
