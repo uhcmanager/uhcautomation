@@ -612,10 +612,11 @@ public class UHCUtils {
             commandSender.sendMessage(ChatColor.RED + "Game has not started yet!");
             return;
         }
-        commandSender.sendMessage(ChatColor.GOLD.toString() + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "\nCURRENT GAME STATUS:\n" +
-                ChatColor.GREEN.toString() + ChatColor.BOLD + "Time Elapsed: " + ChatColor.RESET + secsToFormatString(timeElapsedSecs)
-                + ChatColor.GREEN.toString() + ChatColor.BOLD + (m.getGameInstance().isTeamMode() ? "\nTeams Remaining: " : "\nPlayers Remaining: ") + ChatColor.RESET + (m.getGameInstance().isTeamMode() ? m.getGameInstance().getNumTeams() : m.getGameInstance().getLivePlayers().size())
-                + ChatColor.YELLOW.toString() + ChatColor.BOLD + "PVP Enabled: ");
+        StringBuilder message = new StringBuilder();
+        message.append(ChatColor.GOLD.toString()).append(ChatColor.BOLD.toString()).append(ChatColor.UNDERLINE).append("\nCURRENT GAME STATUS:\n")
+                .append(ChatColor.GREEN.toString()).append(ChatColor.BOLD).append("Time Elapsed: ").append(ChatColor.RESET).append(secsToFormatString(timeElapsedSecs))
+                .append(ChatColor.GREEN.toString()).append(ChatColor.BOLD).append(m.getGameInstance().isTeamMode() ? "\nTeams Remaining: " : "\nPlayers Remaining: ").append(ChatColor.RESET).append(m.getGameInstance().isTeamMode() ? m.getGameInstance().getNumTeams() : m.getGameInstance().getLivePlayers().size())
+                .append(ChatColor.YELLOW.toString()).append(ChatColor.BOLD).append("PVP Enabled: ").append(m.getGameInstance().getWorld().getPVP() ? ChatColor.GREEN : ChatColor.RED).append(m.getGameInstance().getWorld().getPVP());
     }
 
     public static String getRules(Main m) {
