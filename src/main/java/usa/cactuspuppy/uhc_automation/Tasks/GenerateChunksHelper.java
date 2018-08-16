@@ -35,6 +35,7 @@ public class GenerateChunksHelper implements Runnable {
     public void run() {
         if (chunkX == maxChunkX && chunkZ == maxChunkZ) {
             generateChunk(world.getChunkAt(chunkX, chunkZ));
+            Main.getInstance().getLogger().info("Generated chunk at chunk coords X: " + chunkX + ", Z: " + chunkZ);
             long timeElapsed = System.currentTimeMillis() - startTime;
             Main.getInstance().getLogger().info(ChatColor.GREEN + "Chunk pre-generation complete! Took " + timeElapsed / 1000 + " seconds (" + timeElapsed + " ms)");
             Bukkit.getScheduler().cancelTask(schedulerID);

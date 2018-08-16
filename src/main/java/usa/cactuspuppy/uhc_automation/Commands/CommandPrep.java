@@ -1,10 +1,12 @@
 package usa.cactuspuppy.uhc_automation.Commands;
 
 import lombok.NoArgsConstructor;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.Tasks.GenerateChunksHelper;
+import usa.cactuspuppy.uhc_automation.Tasks.PreGameCountdown;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,13 +28,15 @@ public class CommandPrep {
             if (GenerateChunksHelper.getInstance() != null) {
                 sender.sendMessage(ChatColor.RED + "Chunk pre-generation is already in progress! Use " + ChatColor.RESET + "/uhc prep cancel");
                 return;
-            }
+            } else if (PreGameCountdown.instanced || Main.getInstance().getGameInstance().isActive())
             (new GenerateChunksHelper()).schedule();
         } else if (args[0].equalsIgnoreCase("cancel")) {
             if (GenerateChunksHelper.getInstance() == null) {
                 sender.sendMessage(ChatColor.RED + "No chunk generation is currently in progress.");
                 return;
             }
+            Bukkit.getScheduler().cancelTask(GenerateChunksHelper.getInstance().getSchedulerID());
+            sender.sendMessage(ChatColor.GREEN + "Successfully halted chunk pre-generation.");
         } else if (!args[0].equalsIgnoreCase("noload")) {
             sender.sendMessage(ChatColor.RED + "Unrecognized argument " + ChatColor.RESET + args[0] + ".\nValid arguments: " + ChatColor.RESET + "noload, load, cancel");
         }
