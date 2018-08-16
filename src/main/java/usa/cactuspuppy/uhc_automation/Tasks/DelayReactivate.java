@@ -23,7 +23,7 @@ public class DelayReactivate implements Runnable {
 
     @Override
     public void run() {
-        g.setTimeAnnouncer(new TimeAnnouncer());
+        g.setInfoAnnouncer(new InfoAnnouncer());
         if (!UHCUtils.isWorldData(g.getMain())) {
             return;
         }
@@ -61,6 +61,8 @@ public class DelayReactivate implements Runnable {
             (new PVPEnableCountdown(g.getSecsToPVP(), g.getStartT(), Main.getInstance().getConfig().getBoolean("warnings.pvp", true))).schedule();
         }
         HandlerList.unregisterAll(g.getFreezePlayers());
+        g.getInfoAnnouncer().schedule();
+        g.getInfoAnnouncer().showBoard();
         g.setActive(true);
     }
 

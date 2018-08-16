@@ -7,16 +7,16 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.InfoDisplayMode;
 import usa.cactuspuppy.uhc_automation.InfoModeCache;
+import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class TimeAnnouncer implements Runnable {
+public class InfoAnnouncer implements Runnable {
     private Set<UUID> objectivePlayerSet = new HashSet<>();
     private Scoreboard timeScoreboard;
     private Objective obj;
@@ -24,7 +24,7 @@ public class TimeAnnouncer implements Runnable {
 
     private static final String TIME_TEAM_ID = ChatColor.BLACK.toString() + ChatColor.WHITE.toString();
 
-    public TimeAnnouncer() {
+    public InfoAnnouncer() {
         timeScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         if (timeScoreboard.getObjective("TimeDisplay") == null) {
             timeScoreboard.registerNewObjective("TimeDisplay", "dummy");
@@ -46,13 +46,14 @@ public class TimeAnnouncer implements Runnable {
         obj.getScore(TIME_TEAM_ID).setScore(14);
     }
 
-    public void removePlayerfromObjectiveSet(Player p) {
+    public void removePlayerFromObjectiveSet(Player p) {
         Main.getInstance().getGameInstance().bindPlayertoScoreboard(p);
         objectivePlayerSet.remove(p.getUniqueId());
     }
 
     @Override
     public void run() {
+        timeDisplay.setPrefix(ChatColor.WHITE + UHCUtils.secsToFormatString2(UHCUtils.getSecsElapsed(Main.getInstance())));
         Main.getInstance().getGameInstance().getActivePlayers().stream().map(Bukkit::getPlayer).forEach(this::showTimetoPlayer);
     }
 
@@ -66,7 +67,6 @@ public class TimeAnnouncer implements Runnable {
                 player.setScoreboard(timeScoreboard);
                 objectivePlayerSet.add(player.getUniqueId());
             }
-            timeDisplay.setPrefix(ChatColor.WHITE + UHCUtils.secsToFormatString2(UHCUtils.getSecsElapsed(Main.getInstance())));
         }
     }
 

@@ -46,7 +46,7 @@ public class CommandInfo {
                 if (curr == next) {
                     return;
                 } else if (curr == InfoDisplayMode.SCOREBOARD) {
-                    Main.getInstance().getGameInstance().getTimeAnnouncer().removePlayerfromObjectiveSet(p);
+                    Main.getInstance().getGameInstance().getInfoAnnouncer().removePlayerFromObjectiveSet(p);
                 }
                 InfoModeCache.getInstance().storePlayerPref(p.getUniqueId(), next);
                 commandSender.sendMessage(ChatColor.GREEN + "Changed info display preference to " + ChatColor.RESET + next.name().toLowerCase());

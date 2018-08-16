@@ -53,7 +53,7 @@ public class GameInstance {
     @Setter private int borderCountdown;
     private boolean borderShrinking;
     @Getter private PlayerMoveListener freezePlayers;
-    @Getter @Setter private TimeAnnouncer timeAnnouncer;
+    @Getter @Setter private InfoAnnouncer infoAnnouncer;
     @Getter @Setter private Set<Player> giveBoats;
     private int loadChunksCDID;
     private int teamsRemaining;
@@ -215,13 +215,13 @@ public class GameInstance {
         HandlerList.unregisterAll(freezePlayers);
         activePlayers.forEach(this::startPlayer);
         giveBoats = null;
-        timeAnnouncer.schedule();
-        timeAnnouncer.showBoard();
+        infoAnnouncer.schedule();
+        infoAnnouncer.showBoard();
     }
 
     public void stop() {
         (new RestartTasks()).schedule();
-        timeAnnouncer.clearBoard();
+        infoAnnouncer.clearBoard();
         long stopT = System.currentTimeMillis();
         long timeElapsed;
         if (startT == 0) {
@@ -385,26 +385,28 @@ public class GameInstance {
         } else {
             worldName = "NOT BOUND";
         }
-        s.sendMessage("\n" + ChatColor.GOLD.toString() + ChatColor.BOLD + "Current Status:");
-        s.sendMessage("World: " + worldName);
-        s.sendMessage("Event Name: " + main.getConfig().getString("event-name"));
-        s.sendMessage("Active: " + active);
-        s.sendMessage("Team Mode: " + teamMode);
-        if (DEBUG) { s.sendMessage(ChatColor.RED + "DEBUG MODE ACTIVE"); }
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n").append(ChatColor.GOLD).append(ChatColor.BOLD).append("Current Status:");
+        if (DEBUG) { builder.append("\n").append(ChatColor.RED).append(ChatColor.BOLD).append("DEBUG MODE ACTIVE"); }
+        builder.append("\n").append(ChatColor.AQUA).append("World: ").append(ChatColor.RESET).append(worldName);
+        builder.append("\n").append(ChatColor.YELLOW).append("Event Name: ").append(ChatColor.RESET).append(main.getConfig().getString("event-name"));
+        builder.append("\n").append(ChatColor.AQUA).append("Active: ").append((active ? ChatColor.GREEN : ChatColor.RED)).append(active);
+        builder.append("\n").append(ChatColor.YELLOW).append("Team Mode: ").append((teamMode ? ChatColor.GREEN : ChatColor.RED)).append(teamMode);
         if (active) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
-            s.sendMessage("Start Time: " + sdf.format(startT));
-            s.sendMessage("Time Elapsed: " + UHCUtils.secsToFormatString(UHCUtils.getSecsElapsed(main)));
+            builder.append("\n\n").append(ChatColor.AQUA).append("Game started ").append(sdf.format(startT));
+            builder.append("\n").append(ChatColor.GREEN).append("Time Elapsed: ").append(UHCUtils.secsToFormatString(UHCUtils.getSecsElapsed(main)));
             if (teamMode) {
-                s.sendMessage("Teams Remaining: " + teamsRemaining);
+                builder.append("\n").append(ChatColor.AQUA).append("Teams Remaining: ").append((teamsRemaining <= 3 ? ChatColor.RED : ChatColor.GREEN)).append(teamsRemaining);
             } else {
-                s.sendMessage("Player Remaining: " + livePlayers.size());
+                builder.append("\n").append(ChatColor.AQUA).append("Players Remaining: ").append((livePlayers.size() <= 3 ? ChatColor.RED : ChatColor.GREEN)).append(livePlayers.size());
             }
-            s.sendMessage("Border Shrinking: " + borderShrinking);
+            builder.append("\n").append(ChatColor.GREEN).append("Border Shrinking: ").append((borderShrinking ? ChatColor.GREEN : ChatColor.RED)).append(borderShrinking);
+            builder.append("\n").append(ChatColor.AQUA).append("PVP Enabled: ").append((world.getPVP() ? ChatColor.GREEN : ChatColor.RED)).append(world.getPVP());
         }
-        s.sendMessage("All Players (UUIDs)");
+        builder.append("\n").append(ChatColor.AQUA).append(ChatColor.UNDERLINE).append("Registered Players:");
         if (regPlayers.isEmpty()) {
-            s.sendMessage("  " + "NONE");
+            builder.append("\n  ").append(ChatColor.RED).append("NONE");
         } else {
             for (UUID u : regPlayers) {
                 String name;
@@ -417,37 +419,36 @@ public class GameInstance {
                     name = p.getName();
                     online = "Online";
                 }
-                s.sendMessage("  " + name + " - " + online);
+                builder.append("\n  ").append(ChatColor.RESET).append(name).append(" - ").append(online);
             }
         }
-        s.sendMessage("Logged-In Players:");
-        if (activePlayers.isEmpty()) {
-            s.sendMessage("  " + "NONE");
-        } else {
-            for (UUID u : activePlayers) {
-                s.sendMessage("  " + Bukkit.getPlayer(u).getName());
-            }
-        }
-        s.sendMessage("Alive Players:");
+        builder.append("\n").append(ChatColor.AQUA).append(ChatColor.UNDERLINE).append("Alive Players:");
         if (livePlayers.isEmpty()) {
-            s.sendMessage("  " + "NONE");
+            builder.append("\n  ").append(ChatColor.RED).append("NONE");
         } else {
             for (UUID u : livePlayers) {
-                s.sendMessage("  " + Bukkit.getPlayer(u).getName());
+                builder.append("\n  ").append(ChatColor.RESET).append(Bukkit.getPlayer(u).getName());
             }
         }
-        s.sendMessage("Dead/Blacklisted Players (UUIDs):");
+        builder.append("\n").append(ChatColor.AQUA).append(ChatColor.UNDERLINE).append("Dead/Blacklisted Players:");
         if (blacklistPlayers.isEmpty()) {
-            s.sendMessage("  " + "NONE");
+            builder.append("\n  ").append(ChatColor.RED).append("NONE");
         } else {
             for (UUID u : blacklistPlayers) {
-                s.sendMessage("  " + u.toString());
+                Player p = Bukkit.getPlayer(u);
+                if (p != null) {
+                    builder.append("\n  ").append(ChatColor.RESET).append(p.getName());
+                } else {
+                    builder.append("\n  ").append(ChatColor.RESET).append(u.toString());
+                }
             }
         }
-        s.sendMessage("Initial Size: " + initSize);
-        s.sendMessage("Final Size: " + finalSize);
-        s.sendMessage("Mins to Border Shrink: " + minsToShrink);
-        s.sendMessage("Episode Marker Interval: " + epLength + " mins");
+        builder.append("\n").append(ChatColor.AQUA).append("Initial Size: ").append(ChatColor.RESET).append(initSize);
+        builder.append("\n").append(ChatColor.GREEN).append("Final Size: ").append(ChatColor.RESET).append(finalSize);
+        builder.append("\n").append(ChatColor.AQUA).append("Border Delay Length: ").append(ChatColor.RESET).append(minsToShrink).append(" mins");
+        builder.append("\n").append(ChatColor.GREEN).append("Episode Marker Interval: ").append(ChatColor.RESET).append(epLength).append(" mins");
+        builder.append("\n").append(ChatColor.AQUA).append("PVP Delay Length: ").append(ChatColor.RESET).append(secsToPVP).append(" secs");
+        s.sendMessage(builder.toString());
     }
 
     @SuppressWarnings("deprecation")

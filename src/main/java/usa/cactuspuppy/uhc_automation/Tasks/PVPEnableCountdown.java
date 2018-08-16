@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.Tasks;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import usa.cactuspuppy.uhc_automation.Main;
@@ -9,14 +10,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class PVPEnableCountdown implements Runnable {
-    private long enableTime;
+    @Getter private long enableTime;
     private LinkedList<Long> announceTimes;
     private long nextAnnounce;
     private boolean silent;
 
+    @Getter private static PVPEnableCountdown instance;
+
     private Integer assignedID;
 
     public PVPEnableCountdown(long secs, long startT, boolean announce) {
+        instance = this;
         enableTime = startT + secs * 1000;
         silent = !announce;
         announceTimes = new LinkedList<>();

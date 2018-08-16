@@ -14,7 +14,6 @@ import org.bukkit.scoreboard.Team;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -324,7 +323,7 @@ public class UHCUtils {
     }
 
     public static boolean spreadplayers(GameInstance g) {
-        double range = g.getInitSize() / 2;
+        double range = g.getInitSize() / 2.0;
         boolean teams = g.isTeamMode() && g.isRespectTeams();
 
         //May be allowed to be changed in future, TBD
@@ -544,7 +543,7 @@ public class UHCUtils {
     }
 
     public static Map<String, Integer> secsToHMS(int secs) {
-        return secsToHMS(secs);
+        return secsToHMS((long) secs);
     }
 
     public static Map<String, Integer> secsToHMS(long secs) {
@@ -567,7 +566,7 @@ public class UHCUtils {
     }
 
     public static String hmsToFormatString(int hrs, int mins, int secs) {
-        assert hrs >= 0 && mins >= 0 && secs >= 0;
+        assert (hrs >= 0) && (mins >= 0) && (secs >= 0);
 
         if (hrs == 0 && mins == 0 && secs == 0) {
             return "0 seconds";
@@ -613,8 +612,10 @@ public class UHCUtils {
             commandSender.sendMessage(ChatColor.RED + "Game has not started yet!");
             return;
         }
-        commandSender.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD
-                + "Time Elapsed: " + ChatColor.RESET + secsToFormatString(timeElapsedSecs));
+        commandSender.sendMessage(ChatColor.GOLD.toString() + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "\nCURRENT GAME STATUS:\n" +
+                ChatColor.GREEN.toString() + ChatColor.BOLD + "Time Elapsed: " + ChatColor.RESET + secsToFormatString(timeElapsedSecs)
+                + ChatColor.GREEN.toString() + ChatColor.BOLD + (m.getGameInstance().isTeamMode() ? "\nTeams Remaining: " : "\nPlayers Remaining: ") + ChatColor.RESET + (m.getGameInstance().isTeamMode() ? m.getGameInstance().getNumTeams() : m.getGameInstance().getLivePlayers().size())
+                + ChatColor.YELLOW.toString() + ChatColor.BOLD + "PVP Enabled: ");
     }
 
     public static String getRules(Main m) {

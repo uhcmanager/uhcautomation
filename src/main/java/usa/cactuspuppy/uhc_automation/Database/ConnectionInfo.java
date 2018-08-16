@@ -1,4 +1,4 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Database;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,4 +7,5 @@ import lombok.Data;
 public @Data class ConnectionInfo {
     private String host, database, username, password;
     private int port;
+    private String method, file;
 }

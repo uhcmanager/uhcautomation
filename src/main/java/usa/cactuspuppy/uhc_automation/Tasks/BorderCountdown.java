@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.Tasks;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import usa.cactuspuppy.uhc_automation.Main;
@@ -9,10 +10,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class BorderCountdown implements Runnable {
-    private long end;
+    @Getter private long end;
     private LinkedList<Long> warningTimes;
     private long nextWarn;
     private boolean silent;
+
+    @Getter private static BorderCountdown instance;
 
     private Integer assignedID;
 
@@ -22,6 +25,7 @@ public class BorderCountdown implements Runnable {
      * @param s start time of game
      */
     public BorderCountdown(int l, long s, boolean announce) {
+        instance = this;
         end = s + l * 1000;
         silent = !announce;
         warningTimes = new LinkedList<>();

@@ -1,6 +1,9 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.Database;
 
 import org.bukkit.Bukkit;
+import usa.cactuspuppy.uhc_automation.InfoDisplayMode;
+import usa.cactuspuppy.uhc_automation.InfoModeCache;
+import usa.cactuspuppy.uhc_automation.Main;
 
 import java.net.ConnectException;
 import java.sql.Connection;
@@ -44,9 +47,11 @@ public class SQLAPI {
             } else {
                 Main.getInstance().getLogger().info("uhcinfo_mode table exists, using that...");
             }
-        } catch (SQLException | ConnectException e) {
+        } catch (SQLException e) {
             Bukkit.getLogger().severe("SQLAPI Error: Could not create uhcinfo_mode table.");
             e.printStackTrace();
+        } catch (ConnectException e) {
+            Bukkit.getLogger().severe("Could not establish connection to database! Check your config.yml");
         }
     }
 

@@ -3,7 +3,6 @@ package usa.cactuspuppy.uhc_automation;
 import lombok.Getter;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.java.annotation.command.Command;
 import org.bukkit.plugin.java.annotation.permission.ChildPermission;
 import org.bukkit.plugin.java.annotation.permission.Permission;
 import org.bukkit.plugin.java.annotation.plugin.ApiVersion;
@@ -14,6 +13,8 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import org.bukkit.scheduler.BukkitRunnable;
 import usa.cactuspuppy.uhc_automation.Commands.CommandHandler;
 import usa.cactuspuppy.uhc_automation.Commands.TabCompleteHelper;
+import usa.cactuspuppy.uhc_automation.Database.ConnectionInfo;
+import usa.cactuspuppy.uhc_automation.Database.SQLAPI;
 import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
 import usa.cactuspuppy.uhc_automation.Tasks.SQLRepeating;
 
@@ -129,7 +130,7 @@ public class Main extends JavaPlugin {
     }
 
     private void createConnectionInfo() {
-        connectionInfo = new ConnectionInfo(getConfig().getString("db.host"), getConfig().getString("db.database"), getConfig().getString("db.username"), getConfig().getString("db.password"), getConfig().getInt("db.port"));
+        connectionInfo = new ConnectionInfo(getConfig().getString("db.host"), getConfig().getString("db.database"), getConfig().getString("db.username"), getConfig().getString("db.password"), getConfig().getInt("db.port"), getConfig().getString("db.method", "sqlite"), getConfig().getString("db.file"));
     }
 
     public Optional<Connection> getConnection() {
@@ -138,8 +139,13 @@ public class Main extends JavaPlugin {
                 if (connectionInfo == null) {
                     return Optional.empty();
                 }
-                String connectionURL = "jdbc:mysql://" + connectionInfo.getHost() + ":" + connectionInfo.getPort() + "/" + connectionInfo.getDatabase();
-                return Optional.ofNullable(DriverManager.getConnection(connectionURL, connectionInfo.getUsername(), connectionInfo.getPassword()));
+                if (connectionInfo.getMethod().equals("sqlite")) {
+                    return Optional.ofNullable(DriverManager.getConnection("jdbc:sqlite:" + Main.getInstance().getDataFolder() + connectionInfo.getFile()));
+                } else if (connectionInfo.getMethod().equals("mysql")) {
+                    String connectionURL = "jdbc:mysql://" + connectionInfo.getHost() + ":" + connectionInfo.getPort();
+                    return Optional.ofNullable(DriverManager.getConnection(connectionURL, connectionInfo.getUsername(), connectionInfo.getPassword()));
+                }
+                return Optional.empty();
             } catch (SQLException e) {
                 getLogger().warning("Unable to obtain database connection! Double check your config.yml is correct.");
                 e.printStackTrace();
