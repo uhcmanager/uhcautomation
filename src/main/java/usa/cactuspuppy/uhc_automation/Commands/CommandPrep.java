@@ -22,13 +22,16 @@ public class CommandPrep {
         }
         if (args.length == 0) {
             Main.getInstance().getGameInstance().prep();
+            sender.sendMessage(ChatColor.GREEN + "Successfully prepared game world for game!");
             return;
         }
         if (args[0].equalsIgnoreCase("load")) {
             if (GenerateChunksHelper.getInstance() != null) {
                 sender.sendMessage(ChatColor.RED + "Chunk pre-generation is already in progress! Use " + ChatColor.RESET + "/uhc prep cancel");
                 return;
-            } else if (PreGameCountdown.instanced || Main.getInstance().getGameInstance().isActive())
+            } else if (PreGameCountdown.instanced || Main.getInstance().getGameInstance().isActive()) {
+                sender.sendMessage(ChatColor.RED + "Game is starting or has started! Halt the game first with " + ChatColor.RESET + "/uhc reset" + ChatColor.RED + " or wait for the game to complete before pregenerating chunks!");
+            }
             (new GenerateChunksHelper()).schedule();
         } else if (args[0].equalsIgnoreCase("cancel")) {
             if (GenerateChunksHelper.getInstance() == null) {
