@@ -18,6 +18,7 @@ public class CommandStart {
             sender.sendMessage(ChatColor.RED + "A game is already in progress! Use " + ChatColor.RESET + "/uhcreset " + ChatColor.RED + "to stop the game first!");
             return;
         }
+        if ()
         if (PreGameCountdown.instanced) {
             if (args.length == 0) {
                 PreGameCountdown.getInstance().instaStart();
