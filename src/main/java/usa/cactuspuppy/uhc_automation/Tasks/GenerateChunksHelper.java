@@ -10,13 +10,15 @@ import usa.cactuspuppy.uhc_automation.Main;
 import java.util.logging.Level;
 
 public class GenerateChunksHelper implements Runnable {
-    @Getter private static GenerateChunksHelper instance;
+    @Getter
+    private static GenerateChunksHelper instance;
     private long startTime;
     private int minChunkX, maxChunkX, minChunkZ, maxChunkZ;
     private int chunkX, chunkZ;
     private World world;
 
-    @Getter private int schedulerID;
+    @Getter
+    private int schedulerID;
 
     public GenerateChunksHelper() {
         startTime = System.currentTimeMillis();
@@ -47,6 +49,8 @@ public class GenerateChunksHelper implements Runnable {
         generateChunk(world.getChunkAt(chunkX, chunkZ));
         Main.getInstance().getLogger().log(Level.FINE, "Generated chunk at chunk coords X: " + chunkX + ", Z: " + chunkZ);
         if (chunkZ == maxChunkZ) {
+            double completion = (chunkX - minChunkX) / (double) (maxChunkX - minChunkX);
+            Main.getInstance().getLogger().info(String.format(ChatColor.YELLOW + "Chunk pre-generation " + ChatColor.RESET + "%.2d" + ChatColor.YELLOW + " complete", completion));
             chunkX++;
             chunkZ = minChunkZ;
         } else {
@@ -55,7 +59,9 @@ public class GenerateChunksHelper implements Runnable {
     }
 
     private static void generateChunk(Chunk chunk) {
-        if (chunk.isLoaded()) { return; }
+        if (chunk.isLoaded()) {
+            return;
+        }
         chunk.load(true);
         chunk.unload(true);
     }
@@ -66,5 +72,9 @@ public class GenerateChunksHelper implements Runnable {
 
     public void schedule() {
         schedulerID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), this, 0L, 2L);
+    }
+
+    public static void clearInstance() {
+        instance = null;
     }
 }

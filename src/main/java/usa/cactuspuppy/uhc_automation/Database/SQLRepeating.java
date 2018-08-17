@@ -1,7 +1,5 @@
-package usa.cactuspuppy.uhc_automation.Tasks;
+package usa.cactuspuppy.uhc_automation.Database;
 
-
-import usa.cactuspuppy.uhc_automation.Database.SQLAPI;
 
 import java.util.List;
 import java.util.UUID;

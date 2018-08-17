@@ -40,6 +40,7 @@ public class CommandPrep {
                 return;
             }
             Bukkit.getScheduler().cancelTask(GenerateChunksHelper.getInstance().getSchedulerID());
+            GenerateChunksHelper.clearInstance();
             sender.sendMessage(ChatColor.GREEN + "Successfully halted chunk pre-generation.");
         } else if (!args[0].equalsIgnoreCase("noload")) {
             sender.sendMessage(ChatColor.RED + "Unrecognized argument " + ChatColor.RESET + args[0] + ".\nValid arguments: " + ChatColor.RESET + "noload, load, cancel");
