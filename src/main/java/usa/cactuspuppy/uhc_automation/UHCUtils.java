@@ -618,7 +618,7 @@ public class UHCUtils {
         StringBuilder message = new StringBuilder();
         boolean pvp = m.getGameInstance().getWorld().getPVP();
         boolean border = m.getGameInstance().isBorderShrinking();
-        message.append(ChatColor.GOLD).append(ChatColor.BOLD).append(ChatColor.UNDERLINE).append("\n").append(m.getConfig().getString("even-name", "CURRENT GAME:")).append("\n")
+        message.append(ChatColor.GOLD).append(ChatColor.BOLD).append(ChatColor.UNDERLINE).append("\n").append(m.getConfig().getString("event-name", "CURRENT GAME:")).append("\n")
                 .append(ChatColor.DARK_GREEN).append(ChatColor.BOLD).append("Time Elapsed: ").append(ChatColor.RESET).append(secsToFormatString(timeElapsedSecs))
                 .append(ChatColor.AQUA).append(ChatColor.BOLD).append(m.getGameInstance().isTeamMode() ? "\nTeams Remaining: " : "\nPlayers Remaining: ").append(ChatColor.RESET).append(m.getGameInstance().isTeamMode() ? m.getGameInstance().getNumTeams() : m.getGameInstance().getLivePlayers().size());
         if (pvp) {

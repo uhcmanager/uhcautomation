@@ -41,6 +41,8 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        //permission check
+        boolean hasAdmin = sender.hasPermission("uhc.admin");
 
         //alias handling
         if (Arrays.asList(REGISTER_ALIASES).contains(subcommand)) {
@@ -82,6 +84,10 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 
     private void help(CommandSender sender) {
         sender.spigot().sendMessage(buildHelpMsg(sender.hasPermission("uhc.admin")));
+    }
+
+    private void permissionDeny(CommandSender sender) {
+        sender.sendMessage(ChatColor.RED + "You do not have permission to run this command!");
     }
 
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {

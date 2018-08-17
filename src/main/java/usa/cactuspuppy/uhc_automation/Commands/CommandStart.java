@@ -46,6 +46,7 @@ public class CommandStart {
             } catch (NumberFormatException e) {
                 sender.sendMessage(ChatColor.RED + "Usage: /uhc start [secs]");
             }
+            return;
         }
         sender.sendMessage(ChatColor.RED + "Usage: /uhc start [secs]");
     }
