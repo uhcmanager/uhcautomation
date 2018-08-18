@@ -37,6 +37,7 @@ public class GenerateChunksHelper implements Runnable {
         instance = this;
         Main.getInstance().getLogger().info(String.format("Chunk pre-generation %s. Lag may occur during this time...", (running ? "resumed" : "initiated")));
         UHCUtils.broadcastMessage("[" + ChatColor.GOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.DARK_RED + ChatColor.BOLD + "Chunk pre-generation beginning. Severe lag may occur.");
+        running = true;
     }
 
     @Override
@@ -45,7 +46,7 @@ public class GenerateChunksHelper implements Runnable {
             generateChunk(world.getChunkAt(chunkX, chunkZ));
             Main.getInstance().getLogger().fine("Generated chunk at chunk coords X: " + chunkX + ", Z: " + chunkZ);
             long timeElapsed = System.currentTimeMillis() - startTime;
-            Main.getInstance().getLogger().info(ChatColor.GREEN + "Chunk pre-generation complete! Took " + timeElapsed / 1000 + " seconds (" + timeElapsed + " ms)");
+            Main.getInstance().getLogger().info("Chunk pre-generation complete! Took " + timeElapsed / 1000 + " seconds (" + timeElapsed + " ms)");
             Bukkit.getScheduler().cancelTask(schedulerID);
             instance = null;
             return;
