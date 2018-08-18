@@ -15,15 +15,19 @@ public class GenerateChunksHelper implements Runnable {
     @Getter private static boolean running;
 
     private long startTime;
+    private static long prevElapsed;
     private int minChunkX, maxChunkX, minChunkZ, maxChunkZ;
     private static int chunkX, chunkZ;
     private World world;
+
+    private int sideLength;
 
     @Getter
     private int schedulerID;
 
     public GenerateChunksHelper() {
         startTime = System.currentTimeMillis();
+        instance = this;
         world = Main.getInstance().getGameInstance().getWorld();
         int radius = blockCoordtoChunkCoord(Main.getInstance().getGameInstance().getInitSize() / 2) + 1;
         this.minChunkX = -radius;
@@ -33,8 +37,9 @@ public class GenerateChunksHelper implements Runnable {
         if (!running) {
             chunkX = minChunkX;
             chunkZ = minChunkZ;
+            prevElapsed = 0;
         }
-        instance = this;
+        sideLength = (maxChunkX - minChunkX) + 1;
         Main.getInstance().getLogger().info(String.format("Chunk pre-generation %s. Lag may occur during this time...", (running ? "resumed" : "initiated")));
         UHCUtils.broadcastMessage("[" + ChatColor.GOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.DARK_RED + ChatColor.BOLD + "Chunk pre-generation beginning. Severe lag may occur.");
         running = true;
@@ -46,18 +51,19 @@ public class GenerateChunksHelper implements Runnable {
             generateChunk(world.getChunkAt(chunkX, chunkZ));
             Main.getInstance().getLogger().fine("Generated chunk at chunk coords X: " + chunkX + ", Z: " + chunkZ);
             long timeElapsed = System.currentTimeMillis() - startTime;
-            Main.getInstance().getLogger().info("Chunk pre-generation complete! Took " + timeElapsed / 1000 + " seconds (" + timeElapsed + " ms)");
+            Main.getInstance().getLogger().info("Chunk pre-generation complete! Took " + ((timeElapsed + prevElapsed) / 1000) + " seconds (" + (timeElapsed + prevElapsed) + " ms)");
             Bukkit.getScheduler().cancelTask(schedulerID);
+            running = false;
             instance = null;
             return;
         }
         generateChunk(world.getChunkAt(chunkX, chunkZ));
         Main.getInstance().getLogger().log(Level.FINE, "Generated chunk at chunk coords X: " + chunkX + ", Z: " + chunkZ);
         if (chunkZ == maxChunkZ) {
-            double completion = (chunkX - minChunkX) / (double) (maxChunkX - minChunkX);
-            Main.getInstance().getLogger().info(String.format("Chunk pre-generation %.2f%% complete", completion * 100));
             chunkX++;
             chunkZ = minChunkZ;
+            double completion = (sideLength * (chunkX - minChunkX)) / Math.pow(sideLength, 2);
+            System.out.print(String.format("Chunk pre-generation %.2f%% complete\r", completion * 100));
         } else {
             chunkZ++;
         }
@@ -87,6 +93,7 @@ public class GenerateChunksHelper implements Runnable {
     }
 
     public static void pause() {
+        prevElapsed += System.currentTimeMillis() - getInstance().startTime;
         UHCUtils.broadcastMessage(ChatColor.YELLOW + "Chunk pre-generation paused.");
         Bukkit.getScheduler().cancelTask(getInstance().schedulerID);
         instance = null;
