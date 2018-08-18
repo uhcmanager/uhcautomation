@@ -43,7 +43,7 @@ public class GenerateChunksHelper implements Runnable {
     public void run() {
         if (chunkX == maxChunkX && chunkZ == maxChunkZ) {
             generateChunk(world.getChunkAt(chunkX, chunkZ));
-            Main.getInstance().getLogger().info("Generated chunk at chunk coords X: " + chunkX + ", Z: " + chunkZ);
+            Main.getInstance().getLogger().fine("Generated chunk at chunk coords X: " + chunkX + ", Z: " + chunkZ);
             long timeElapsed = System.currentTimeMillis() - startTime;
             Main.getInstance().getLogger().info(ChatColor.GREEN + "Chunk pre-generation complete! Took " + timeElapsed / 1000 + " seconds (" + timeElapsed + " ms)");
             Bukkit.getScheduler().cancelTask(schedulerID);
@@ -54,7 +54,7 @@ public class GenerateChunksHelper implements Runnable {
         Main.getInstance().getLogger().log(Level.FINE, "Generated chunk at chunk coords X: " + chunkX + ", Z: " + chunkZ);
         if (chunkZ == maxChunkZ) {
             double completion = (chunkX - minChunkX) / (double) (maxChunkX - minChunkX);
-            Main.getInstance().getLogger().info(String.format(ChatColor.YELLOW + "Chunk pre-generation " + ChatColor.RESET + "%.2f" + ChatColor.YELLOW + " complete", completion));
+            Main.getInstance().getLogger().info(String.format("Chunk pre-generation %.2f%% complete", completion * 100));
             chunkX++;
             chunkZ = minChunkZ;
         } else {
