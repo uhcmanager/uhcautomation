@@ -1,6 +1,7 @@
 package usa.cactuspuppy.uhc_automation;
 
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.permission.ChildPermission;
@@ -10,22 +11,22 @@ import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.LogPrefix;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
-import org.bukkit.scheduler.BukkitRunnable;
 import usa.cactuspuppy.uhc_automation.Commands.CommandHandler;
 import usa.cactuspuppy.uhc_automation.Commands.TabCompleteHelper;
 import usa.cactuspuppy.uhc_automation.Database.ConnectionInfo;
 import usa.cactuspuppy.uhc_automation.Database.SQLAPI;
+import usa.cactuspuppy.uhc_automation.Database.SQLRepeating;
 import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
-import usa.cactuspuppy.uhc_automation.Tasks.SQLRepeating;
 
 import java.io.*;
+import java.net.ConnectException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.logging.Level;
 
-@Plugin(name = "UHC_Automation", version = "1.7")
+@Plugin(name = "UHC_Automation", version = "1.8")
 @Description("Automates the process of running a UHC")
 @Author("CactusPuppy")
 @LogPrefix("UHC")
@@ -35,7 +36,7 @@ import java.util.logging.Level;
 public class Main extends JavaPlugin {
     private static Main instance;
     @Getter private GameInstance gameInstance;
-    private ConnectionInfo connectionInfo;
+    @Getter private ConnectionInfo connectionInfo;
 
     @Override
     public void onEnable() {
@@ -46,20 +47,21 @@ public class Main extends JavaPlugin {
         createConnectionInfo();
         new SQLAPI();
         SQLAPI sqlHandler = SQLAPI.getInstance();
-        sqlHandler.createUHCTimeTable();
-        InfoModeCache.getInstance().addAllToCache(sqlHandler.getPlayerPrefs());
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                SQLRepeating.start();
-            }
-        }.runTaskLater(getInstance(), 1L);
+        try {
+            sqlHandler.createUHCTimeTable();
+            InfoModeCache.getInstance().addAllToCache(sqlHandler.getPlayerPrefs());
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), SQLRepeating::start, 1L);
+        } catch (ConnectException e) {
+            getLogger().severe("Database integration failed, not attempting reconnect.");
+            connectionInfo = null;
+        }
         if (gameInstance == null) {
             gameInstance = new GameInstance(this);
         }
         registerCommands();
         (new RestartTasks()).schedule();
-        getLogger().info("UHC Automation loaded in " + ((System.currentTimeMillis() - start)) + " ms");
+        long timeElapsed = System.currentTimeMillis() - start;
+        getLogger().info("UHC Automation loaded in " + timeElapsed + " ms");
     }
 
     @Override
@@ -147,7 +149,7 @@ public class Main extends JavaPlugin {
                 }
                 return Optional.empty();
             } catch (SQLException e) {
-                getLogger().warning("Unable to obtain database connection! Double check your config.yml is correct.");
+                Main.getInstance().getLogger().warning("Unable to obtain database connection! Double check your config.yml is correct.");
                 e.printStackTrace();
             }
             return Optional.empty();

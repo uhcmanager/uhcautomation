@@ -19,8 +19,9 @@ public class CommandStart {
         }
         if (GenerateChunksHelper.getInstance() != null) {
             sender.sendMessage(ChatColor.RED + "Chunk pre-generation is currently in progress! Please wait for it to complete or cancel it with " + ChatColor.RESET + "/uhc prep cancel");
+            return;
         }
-        if (PreGameCountdown.instanced) {
+        if (PreGameCountdown.getInstance() != null) {
             if (args.length == 0) {
                 PreGameCountdown.getInstance().instaStart();
             } else if (args.length == 1) {
@@ -45,6 +46,7 @@ public class CommandStart {
             } catch (NumberFormatException e) {
                 sender.sendMessage(ChatColor.RED + "Usage: /uhc start [secs]");
             }
+            return;
         }
         sender.sendMessage(ChatColor.RED + "Usage: /uhc start [secs]");
     }

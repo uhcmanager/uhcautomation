@@ -6,5 +6,3 @@ src/test/
 dependency-reduced-pom.xml
 *.iml
 
-# to be removed upon rework
-src/main/resources/start_msgs.txt

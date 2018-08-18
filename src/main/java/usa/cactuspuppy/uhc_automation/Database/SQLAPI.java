@@ -26,7 +26,7 @@ public class SQLAPI {
         return sqlapi;
     }
 
-    public void createUHCTimeTable() {
+    public void createUHCTimeTable() throws ConnectException {
         try {
             if (noUHCTimeTable()) {
                 Bukkit.getLogger().info("uhcinfo_mode table does not exist, creating...");
@@ -46,7 +46,8 @@ public class SQLAPI {
             Bukkit.getLogger().severe("SQLAPI Error: Could not create uhcinfo_mode table.");
             e.printStackTrace();
         } catch (ConnectException e) {
-            Bukkit.getLogger().severe("Could not establish connection to database! Check your config.yml");
+            Bukkit.getLogger().warning("Could not establish connection to database! Check your config.yml");
+            throw new ConnectException();
         }
     }
 
@@ -65,7 +66,7 @@ public class SQLAPI {
             return isTable;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            throw new ConnectException();
         }
     }
 

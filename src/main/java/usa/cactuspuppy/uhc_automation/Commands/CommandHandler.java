@@ -41,6 +41,8 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        //permission check
+        boolean hasAdmin = sender.hasPermission("uhc.admin");
 
         //alias handling
         if (Arrays.asList(REGISTER_ALIASES).contains(subcommand)) {
@@ -82,6 +84,10 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 
     private void help(CommandSender sender) {
         sender.spigot().sendMessage(buildHelpMsg(sender.hasPermission("uhc.admin")));
+    }
+
+    private void permissionDeny(CommandSender sender) {
+        sender.sendMessage(ChatColor.RED + "You do not have permission to run this command!");
     }
 
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
@@ -134,12 +140,12 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
         optionInteract.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/uhc options "));
         BaseComponent[] option = new ComponentBuilder("- ").color(net.md_5.bungee.api.ChatColor.RED).append(optionInteract).append(" Modifies game options\n").retain(ComponentBuilder.FormatRetention.NONE).color(net.md_5.bungee.api.ChatColor.GREEN).create();
 
-        BaseComponent prepInteract = new TextComponent("/uhc prep [noload:load:cancel]");
+        BaseComponent prepInteract = new TextComponent("/uhc prep [load:pause:stop]");
         prepInteract.setColor(net.md_5.bungee.api.ChatColor.AQUA);
         prepInteract.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Prepares the game world for the game. If no second argument\nis specified, defaults to noload.\n").color(net.md_5.bungee.api.ChatColor.WHITE)
                 .append("Arguments:\n").color(net.md_5.bungee.api.ChatColor.BLUE).underlined(true).bold(true)
-                .append("noload").color(net.md_5.bungee.api.ChatColor.GOLD).underlined(false).bold(true).append(" - ").color(net.md_5.bungee.api.ChatColor.DARK_GRAY).bold(false).append("Does not attempt to pregenerate chunks.\n").color(net.md_5.bungee.api.ChatColor.WHITE)
-                .append("load").color(net.md_5.bungee.api.ChatColor.GOLD).bold(true).append(" - ").color(net.md_5.bungee.api.ChatColor.DARK_GRAY).bold(false).append("Pre-generates all chunks which have not been loaded within the game area.\n").color(net.md_5.bungee.api.ChatColor.WHITE)
+                .append("load").color(net.md_5.bungee.api.ChatColor.GOLD).bold(true).append(" - ").color(net.md_5.bungee.api.ChatColor.DARK_GRAY).bold(false).append("Pre-generates all chunks which have not been loaded within the game area, or resumes said pre-generation.\n").color(net.md_5.bungee.api.ChatColor.WHITE)
+                .append("pause").color(net.md_5.bungee.api.ChatColor.GOLD).underlined(false).bold(true).append(" - ").color(net.md_5.bungee.api.ChatColor.DARK_GRAY).bold(false).append("Pauses chunk pre-generation, saving progress for future resumption.\n").color(net.md_5.bungee.api.ChatColor.WHITE)
                 .append("Requires uhc.admin: ").color(net.md_5.bungee.api.ChatColor.GOLD).append("YES").color(net.md_5.bungee.api.ChatColor.GREEN).bold(true)
                 .append("\nConsole: ").color(net.md_5.bungee.api.ChatColor.GOLD).bold(false).append("YES").color(net.md_5.bungee.api.ChatColor.GREEN).bold(true).create()));
         prepInteract.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/uhc prep "));
