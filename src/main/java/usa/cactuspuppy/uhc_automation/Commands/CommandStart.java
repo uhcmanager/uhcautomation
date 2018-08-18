@@ -21,7 +21,7 @@ public class CommandStart {
             sender.sendMessage(ChatColor.RED + "Chunk pre-generation is currently in progress! Please wait for it to complete or cancel it with " + ChatColor.RESET + "/uhc prep cancel");
             return;
         }
-        if (PreGameCountdown.instanced) {
+        if (PreGameCountdown.getInstance() != null) {
             if (args.length == 0) {
                 PreGameCountdown.getInstance().instaStart();
             } else if (args.length == 1) {

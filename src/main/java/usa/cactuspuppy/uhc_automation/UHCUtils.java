@@ -48,6 +48,10 @@ public class UHCUtils {
         }
     }
 
+    public static void broadcastMessage(String msg) {
+        broadcastMessage(Main.getInstance().getGameInstance(), msg);
+    }
+
     public static void broadcastMessagewithTitle(GameInstance gi, String chat, String title, String subtitle, int in, int stay, int out) {
         for (UUID u: gi.getActivePlayers()) {
             Player p = Bukkit.getPlayer(u);
@@ -608,7 +612,6 @@ public class UHCUtils {
     }
 
     public static void sendPlayerInfo(Main m, CommandSender commandSender) {
-        //TODO: Expand info given
         int timeElapsedSecs = getSecsElapsed(m);
         long currTime = System.currentTimeMillis();
         if (timeElapsedSecs == -1) {
@@ -618,7 +621,7 @@ public class UHCUtils {
         StringBuilder message = new StringBuilder();
         boolean pvp = m.getGameInstance().getWorld().getPVP();
         boolean border = m.getGameInstance().isBorderShrinking();
-        message.append(ChatColor.GOLD).append(ChatColor.BOLD).append(ChatColor.UNDERLINE).append("\n").append(m.getConfig().getString("event-name", "CURRENT GAME:")).append("\n")
+        message.append(ChatColor.GOLD).append(ChatColor.BOLD).append(ChatColor.UNDERLINE).append("\n").append(m.getConfig().getString("event-name", "CURRENT GAME")).append(":\n")
                 .append(ChatColor.DARK_GREEN).append(ChatColor.BOLD).append("Time Elapsed: ").append(ChatColor.RESET).append(secsToFormatString(timeElapsedSecs))
                 .append(ChatColor.AQUA).append(ChatColor.BOLD).append(m.getGameInstance().isTeamMode() ? "\nTeams Remaining: " : "\nPlayers Remaining: ").append(ChatColor.RESET).append(m.getGameInstance().isTeamMode() ? m.getGameInstance().getNumTeams() : m.getGameInstance().getLivePlayers().size());
         if (pvp) {

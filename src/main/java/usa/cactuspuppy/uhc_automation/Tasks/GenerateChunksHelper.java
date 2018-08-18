@@ -6,15 +6,17 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.util.logging.Level;
 
 public class GenerateChunksHelper implements Runnable {
-    @Getter
-    private static GenerateChunksHelper instance;
+    @Getter private static GenerateChunksHelper instance;
+    @Getter private static boolean running;
+
     private long startTime;
     private int minChunkX, maxChunkX, minChunkZ, maxChunkZ;
-    private int chunkX, chunkZ;
+    private static int chunkX, chunkZ;
     private World world;
 
     @Getter
@@ -28,11 +30,13 @@ public class GenerateChunksHelper implements Runnable {
         this.maxChunkX = radius;
         this.minChunkZ = -radius;
         this.maxChunkZ = radius;
-        chunkX = minChunkX;
-        chunkZ = minChunkZ;
+        if (!running) {
+            chunkX = minChunkX;
+            chunkZ = minChunkZ;
+        }
         instance = this;
-        Main.getInstance().getLogger().info("Chunk pre-generation initiated. Lag may occur during this time...");
-        Bukkit.broadcastMessage("[" + ChatColor.GOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.DARK_RED + ChatColor.BOLD + "Chunk pre-generation beginning. Severe lag may occur.");
+        Main.getInstance().getLogger().info(String.format("Chunk pre-generation %s. Lag may occur during this time...", (running ? "resumed" : "initiated")));
+        UHCUtils.broadcastMessage("[" + ChatColor.GOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.DARK_RED + ChatColor.BOLD + "Chunk pre-generation beginning. Severe lag may occur.");
     }
 
     @Override
@@ -50,7 +54,7 @@ public class GenerateChunksHelper implements Runnable {
         Main.getInstance().getLogger().log(Level.FINE, "Generated chunk at chunk coords X: " + chunkX + ", Z: " + chunkZ);
         if (chunkZ == maxChunkZ) {
             double completion = (chunkX - minChunkX) / (double) (maxChunkX - minChunkX);
-            Main.getInstance().getLogger().info(String.format(ChatColor.YELLOW + "Chunk pre-generation " + ChatColor.RESET + "%.2d" + ChatColor.YELLOW + " complete", completion));
+            Main.getInstance().getLogger().info(String.format(ChatColor.YELLOW + "Chunk pre-generation " + ChatColor.RESET + "%.2f" + ChatColor.YELLOW + " complete", completion));
             chunkX++;
             chunkZ = minChunkZ;
         } else {
@@ -74,7 +78,16 @@ public class GenerateChunksHelper implements Runnable {
         schedulerID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), this, 0L, 2L);
     }
 
-    public static void clearInstance() {
+    public static void stop() {
+        UHCUtils.broadcastMessage(ChatColor.YELLOW + "Chunk pre-generation stopped.");
+        Bukkit.getScheduler().cancelTask(getInstance().schedulerID);
+        running = false;
+        instance = null;
+    }
+
+    public static void pause() {
+        UHCUtils.broadcastMessage(ChatColor.YELLOW + "Chunk pre-generation paused.");
+        Bukkit.getScheduler().cancelTask(getInstance().schedulerID);
         instance = null;
     }
 }

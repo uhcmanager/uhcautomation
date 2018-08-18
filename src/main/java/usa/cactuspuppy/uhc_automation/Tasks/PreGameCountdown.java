@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.Tasks;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -12,15 +13,13 @@ public class PreGameCountdown implements Runnable {
     private CommandSender sender;
 
     private static Integer assignedID;
-    public static boolean instanced;
-    public static PreGameCountdown pgc;
+    @Getter private static PreGameCountdown instance;
 
     public PreGameCountdown(int l, CommandSender s) {
         length = l;
         secs = l;
-        instanced = true;
         sender = s;
-        pgc = this;
+        instance = this;
     }
 
     @Override
@@ -29,8 +28,7 @@ public class PreGameCountdown implements Runnable {
         if (secs <= 0) {
             Main.getInstance().getGameInstance().start(sender);
             if (assignedID != null) { Bukkit.getScheduler().cancelTask(assignedID); }
-            instanced = false;
-            pgc = null;
+            instance = null;
             assignedID = null;
             return;
         }
@@ -61,12 +59,11 @@ public class PreGameCountdown implements Runnable {
         run();
     }
 
-    public int getID() {
-        return assignedID;
-    }
+    public int getID() { return assignedID; }
 
-    public static PreGameCountdown getInstance() {
-        return pgc;
+    public static void stop() {
+        Bukkit.getScheduler().cancelTask(assignedID);
+        instance = null;
     }
 
     private void infoPlayer(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
