@@ -23,7 +23,7 @@ public class CommandInfo {
                 if (tdm == InfoDisplayMode.CHAT) {
                     UHCUtils.sendPlayerInfo(Main.getInstance(), commandSender);
                 } else {
-                    p.sendMessage(ChatColor.YELLOW + "Your current info display option is not set to chat. Use " + ChatColor.RESET + ChatColor.ITALIC + "/uhcinfo chat" + ChatColor.RESET.toString() + ChatColor.YELLOW + " to make chat your info display preference.");
+                    p.sendMessage(ChatColor.YELLOW + "Your current info display option is not set to chat. Use " + ChatColor.RESET + ChatColor.ITALIC + "/uhc info chat" + ChatColor.RESET.toString() + ChatColor.YELLOW + " to make chat your info display preference.");
                 }
             } else {
                 UHCUtils.sendPlayerInfo(Main.getInstance(), commandSender);

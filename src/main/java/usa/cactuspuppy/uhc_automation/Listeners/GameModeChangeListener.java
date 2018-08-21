@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import usa.cactuspuppy.uhc_automation.Main;
@@ -11,7 +12,12 @@ import usa.cactuspuppy.uhc_automation.Main;
 public class GameModeChangeListener implements Listener {
     @Getter private static GameModeChangeListener instance;
 
-    public GameModeChangeListener() { instance = this; }
+    public GameModeChangeListener() {
+        if (instance != null) {
+            HandlerList.unregisterAll(GameModeChangeListener.getInstance());
+        }
+        instance = this;
+    }
 
     @EventHandler
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {

@@ -104,19 +104,20 @@ public class GameInstance {
         }
         world.setSpawnLocation(0, 254, 0);
         Location spawn = new Location(world, 0, 254, 0);
+        new GameModeChangeListener();
         for (Player p : activePlayers.stream().map(Bukkit::getPlayer).collect(Collectors.toList())) {
             p.teleport(spawn);
             p.setGameMode(GameMode.SURVIVAL);
         }
-        world.setGameRuleValue("spawnRadius", "0");
-        world.setGameRuleValue("doDaylightCycle", "false");
-        world.setGameRuleValue("doWeatherCycle", "false");
+        world.setGameRule(GameRule.SPAWN_RADIUS, 0);
+        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         world.setTime(0L);
         world.setStorm(false);
         world.setPVP(false);
         world.getWorldBorder().setCenter(0D, 0D);
         world.getWorldBorder().setSize(initSize);
-        world.setGameRuleValue("naturalRegenration", String.valueOf(!uhcMode));
+        world.setGameRule(GameRule.NATURAL_REGENERATION, !uhcMode);
     }
 
     public void start(CommandSender s) {
@@ -166,7 +167,7 @@ public class GameInstance {
     private void prepPlayer(Player p) {
         p.getInventory().clear();
         p.getActivePotionEffects().forEach(e -> p.removePotionEffect(e.getType()));
-        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "effect " + p.getName() + " minecraft:resistance 10 10 true");
+        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "effect give " + p.getName() + " minecraft:resistance 10 10 true");
         p.setGameMode(GameMode.ADVENTURE);
     }
 
@@ -176,8 +177,8 @@ public class GameInstance {
         UHCUtils.saveAuxData(main);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Start Time - " + sdf.format(new Date(startT)));
-        world.setGameRuleValue("doDaylightCycle", "true");
-        world.setGameRuleValue("doWeatherCycle", "true");
+        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);
+        world.setGameRule(GameRule.DO_WEATHER_CYCLE, true);
         world.setStorm(false);
         world.setWeatherDuration((new Random()).nextInt(48000) + 24000);
         if (minsToShrink > 0) {
@@ -188,8 +189,8 @@ public class GameInstance {
             main.getLogger().info("Game border shrinking from " + initSize + " to " + finalSize
                     + " over " + calcBorderShrinkTime() + " secs");
             (new BorderAnnouncer()).schedule();
-            world.setGameRuleValue("doDaylightCycle", "false");
-            world.setGameRuleValue("doWeatherCycle", "false");
+            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+            world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
             world.setTime(6000L);
         }
         if (epLength != 0) {
@@ -201,7 +202,7 @@ public class GameInstance {
             (new PVPEnableCountdown(secsToPVP, startT, Main.getInstance().getConfig().getBoolean("warnings.pvp", true))).schedule();
         }
         HandlerList.unregisterAll(freezePlayers);
-        activePlayers.forEach(this::startPlayer);
+        livePlayers.forEach(this::startPlayer);
         giveBoats = null;
         infoAnnouncer.schedule();
         infoAnnouncer.showBoard();
@@ -238,13 +239,13 @@ public class GameInstance {
             alertPlayerBorder(u);
         }
         (new BorderAnnouncer()).schedule();
-        world.setGameRuleValue("doDaylightCycle", "false");
-        world.setGameRuleValue("doWeatherCycle", "false");
+        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         world.setTime(6000L);
         world.setStorm(false);
     }
 
-    @SuppressWarnings("deprecation")
+//    @SuppressWarnings("deprecation")
     public void win() {
         int timeElapsed = UHCUtils.getSecsElapsed(main);
         if (teamMode) {
@@ -257,9 +258,22 @@ public class GameInstance {
                 UHCUtils.broadcastMessagewithTitle(this, ChatColor.RED + "\nWait... what? The game ended in a tie!",
                         ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.RESET + "Game ended in a tie!", 0, 80, 40);
             } else {
-                Team t = livePlayers.stream().findFirst().map(u -> Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(Bukkit.getPlayer(u))).orElse(null);
+                Team t = livePlayers.stream().findFirst().map(u -> Bukkit.getScoreboardManager().getMainScoreboard().getTeam(Bukkit.getPlayer(u).getName())).orElse(null);
                 if (t == null) {
-                    main.getLogger().severe("Winning team verification failed.");
+                    List<String> names = new ArrayList<>();
+                    for (UUID u : activePlayers) {
+                        Player p = Bukkit.getPlayer(u);
+                        assert p != null;
+                        if (Bukkit.getScoreboardManager().getMainScoreboard().getTeam(p.getName()) == null) {
+                            names.add(p.getDisplayName());
+                        }
+                    }
+                    StringBuilder winningTeamPlayers = new StringBuilder();
+                    collectNames(names, winningTeamPlayers);
+                    String winners = winningTeamPlayers.toString();
+                    UHCUtils.broadcastMessagewithTitle(this, "\n" + t.getName() + ChatColor.GREEN + " has emerged victorious!\nMembers: " + ChatColor.RESET + winners,
+                            t.getName(), ChatColor.GREEN + "wins!", 0 , 80, 40);
+                    UHCUtils.broadcastMessage(this, ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + WordUtils.capitalize(UHCUtils.secsToFormatString(timeElapsed)));
                     return;
                 }
                 List<String> onlineWinners = new ArrayList<>();
@@ -269,20 +283,7 @@ public class GameInstance {
                     }
                 }
                 StringBuilder winningTeamPlayers = new StringBuilder();
-                if (onlineWinners.size() == 1) {
-                    winningTeamPlayers.append(onlineWinners.get(0));
-                } else if (onlineWinners.size() == 2) {
-                    winningTeamPlayers.append(onlineWinners.get(0)).append(" and ").append(onlineWinners.get(1));
-                } else {
-                    winningTeamPlayers.append(onlineWinners.get(0));
-                    for (int i = 1; i < onlineWinners.size(); i++) {
-                        if (i == onlineWinners.size() - 1) {
-                            winningTeamPlayers.append(", and ").append(onlineWinners.get(i));
-                        } else {
-                            winningTeamPlayers.append(", ").append(onlineWinners.get(i));
-                        }
-                    }
-                }
+                collectNames(onlineWinners, winningTeamPlayers);
                 String winners = winningTeamPlayers.toString();
                 UHCUtils.broadcastMessagewithTitle(this, "\n" + t.getName() + ChatColor.GREEN + " has emerged victorious!\nMembers: " + ChatColor.RESET + winners,
                         t.getName(), ChatColor.GREEN + "wins!", 0 , 80, 40);
@@ -304,6 +305,23 @@ public class GameInstance {
             }
         }
         stop();
+    }
+
+    private void collectNames(List<String> names, StringBuilder winningTeamPlayers) {
+        if (names.size() == 1) {
+            winningTeamPlayers.append(names.get(0));
+        } else if (names.size() == 2) {
+            winningTeamPlayers.append(names.get(0)).append(" and ").append(names.get(1));
+        } else {
+            winningTeamPlayers.append(names.get(0));
+            for (int i = 1; i < names.size(); i++) {
+                if (i == names.size() - 1) {
+                    winningTeamPlayers.append(", and ").append(names.get(i));
+                } else {
+                    winningTeamPlayers.append(", ").append(names.get(i));
+                }
+            }
+        }
     }
 
     /**
@@ -392,7 +410,7 @@ public class GameInstance {
             builder.append("\n").append(ChatColor.GREEN).append("Border Shrinking: ").append((borderShrinking ? ChatColor.GREEN : ChatColor.RED)).append(borderShrinking);
             builder.append("\n").append(ChatColor.AQUA).append("PVP Enabled: ").append((world.getPVP() ? ChatColor.GREEN : ChatColor.RED)).append(world.getPVP());
         }
-        builder.append("\n").append(ChatColor.AQUA).append(ChatColor.UNDERLINE).append("Registered Players:");
+        builder.append("\n").append(ChatColor.AQUA).append(ChatColor.UNDERLINE).append("Registered Players:").append(ChatColor.RESET);
         if (regPlayers.isEmpty()) {
             builder.append("\n  ").append(ChatColor.RED).append("NONE");
         } else {
@@ -410,7 +428,7 @@ public class GameInstance {
                 builder.append("\n  ").append(ChatColor.RESET).append(name).append(" - ").append(online);
             }
         }
-        builder.append("\n").append(ChatColor.AQUA).append(ChatColor.UNDERLINE).append("Alive Players:");
+        builder.append("\n").append(ChatColor.AQUA).append(ChatColor.UNDERLINE).append("Alive Players:").append(ChatColor.RESET);
         if (livePlayers.isEmpty()) {
             builder.append("\n  ").append(ChatColor.RED).append("NONE");
         } else {
@@ -418,7 +436,7 @@ public class GameInstance {
                 builder.append("\n  ").append(ChatColor.RESET).append(Bukkit.getPlayer(u).getName());
             }
         }
-        builder.append("\n").append(ChatColor.AQUA).append(ChatColor.UNDERLINE).append("Dead/Blacklisted Players:");
+        builder.append("\n").append(ChatColor.AQUA).append(ChatColor.UNDERLINE).append("Spectators/Dead/Blacklisted Players:").append(ChatColor.RESET);
         if (blacklistPlayers.isEmpty()) {
             builder.append("\n  ").append(ChatColor.RED).append("NONE");
         } else {
@@ -436,6 +454,7 @@ public class GameInstance {
         builder.append("\n").append(ChatColor.AQUA).append("Border Delay Length: ").append(ChatColor.RESET).append(minsToShrink).append(" mins");
         builder.append("\n").append(ChatColor.GREEN).append("Episode Marker Interval: ").append(ChatColor.RESET).append(epLength).append(" mins");
         builder.append("\n").append(ChatColor.AQUA).append("PVP Delay Length: ").append(ChatColor.RESET).append(secsToPVP).append(" secs");
+        builder.append("\n\n");
         s.sendMessage(builder.toString());
     }
 

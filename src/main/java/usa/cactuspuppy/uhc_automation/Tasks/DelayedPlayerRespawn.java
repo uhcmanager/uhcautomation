@@ -19,7 +19,7 @@ public class DelayedPlayerRespawn implements Runnable {
     public void run() {
         p.spigot().respawn();
         p.setGameMode(GameMode.SPECTATOR);
-        p.teleport(l);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(),() -> p.teleport(l), 1L);
     }
 
     public void schedule() {

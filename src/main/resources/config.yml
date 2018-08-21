@@ -17,14 +17,25 @@ nether-end-exclusion: true
 
 ### Game Options ###
 game:
+  # Initial size of world border, in total width
   init-size: 4001
+  # Final size of world border, in total width
   final-size: 101
+  # Minutes per episode marker. Set to 0 to disable.
   episode-length: 20
+  # Minutes from start until border shrinks from init-size to final-size.
+  # Set to 0 to make border shrink instantly, set to -1 to disable border shrinking
   mins-to-shrink: 120
+  # Seconds from start until PVP is enabled.
   secs-to-pvp: 1200
+  # Whether or not teams are taken into consideration
   team-mode: false
+  # Whether or not to keep team members together at the start of the game.
   respect-teams: true
+  # Whether or not players should naturally regenerate health
   uhc-mode: true
+  # Minimum distance between spawn locations at the start of the game.
+  # Note that the game will fail to start if it cannot fit everyone into the map.
   spread-distance: 150
 
 ### Warnings ###
@@ -37,8 +48,8 @@ warnings:
 #
 # 1,2,3,4,5,6,7,8,9,10,15,20,30,45,60,120,180,300,600,900,1200,1800,3600
 warning-times:
-  border: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 45, 60, 120, 180, 300, 600, 900, 1200, 1800, 3600
-  pvp: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 45, 60, 120, 180, 300, 600, 900, 1200, 1800, 3600
+  border: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 45, 60, 120, 180, 300, 600, 900, 1200, 1800, 3600
+  pvp: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 45, 60, 120, 180, 300, 600, 900, 1200, 1800, 3600
 
 ### Optional Database Information ###
 db:

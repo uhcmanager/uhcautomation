@@ -85,6 +85,6 @@ public class InfoAnnouncer implements Runnable {
         if (timeScoreboard.getObjective("FILL") != null) {
             timeScoreboard.getObjective("FILL").unregister();
         }
-        timeScoreboard.registerNewObjective("FILL", "dummy").setDisplaySlot(DisplaySlot.SIDEBAR);
+        timeScoreboard.registerNewObjective("FILL", "dummy", "FILL").setDisplaySlot(DisplaySlot.SIDEBAR);
     }
 }

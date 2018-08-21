@@ -18,6 +18,7 @@ public class CommandPrep {
     public static void onCommand(CommandSender sender, String[] args) {
         if (Main.getInstance().getGameInstance().isActive()) {
             sender.sendMessage(ChatColor.RED + "Game is currently active, use /uhcstop to stop the game or wait until the current game is finished before attempt to prep the world.");
+            return;
         }
         if (args.length == 0) {
             Main.getInstance().getGameInstance().prep();

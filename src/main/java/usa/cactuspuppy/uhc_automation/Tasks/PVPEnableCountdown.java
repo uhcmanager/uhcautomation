@@ -37,7 +37,7 @@ public class PVPEnableCountdown implements Runnable {
     public void run() {
         if (System.currentTimeMillis() >= enableTime) {
             Main.getInstance().getGameInstance().getWorld().setPVP(true);
-            UHCUtils.broadcastMessagewithSound(Main.getInstance().getGameInstance(), "\n" + ChatColor.DARK_RED + ChatColor.BOLD + "PVP HAS BEEN ENABLED.", "minecraft:entity.ender_dragon.growl", 1.0F, 1.0F);
+            UHCUtils.broadcastMessagewithSoundandTitle(Main.getInstance().getGameInstance(), "\n" + ChatColor.DARK_RED + ChatColor.BOLD + "PVP HAS BEEN ENABLED.", ChatColor.DARK_RED.toString() + ChatColor.BOLD + "PVP", "enabled!", 0, 40, 20, "minecraft:entity.ender_dragon.growl", 1.0F, 1.0F);
             if (assignedID != null) { Bukkit.getScheduler().cancelTask(assignedID); }
             return;
         }
@@ -56,6 +56,6 @@ public class PVPEnableCountdown implements Runnable {
     }
 
     public void schedule() {
-        this.assignedID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), this, 0L, 20L);
+        this.assignedID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), this, 0L, 10L);
     }
 }

@@ -117,16 +117,7 @@ public class UHCUtils {
     public static void saveAuxData(Main m) {
         String location =  m.getDataFolder() + "/" + m.getConfig().getString("data-location").replaceAll("<worldname>", m.getConfig().getString("world"));
         File dataFolder = new File(location);
-        if (!dataFolder.exists()) {
-            m.getLogger().info("Could not find world data folder '" + location + "', creating...");
-            boolean created = dataFolder.mkdirs();
-            if (!created) {
-                m.getLogger().severe("Could not create data folder to save game instance data!");
-                return;
-            } else {
-                m.getLogger().info("Created world data folder: '" + location + "', saving data...");
-            }
-        }
+        if (!checkForDataFolder(m, location, dataFolder)) return;
         String auxDataName = location + "/auxData.txt";
         File auxDataFile = new File(auxDataName);
         if (auxDataFile.isFile()) {
@@ -146,6 +137,20 @@ public class UHCUtils {
         } catch (IOException e) {
             m.getLogger().severe("Could not save aux data to '" + auxDataName + "'!");
         }
+    }
+
+    private static boolean checkForDataFolder(Main m, String location, File dataFolder) {
+        if (!dataFolder.exists()) {
+            m.getLogger().info("Could not find world data folder '" + location + "', creating...");
+            boolean created = dataFolder.mkdirs();
+            if (!created) {
+                m.getLogger().severe("Could not create data folder to save game instance data!");
+                return false;
+            } else {
+                m.getLogger().info("Created world data folder: '" + location + "', saving data...");
+            }
+        }
+        return true;
     }
 
     public static Map<String, Set<UUID>> loadWorldPlayers(Main m) {
@@ -232,25 +237,16 @@ public class UHCUtils {
         Set<UUID> blacklistPlayers = m.getGameInstance().getBlacklistPlayers();
         String location =  m.getDataFolder() + "/" + m.getConfig().getString("data-location").replaceAll("<worldname>", m.getConfig().getString("world"));
         File dataFolder = new File(location);
-        if (!dataFolder.exists()) {
-            m.getLogger().info("Could not find world data folder '" + location + "', creating...");
-            boolean created = dataFolder.mkdirs();
-            if (!created) {
-                m.getLogger().severe("Could not create data folder to save game instance data!");
-                return;
-            } else {
-                m.getLogger().info("Created world data folder: '" + location + "', savind data...");
-            }
-        }
+        if (!checkForDataFolder(m, location, dataFolder)) return;
         String regPlayersName = location + "/regPlayers.txt";
         String blacklistPlayersName = location + "/blacklistPlayers.txt";
         File rPFile = new File(regPlayersName);
         File bPFile = new File(blacklistPlayersName);
         if (rPFile.isFile()) {
-            rPFile.delete();
+            if (!rPFile.delete()) m.getLogger().severe("Could not clear old player files");
         }
         if (bPFile.isFile()) {
-            bPFile.delete();
+            if (!bPFile.delete()) m.getLogger().severe("Could not clear old player files");
         }
         //Reg Players save
         try {

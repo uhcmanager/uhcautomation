@@ -40,6 +40,7 @@ public class PlayerDeathListener implements Listener {
             p.getInventory().clear();
         } else {
             for (ItemStack i : p.getInventory()) {
+                if (i == null) continue;
                 drops.getWorld().dropItemNaturally(drops, i);
             }
         }
