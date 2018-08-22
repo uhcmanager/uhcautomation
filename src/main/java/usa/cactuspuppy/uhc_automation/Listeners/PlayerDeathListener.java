@@ -9,15 +9,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import usa.cactuspuppy.uhc_automation.Main;
-import usa.cactuspuppy.uhc_automation.Tasks.DelayedPlayerRespawn;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @NoArgsConstructor
 public class PlayerDeathListener implements Listener {
+    private static Map<UUID, Location> respawnQueue = new HashMap<>();
+
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         String oldMsg = e.getDeathMessage();
@@ -44,8 +48,10 @@ public class PlayerDeathListener implements Listener {
                 drops.getWorld().dropItemNaturally(drops, i);
             }
         }
-        (new DelayedPlayerRespawn(p, drops)).schedule();
-        p.setGameMode(GameMode.SPECTATOR);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
+           p.spigot().respawn();
+        }, 1L);
+        respawnQueue.put(p.getUniqueId(), drops);
         for (UUID u : Main.getInstance().getGameInstance().getActivePlayers()) {
             Player p1 = Bukkit.getPlayer(u);
             announceDeath(p, p1);
@@ -53,6 +59,14 @@ public class PlayerDeathListener implements Listener {
         UHCUtils.saveWorldPlayers(Main.getInstance());
         Main.getInstance().getGameInstance().removePlayerFromLive(p);
         Main.getInstance().getGameInstance().checkForWin();
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent e) {
+        Location loc = respawnQueue.get(e.getPlayer().getUniqueId());
+        if (loc == null) { return; }
+        e.setRespawnLocation(loc);
+        e.getPlayer().setGameMode(GameMode.SPECTATOR);
     }
 
     private void announceDeath(Player died, Player tell) {
