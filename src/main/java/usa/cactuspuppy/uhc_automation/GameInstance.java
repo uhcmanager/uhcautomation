@@ -260,20 +260,7 @@ public class GameInstance {
             } else {
                 Team t = livePlayers.stream().findFirst().map(u -> Bukkit.getScoreboardManager().getMainScoreboard().getTeam(Bukkit.getPlayer(u).getName())).orElse(null);
                 if (t == null) {
-                    List<String> names = new ArrayList<>();
-                    for (UUID u : activePlayers) {
-                        Player p = Bukkit.getPlayer(u);
-                        assert p != null;
-                        if (Bukkit.getScoreboardManager().getMainScoreboard().getTeam(p.getName()) == null) {
-                            names.add(p.getDisplayName());
-                        }
-                    }
-                    StringBuilder winningTeamPlayers = new StringBuilder();
-                    collectNames(names, winningTeamPlayers);
-                    String winners = winningTeamPlayers.toString();
-                    UHCUtils.broadcastMessagewithTitle(this, "\n" + t.getName() + ChatColor.GREEN + " has emerged victorious!\nMembers: " + ChatColor.RESET + winners,
-                            t.getName(), ChatColor.GREEN + "wins!", 0 , 80, 40);
-                    UHCUtils.broadcastMessage(this, ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + WordUtils.capitalize(UHCUtils.secsToFormatString(timeElapsed)));
+                    Main.getInstance().getLogger().severe("Could not determine winning team in " + Main.getInstance().getConfig().getString("event-name"));
                     return;
                 }
                 List<String> onlineWinners = new ArrayList<>();

@@ -68,9 +68,9 @@ public class CommandUnregister {
                         UUID u = UUID.fromString(uuidString);
                         String name = (String) response.get("name");
                         Main.getInstance().getGameInstance().blacklistPlayer(u);
-                        commandSender.sendMessage(ChatColor.GREEN + "Unregistered " + ChatColor.WHITE + name + ChatColor.GREEN +  " from the " + Main.getInstance().getConfig().getString("event-name"));
+                        commandSender.sendMessage(ChatColor.GREEN + "Unregistered " + ChatColor.WHITE + name + ChatColor.GREEN +  " from " + Main.getInstance().getConfig().getString("event-name"));
                         commandSender.sendMessage(ChatColor.YELLOW + "Remember that this player can now only be readded to the UHC with /uhcreg");
-                        Main.getInstance().getLogger().info("Blacklisted " + name + " from the " + Main.getInstance().getConfig().getString("event-name"));
+                        Main.getInstance().getLogger().info("Blacklisted " + name + " from " + Main.getInstance().getConfig().getString("event-name"));
                         UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), ChatColor.RED + name + " has been removed from the UHC.");
                     } catch (IOException | ParseException e) {
                         e.printStackTrace();

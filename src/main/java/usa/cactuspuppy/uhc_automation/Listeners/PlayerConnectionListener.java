@@ -29,7 +29,7 @@ public class PlayerConnectionListener implements Listener {
                     Main.getInstance().getGameInstance().registerPlayer(p);
                 }
             } else {
-                p.sendTitle(ChatColor.GOLD + "Welcome", "to the " + Main.getInstance().getConfig().getString("event-name"), 20, 60, 20);
+                p.sendTitle(ChatColor.GOLD + "Welcome", "to " + Main.getInstance().getConfig().getString("event-name"), 20, 60, 20);
                 p.setHealth(19);
                 p.setHealth(20);
                 Main.getInstance().getGameInstance().registerPlayer(p);

@@ -46,6 +46,8 @@ public class PVPEnableCountdown implements Runnable {
             long timeTo = nextAnnounce;
             if (!announceTimes.isEmpty()) {
                 nextAnnounce = announceTimes.removeLast();
+            } else {
+                silent = true;
             }
             if (timeTo <= 10) {
                 UHCUtils.broadcastMessagewithSoundandTitle(Main.getInstance().getGameInstance(), ChatColor.RED.toString() + ChatColor.BOLD + "[Alert] " + ChatColor.RESET + "PVP enabled in " + UHCUtils.secsToFormatString(timeTo), String.valueOf(timeTo), ChatColor.RED + "secs until PVP enabled", 0, 80, 40, "minecraft:block.note_block.chime", (float) (0.5 + (10 - timeTo) / 40), 1.18F);

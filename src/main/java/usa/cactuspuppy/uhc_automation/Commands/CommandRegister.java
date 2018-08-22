@@ -19,12 +19,12 @@ public class CommandRegister {
         }
         Main.getInstance().getGameInstance().getBlacklistPlayers().remove(p.getUniqueId());
         Main.getInstance().getGameInstance().registerPlayer(p);
-        commandSender.sendMessage(ChatColor.GREEN + "Successfully registered " + playerName + " in the " + Main.getInstance().getConfig().getString("event-name"));
+        commandSender.sendMessage(ChatColor.GREEN + "Successfully registered " + playerName + " in " + Main.getInstance().getConfig().getString("event-name"));
         Main.getInstance().getLogger().info("Registered " + playerName + " into " + Main.getInstance().getConfig().getString("event-name"));
-        p.sendTitle(ChatColor.GOLD + "Welcome", "to the " + Main.getInstance().getConfig().getString("event-name"), 20, 60, 20);
+        p.sendTitle(ChatColor.GOLD + "Welcome", "to " + Main.getInstance().getConfig().getString("event-name"), 20, 60, 20);
         p.setHealth(19);
         p.setHealth(20);
-        p.sendMessage(ChatColor.YELLOW + "You have been manually added to the " + Main.getInstance().getConfig().getString("event-name"));
+        p.sendMessage(ChatColor.YELLOW + "You have been manually added to " + Main.getInstance().getConfig().getString("event-name"));
         return;
     }
 }
