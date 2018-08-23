@@ -125,6 +125,7 @@ public class GameInstance {
             main.getLogger().warning("Not enough players are in the UHC!");
             s.sendMessage(ChatColor.RED + "UHC aborted! Not enough players in the UHC!");
             UHCUtils.broadcastMessage(this, ChatColor.RED.toString() + ChatColor.BOLD + "Could not start UHC.");
+            prep();
             return;
         }
         long initT = System.currentTimeMillis();
@@ -149,12 +150,21 @@ public class GameInstance {
         if (teamMode) {
             teamsRemaining = getNumTeams();
         }
+        if (!copyLivePlayers.isEmpty()) {
+            UHCUtils.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + "\nPlayers not on a team are now spectating.");
+        }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Initiate Time - " + sdf.format(new Date(initT)));
         active = true;
         freezePlayers = new PlayerMoveListener();
         Bukkit.getServer().getPluginManager().registerEvents(freezePlayers, main);
         loadChunksCDID = (new LoadingChunksCountdown(main, 5)).schedule();
+    }
+
+    private void spectateNotTeamPlayer(Player p) {
+        System.out.println(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(p).getName());
+        if (Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(p) != null) return;
+        p.setGameMode(GameMode.SPECTATOR);
     }
 
     private boolean checkNumPlayers() {
