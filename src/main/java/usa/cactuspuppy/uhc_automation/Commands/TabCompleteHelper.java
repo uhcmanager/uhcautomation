@@ -17,18 +17,26 @@ public class TabCompleteHelper implements TabCompleter {
         if (args.length == 1) {
             return null;
         }
+        boolean hasPerm = sender.hasPermission("uhc.admin");
         String subcommand = args[0];
         if (!CommandHandler.validSubcommand(subcommand)) { return new ArrayList<>(); }
-        if (subcommand.equalsIgnoreCase("info")) {
+        if (subcommand.equals("info")) {
             return CommandInfo.onTabComplete(Arrays.copyOfRange(args, 1, args.length));
-        } else if (subcommand.equalsIgnoreCase("options") || Arrays.asList(CommandHandler.getOPTIONS_ALIASES()).contains(subcommand)) {
+        } else if (subcommand.equals("options") || Arrays.asList(CommandHandler.getOPTIONS_ALIASES()).contains(subcommand)) {
+            if (!hasPerm) return new ArrayList<>();
             return CommandOptions.onTabComplete(Arrays.copyOfRange(args, 1, args.length));
-        } else if (subcommand.equalsIgnoreCase("prep")) {
+        } else if (subcommand.equals("prep")) {
+            if (!hasPerm) return new ArrayList<>();
             return CommandPrep.onTabComplete(Arrays.copyOfRange(args, 1, args.length));
-        } else if (subcommand.equalsIgnoreCase("setworld")) {
-            return CommandSetWorld.onTabComplete(Arrays.copyOfRange(args, 1, args.length));
-        } else if (subcommand.equalsIgnoreCase("register") || Arrays.asList(CommandHandler.getREGISTER_ALIASES()).contains(subcommand) || subcommand.equalsIgnoreCase("unregister") || Arrays.asList(CommandHandler.getUNREGISTER_ALIASES()).contains(subcommand)) {
+        } else if (subcommand.equals("register") || Arrays.asList(CommandHandler.getREGISTER_ALIASES()).contains(subcommand) || subcommand.equalsIgnoreCase("unregister") || Arrays.asList(CommandHandler.getUNREGISTER_ALIASES()).contains(subcommand)) {
+            if (!hasPerm) return new ArrayList<>();
             return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
+        } else if (subcommand.equals("setworld")) {
+            if (!hasPerm) return new ArrayList<>();
+            return CommandSetWorld.onTabComplete(Arrays.copyOfRange(args, 1, args.length));
+        } else if (subcommand.equals("team")) {
+            if (!hasPerm) return new ArrayList<>();
+            return CommandTeam.onTabComplete(Arrays.copyOfRange(args, 1, args.length));
         }
         return new ArrayList<>();
     }

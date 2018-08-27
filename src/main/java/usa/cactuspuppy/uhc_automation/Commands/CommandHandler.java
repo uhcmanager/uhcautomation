@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @org.bukkit.plugin.java.annotation.command.Command(name = "uhc", desc = "Accesses the functionality of the UHC plugin", usage = "/uhc <subcommand> [args]")
 public class CommandHandler implements CommandExecutor, TabCompleter {
-    @Getter private static final String[] SUBCOMMANDS = {"help", "info", "options", "prep", "register", "reset", "rules", "setworld", "start", "status", "stop", "unregister"};
+    @Getter private static final String[] SUBCOMMANDS = {"help", "info", "options", "prep", "register", "reset", "rules", "setworld", "start", "status", "stop", "team", "unregister"};
     @Getter private static final String[] REGISTER_ALIASES = {"reg", "join", "add"};
     @Getter private static final String[] UNREGISTER_ALIASES = {"unreg", "remove", "rm"};
     @Getter private static final String[] OPTIONS_ALIASES = {"opt", "optn", "option"};
@@ -42,16 +42,19 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
         }
 
         //permission check
-        boolean hasAdmin = sender.hasPermission("uhc.admin");
+        boolean hasPerm = sender.hasPermission("uhc.admin");
 
         //alias handling
         if (Arrays.asList(REGISTER_ALIASES).contains(subcommand)) {
+            if (!hasPerm) denyPermission(sender);
             CommandRegister.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
         }
         if (Arrays.asList(UNREGISTER_ALIASES).contains(subcommand)) {
+            if (!hasPerm) denyPermission(sender);
             CommandUnregister.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
         }
         if (Arrays.asList(OPTIONS_ALIASES).contains(subcommand)) {
+            if (!hasPerm) denyPermission(sender);
             CommandOptions.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
         }
 
@@ -60,22 +63,33 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
         } else if (subcommand.equalsIgnoreCase("info")) {
             CommandInfo.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
         } else if (subcommand.equalsIgnoreCase("options")) {
+            if (!hasPerm) denyPermission(sender);
             CommandOptions.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
         } else if (subcommand.equalsIgnoreCase("prep")) {
+            if (!hasPerm) denyPermission(sender);
             CommandPrep.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
         } else if (subcommand.equalsIgnoreCase("register")) {
+            if (!hasPerm) denyPermission(sender);
             CommandRegister.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
-        } else if (subcommand.equalsIgnoreCase("reset") || subcommand.equalsIgnoreCase("stop")) {
+        } else if (subcommand.equals("reset") || subcommand.equalsIgnoreCase("stop")) {
+            if (!hasPerm) denyPermission(sender);
             CommandReset.onCommand(sender);
-        } else if (subcommand.equalsIgnoreCase("rules")) {
+        } else if (subcommand.equals("rules")) {
             CommandRules.onCommand(sender);
-        } else if (subcommand.equalsIgnoreCase("setworld")) {
+        } else if (subcommand.equals("setworld")) {
+            if (!hasPerm) denyPermission(sender);
             CommandSetWorld.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
-        } else if (subcommand.equalsIgnoreCase("start")) {
+        } else if (subcommand.equals("start")) {
+            if (!hasPerm) denyPermission(sender);
             CommandStart.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
-        } else if (subcommand.equalsIgnoreCase("status")) {
+        } else if (subcommand.equals("status")) {
+            if (!hasPerm) denyPermission(sender);
             CommandStatus.onCommand(sender);
+        } else if (subcommand.equals("team")) {
+            if (!hasPerm) denyPermission(sender);
+            CommandTeam.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
         } else if (subcommand.equalsIgnoreCase("unregister")) {
+            if (!hasPerm) denyPermission(sender);
             CommandUnregister.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
         }
 
@@ -86,8 +100,8 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
         sender.spigot().sendMessage(buildHelpMsg(sender.hasPermission("uhc.admin")));
     }
 
-    private void permissionDeny(CommandSender sender) {
-        sender.sendMessage(ChatColor.RED + "You do not have permission to run this command!");
+    private void denyPermission(CommandSender sender) {
+        sender.sendMessage(ChatColor.RED + "You do not have permission to run this subcommand!");
     }
 
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
@@ -204,6 +218,20 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
         statusInteract.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/uhc start"));
         BaseComponent[] status = new ComponentBuilder("- ").color(net.md_5.bungee.api.ChatColor.RED).append(statusInteract).append(" Informs requester of game status\n").retain(ComponentBuilder.FormatRetention.NONE).color(net.md_5.bungee.api.ChatColor.GREEN).create();
 
+        BaseComponent teamInteract = new TextComponent("/uhc team <subcommand> <team name> [args]");
+        teamInteract.setColor(net.md_5.bungee.api.ChatColor.AQUA);
+        teamInteract.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("DESCRIPTION OF SUBCOMMAND\n").color(net.md_5.bungee.api.ChatColor.WHITE)
+                .append("Subcommands:\n").color(net.md_5.bungee.api.ChatColor.BLUE).underlined(true).bold(true)
+                .append("add").color(net.md_5.bungee.api.ChatColor.GOLD).bold(true).append(" - ").color(net.md_5.bungee.api.ChatColor.DARK_GRAY).bold(false).append("Creates a team with the specified name\n").color(net.md_5.bungee.api.ChatColor.WHITE)
+                .append("remove").color(net.md_5.bungee.api.ChatColor.GOLD).underlined(false).bold(true).append(" - ").color(net.md_5.bungee.api.ChatColor.DARK_GRAY).bold(false).append("Removes the specified team, if it exists\n").color(net.md_5.bungee.api.ChatColor.WHITE)
+                .append("join").color(net.md_5.bungee.api.ChatColor.GOLD).underlined(false).bold(true).append(" - ").color(net.md_5.bungee.api.ChatColor.DARK_GRAY).bold(false).append("Adds the specified player to the specified team\n").color(net.md_5.bungee.api.ChatColor.WHITE)
+                .append("leave").color(net.md_5.bungee.api.ChatColor.GOLD).underlined(false).bold(true).append(" - ").color(net.md_5.bungee.api.ChatColor.DARK_GRAY).bold(false).append("Removes the specified player from the specified team\n").color(net.md_5.bungee.api.ChatColor.WHITE)
+                .append("option").color(net.md_5.bungee.api.ChatColor.GOLD).underlined(false).bold(true).append(" - ").color(net.md_5.bungee.api.ChatColor.DARK_GRAY).bold(false).append("Changes the options for the specified team (i.e. color, collision, etc.)\n").color(net.md_5.bungee.api.ChatColor.WHITE)
+                .append("Requires uhc.admin: ").color(net.md_5.bungee.api.ChatColor.GOLD).append("YES").color(net.md_5.bungee.api.ChatColor.GREEN).bold(true)
+                .append("\nConsole: ").color(net.md_5.bungee.api.ChatColor.GOLD).bold(false).append("YES").color(net.md_5.bungee.api.ChatColor.GREEN).bold(true).create()));
+        teamInteract.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/uhc team \n"));
+        BaseComponent[] team = new ComponentBuilder("- ").color(net.md_5.bungee.api.ChatColor.RED).append(teamInteract).retain(ComponentBuilder.FormatRetention.NONE).append(" DESCRIPTION\n").color(net.md_5.bungee.api.ChatColor.GREEN).create();
+
         BaseComponent unregisterInteract = new TextComponent("/uhc unregister <player>");
         StringJoiner unregsiterAliasJoiner = new StringJoiner(", ");
         Arrays.stream(UNREGISTER_ALIASES).forEach(unregsiterAliasJoiner::add);
@@ -227,6 +255,6 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
         if (!hasPerm) {
             return message.append(infoHeader).append(listHeader).append(help).append(info).append(rules).create();
         }
-        return message.append(infoHeader).append(listHeader).append(help).append(info).append(option).append(prep).append(register).append(reset).append(rules).append(setworld).append(start).append(status).append(unregister).append(wiki).create();
+        return message.append(infoHeader).append(listHeader).append(help).append(info).append(option).append(prep).append(register).append(reset).append(rules).append(setworld).append(start).append(status).append(team).append(unregister).append(wiki).create();
     }
 }

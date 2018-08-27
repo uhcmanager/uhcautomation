@@ -150,9 +150,6 @@ public class GameInstance {
         if (teamMode) {
             teamsRemaining = getNumTeams();
         }
-        if (!copyLivePlayers.isEmpty()) {
-            UHCUtils.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + "\nPlayers not on a team are now spectating.");
-        }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         main.getLogger().info("Game Initiate Time - " + sdf.format(new Date(initT)));
         active = true;
@@ -162,8 +159,9 @@ public class GameInstance {
     }
 
     private void spectateNotTeamPlayer(Player p) {
-        System.out.println(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(p).getName());
-        if (Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(p) != null) return;
+        //DEBUG
+        System.out.println(scoreboard.getTeam(p.getName()).getName());
+        if (Bukkit.getScoreboardManager().getMainScoreboard().getTeam(p.getName()) != null) return;
         p.setGameMode(GameMode.SPECTATOR);
     }
 
