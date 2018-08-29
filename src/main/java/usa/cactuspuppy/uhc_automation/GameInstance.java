@@ -464,8 +464,6 @@ public class GameInstance {
         Set<Team> teams = new HashSet<>();
         for (UUID u : livePlayers) {
             Player p = Bukkit.getPlayer(u);
-            //DEBUG
-            System.out.println(p.getName() + "'s team is " + scoreboard.getEntryTeam(p.getName()).getName());
             teams.add(scoreboard.getEntryTeam(p.getName()));
         }
         return teams.size();
