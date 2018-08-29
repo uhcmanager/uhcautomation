@@ -630,7 +630,7 @@ public class UHCUtils {
             message.append(ChatColor.DARK_PURPLE).append(ChatColor.BOLD).append("\nWorld border shrinking!");
         } else {
             long timeToBorder = BorderCountdown.getInstance().getEnd() - currTime;
-            message.append(ChatColor.GREEN).append(ChatColor.BOLD).append("\nBorder begins shrinking in ").append(ChatColor.RESET).append(secsToFormatString(timeToBorder));
+            message.append(ChatColor.GREEN).append(ChatColor.BOLD).append("\nBorder begins shrinking in ").append(ChatColor.RESET).append(secsToFormatString(timeToBorder / 1000));
         }
         commandSender.sendMessage(message.toString());
     }
