@@ -77,10 +77,11 @@ public class CommandUnregister {
                         commandSender.sendMessage(ChatColor.DARK_RED + "An error occurred, please try again later.");
                     }
                 }
-                UHCUtils.saveWorldPlayers(Main.getInstance());
-                Main.getInstance().getGameInstance().checkForWin();
+                if (Main.getInstance().getGameInstance().isActive()) {
+                    UHCUtils.saveWorldPlayers(Main.getInstance());
+                    Main.getInstance().getGameInstance().checkForWin();
+                }
             }
         }.runTaskAsynchronously(Main.getInstance());
-        return;
     }
 }
