@@ -40,17 +40,15 @@ public class PlayerDeathListener implements Listener {
         Main.getInstance().getLogger().info(p.getName() + " died at [" + p.getLocation().getWorld().getName() + "] "
                 + p.getLocation().getX() + ", " + p.getLocation().getY() + ", " + p.getLocation().getZ());
         Location drops = p.getLocation();
-        if (e.getKeepInventory()) {
+        /*if (e.getKeepInventory()) {
             p.getInventory().clear();
         } else {
             for (ItemStack i : p.getInventory()) {
                 if (i == null) continue;
                 drops.getWorld().dropItemNaturally(drops, i);
             }
-        }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
-           p.spigot().respawn();
-        }, 1L);
+        }*/
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> p.spigot().respawn(), 1L);
         respawnQueue.put(p.getUniqueId(), drops);
         for (UUID u : Main.getInstance().getGameInstance().getActivePlayers()) {
             Player p1 = Bukkit.getPlayer(u);
@@ -65,6 +63,7 @@ public class PlayerDeathListener implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent e) {
         Location loc = respawnQueue.get(e.getPlayer().getUniqueId());
         if (loc == null) { return; }
+        respawnQueue.remove(e.getPlayer().getUniqueId());
         e.setRespawnLocation(loc);
         e.getPlayer().setGameMode(GameMode.SPECTATOR);
     }

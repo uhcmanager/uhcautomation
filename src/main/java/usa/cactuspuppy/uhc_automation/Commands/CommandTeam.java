@@ -1,13 +1,17 @@
 package usa.cactuspuppy.uhc_automation.Commands;
 
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import usa.cactuspuppy.uhc_automation.Main;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,7 +75,7 @@ public class CommandTeam {
             }
             team.addEntry(args[2]);
             commandSender.sendMessage(ChatColor.GREEN + "Successfully added " + ChatColor.WHITE + args[2] + ChatColor.GREEN + " to team " + ChatColor.WHITE + team.getName());
-            Main.getInstance().getLogger().info("Removed " + args[2] + "from team " + team.getName() + " in " + Main.getInstance().getConfig().getString("event-name"));
+            Main.getInstance().getLogger().info("Added " + args[2] + "to team " + team.getName() + " in " + Main.getInstance().getConfig().getString("event-name"));
             return;
         }
         /*Leave Team*/
@@ -93,7 +97,7 @@ public class CommandTeam {
                 commandSender.sendMessage(ChatColor.RED + "Usage: /uhc team option <team name> <option> [value]");
                 return;
             }
-            if (Arrays.stream(Team.Option.values()).noneMatch((v) -> v.name().equals(args[2].toUpperCase())) && !args[3].equals("color")) {
+            if (Arrays.stream(Team.Option.values()).noneMatch((v) -> v.name().equals(args[2].toUpperCase())) && !args[2].equals("color")) {
                 commandSender.sendMessage(ChatColor.RED + "Unknown option " + ChatColor.WHITE + args[2] + ChatColor.RED + ".\n"
                         + ChatColor.YELLOW + "Acceptable options: " + ChatColor.WHITE + "color, name_tag_visibility, death_message_visibility, collision_rule");
                 return;
@@ -116,7 +120,7 @@ public class CommandTeam {
                     commandSender.sendMessage(ChatColor.GREEN + "Successfully set team " + ChatColor.WHITE + ChatColor.GREEN + "'s color to " + ChatColor.WHITE + color.name());
                 }
                 if (Arrays.stream(Team.OptionStatus.values()).noneMatch((v) -> v.name().equalsIgnoreCase(args[3].toUpperCase()))) {
-                    commandSender.sendMessage(ChatColor.RED + "Value must be" + ChatColor.WHITE + " ALWAYS, NEVER, FOR_OTHER_TEAMS, or FOR_OWN_TEAM");
+                    commandSender.sendMessage(ChatColor.RED + "Value must be" + ChatColor.WHITE + " always, never, for_other_teams, or for_own_team");
                     return;
                 }
                 team.setOption(option, Team.OptionStatus.valueOf(args[3].toUpperCase()));
@@ -128,10 +132,27 @@ public class CommandTeam {
     public static List<String> onTabComplete(String[] args) {
         if (args.length == 1) {
             return Arrays.stream(CommandTeam.SUBCOMMANDS).filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
-        } else if (args.length == 0) {
-            return Arrays.asList(CommandTeam.SUBCOMMANDS);
-        } else {
-            return null;
+        } else if (args.length == 2) {
+            if (!args[0].equals("join")) {
+                return Main.getInstance().getGameInstance().getScoreboard().getTeams().stream().map(Team::getName).filter(s -> s.startsWith(args[1])).collect(Collectors.toList());
+            }
+        } else if (args.length == 3) {
+            if (args[0].equals("join") || args[0].equals("leave")) {
+                return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).collect(Collectors.toList());
+            }
+            if (args[0].equals("option")) {
+                List<String> options = Arrays.stream(Team.Option.values()).map(Enum::name).collect(Collectors.toList());
+                options.add("COLOR");
+                return options.stream().filter(s -> s.startsWith(args[2].toUpperCase())).map(String::toLowerCase).collect(Collectors.toList());
+            }
+        } else if (args.length == 4) {
+            if (args[0].equals("option")) {
+                if (args[2].equals("color")) {
+                    return Arrays.stream(ChatColor.values()).map(Enum::name).filter(s -> s.startsWith(args[3].toUpperCase())).map(String::toLowerCase).collect(Collectors.toList());
+                }
+                return Arrays.stream(Team.OptionStatus.values()).map(Enum::name).filter(s -> s.startsWith(args[3].toUpperCase())).map(String::toLowerCase).collect(Collectors.toList());
+            }
         }
+        return new ArrayList<>();
     }
 }
