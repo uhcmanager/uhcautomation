@@ -136,7 +136,7 @@ public class CommandTeam {
         if (args.length == 1) {
             return Arrays.stream(CommandTeam.SUBCOMMANDS).filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
         } else if (args.length == 2) {
-            if (!args[0].equals("join")) {
+            if (!args[0].equals("add")) {
                 return Main.getInstance().getGameInstance().getScoreboard().getTeams().stream().map(Team::getName).filter(s -> s.startsWith(args[1])).collect(Collectors.toList());
             }
         } else if (args.length == 3) {

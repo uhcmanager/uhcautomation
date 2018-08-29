@@ -25,6 +25,6 @@ public class FixColoredNamesChatListener implements Listener {
         }
         String prefix = team.getPrefix();
         String suffix = team.getSuffix();
-        e.setFormat("<" + prefix + "%1$s" + ChatColor.RESET + "> %2$s");
+        e.setFormat("<" + prefix + "%1$s" + suffix + ChatColor.RESET + "> %2$s");
     }
 }
