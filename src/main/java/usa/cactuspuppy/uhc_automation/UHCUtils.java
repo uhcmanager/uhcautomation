@@ -458,7 +458,6 @@ public class UHCUtils {
         }
     }
 
-    @SuppressWarnings("deprecation")
     private static double spread(World world, List<Player> list, Location[] locations, boolean teams, GameInstance g) {
         double distance = 0.0D;
         int i = 0;
@@ -469,7 +468,7 @@ public class UHCUtils {
             Location location;
 
             if (teams) {
-                Team team = Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player);
+                Team team = Main.getInstance().getGameInstance().getScoreboard().getEntryTeam(player.getName());
 
                 if (!hashmap.containsKey(team)) {
                     hashmap.put(team, locations[i++]);

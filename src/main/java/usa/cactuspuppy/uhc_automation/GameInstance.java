@@ -121,8 +121,10 @@ public class GameInstance {
     }
 
     public void start(CommandSender s) {
-        List<UUID> copyLive = new ArrayList<>(livePlayers);
-        copyLive.stream().map(Bukkit::getPlayer).forEach(this::spectateNotTeamPlayer);
+        if (teamMode) {
+            List<UUID> copyLive = new ArrayList<>(livePlayers);
+            copyLive.stream().map(Bukkit::getPlayer).forEach(this::spectateNotTeamPlayer);
+        }
         if (!checkNumPlayers() && !DEBUG) {
             main.getLogger().warning("Not enough players are in the UHC!");
             s.sendMessage(ChatColor.RED + "UHC aborted! Not enough players in the UHC!");
@@ -161,7 +163,7 @@ public class GameInstance {
     }
 
     private void spectateNotTeamPlayer(Player p) {
-        if (scoreboard.getEntryTeam(p.getName()) != null) return;
+        if (scoreboard.getEntryTeam(p.getName()) != null && !blacklistPlayers.contains(p.getUniqueId())) return;
         p.setGameMode(GameMode.SPECTATOR);
     }
 
@@ -456,6 +458,8 @@ public class GameInstance {
         Set<Team> teams = new HashSet<>();
         for (UUID u : livePlayers) {
             Player p = Bukkit.getPlayer(u);
+            //DEBUG
+            System.out.println(p.getName() + "'s team is " + scoreboard.getEntryTeam(p.getName()).getName());
             teams.add(scoreboard.getEntryTeam(p.getName()));
         }
         return teams.size();

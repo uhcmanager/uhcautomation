@@ -5,6 +5,7 @@ import org.bukkit.GameMode;
 import org.bukkit.event.HandlerList;
 import usa.cactuspuppy.uhc_automation.GameInstance;
 import usa.cactuspuppy.uhc_automation.Listeners.PlayerDeathListener;
+import usa.cactuspuppy.uhc_automation.Listeners.WorldChangeListener;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
@@ -46,6 +47,7 @@ public class DelayReactivate implements Runnable {
             g.setStartT((long) auxData.get("sT"));
         }
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(), g.getMain());
+        Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(), Main.getInstance());
         g.getLivePlayers().stream().map(Bukkit::getPlayer).forEach(p -> p.setGameMode(GameMode.SURVIVAL));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
         g.getMain().getLogger().info("Game Reinitiate Time - " + sdf.format(new Date(System.currentTimeMillis())));

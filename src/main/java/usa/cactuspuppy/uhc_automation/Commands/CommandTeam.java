@@ -114,7 +114,7 @@ public class CommandTeam {
                 }
                 ChatColor color = ChatColor.valueOf(args[3].toUpperCase());
                 team.setColor(color);
-                commandSender.sendMessage(ChatColor.GREEN + "Successfully set team " + ChatColor.WHITE + ChatColor.GREEN + "'s color to " + ChatColor.WHITE + color.name());
+                commandSender.sendMessage(ChatColor.GREEN + "Successfully set team " + ChatColor.WHITE + team.getName() + ChatColor.GREEN + "'s color to " + ChatColor.WHITE + color.name());
                 return;
             }
             // other options

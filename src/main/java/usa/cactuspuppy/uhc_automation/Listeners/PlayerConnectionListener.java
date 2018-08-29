@@ -29,6 +29,10 @@ public class PlayerConnectionListener implements Listener {
                     Main.getInstance().getGameInstance().registerPlayer(p);
                 }
             } else {
+                if (Main.getInstance().getGameInstance().getBlacklistPlayers().contains(p.getUniqueId())) {
+                    p.sendMessage(ChatColor.RED + "You are blacklisted from the upcoming game. Contact an admin if you believe this is in error.");
+                    return;
+                }
                 p.sendTitle(ChatColor.GOLD + "Welcome", "to " + Main.getInstance().getConfig().getString("event-name"), 20, 60, 20);
                 p.setHealth(19);
                 p.setHealth(20);
