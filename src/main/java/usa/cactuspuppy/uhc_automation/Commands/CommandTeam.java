@@ -102,23 +102,26 @@ public class CommandTeam {
                         + ChatColor.YELLOW + "Acceptable options: " + ChatColor.WHITE + "color, name_tag_visibility, death_message_visibility, collision_rule");
                 return;
             }
-            Team.Option option = Team.Option.valueOf(args[2].toUpperCase());
-            if (args.length == 3) {
-                if (args[2].equals("color")) {
+            // color first
+            if (args[2].equals("color")) {
+                if (args.length == 3) {
                     commandSender.sendMessage(ChatColor.GOLD + "The color of team " + ChatColor.WHITE + team.getName() + ChatColor.GOLD + " is " + ChatColor.WHITE + team.getColor().name());
                     return;
                 }
+                if (Arrays.stream(ChatColor.values()).noneMatch((v) -> v.name().equalsIgnoreCase(args[3]))) {
+                    commandSender.sendMessage(ChatColor.RED + "Unknown color " + ChatColor.WHITE + args[3]);
+                    return;
+                }
+                ChatColor color = ChatColor.valueOf(args[3].toUpperCase());
+                team.setColor(color);
+                commandSender.sendMessage(ChatColor.GREEN + "Successfully set team " + ChatColor.WHITE + ChatColor.GREEN + "'s color to " + ChatColor.WHITE + color.name());
+                return;
+            }
+            // other options
+            Team.Option option = Team.Option.valueOf(args[2].toUpperCase());
+            if (args.length == 3) {
                 commandSender.sendMessage(ChatColor.GOLD + "Option " + ChatColor.WHITE + option.name() + ChatColor.GOLD + " for team " + ChatColor.WHITE + team.getName() + ChatColor.GREEN + " is " + ChatColor.WHITE + team.getOption(option).name());
             } else {
-                if (args[2].equals("color")) {
-                    if (Arrays.stream(ChatColor.values()).noneMatch((v) -> v.name().equalsIgnoreCase(args[3]))) {
-                        commandSender.sendMessage(ChatColor.RED + "Unknown color " + ChatColor.WHITE + args[3]);
-                        return;
-                    }
-                    ChatColor color = ChatColor.valueOf(args[3].toUpperCase());
-                    team.setColor(color);
-                    commandSender.sendMessage(ChatColor.GREEN + "Successfully set team " + ChatColor.WHITE + ChatColor.GREEN + "'s color to " + ChatColor.WHITE + color.name());
-                }
                 if (Arrays.stream(Team.OptionStatus.values()).noneMatch((v) -> v.name().equalsIgnoreCase(args[3].toUpperCase()))) {
                     commandSender.sendMessage(ChatColor.RED + "Value must be" + ChatColor.WHITE + " always, never, for_other_teams, or for_own_team");
                     return;
