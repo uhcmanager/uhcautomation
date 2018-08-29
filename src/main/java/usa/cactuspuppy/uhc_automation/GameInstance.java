@@ -543,6 +543,10 @@ public class GameInstance {
         world.getWorldBorder().setSize(initSize);
     }
 
+    void setScoreboard(Scoreboard scoreboard) {
+        this.scoreboard = scoreboard;
+    }
+
     public void setUHCMode(boolean um) {
         uhcMode = um;
         world.setGameRuleValue("naturalRegeneration", String.valueOf(!um));

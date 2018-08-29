@@ -11,11 +11,13 @@ import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.LogPrefix;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
+import org.bukkit.scoreboard.Scoreboard;
 import usa.cactuspuppy.uhc_automation.Commands.CommandHandler;
 import usa.cactuspuppy.uhc_automation.Commands.TabCompleteHelper;
 import usa.cactuspuppy.uhc_automation.Database.ConnectionInfo;
 import usa.cactuspuppy.uhc_automation.Database.SQLAPI;
 import usa.cactuspuppy.uhc_automation.Database.SQLRepeating;
+import usa.cactuspuppy.uhc_automation.ScoreboardUtils.ScoreboardIO;
 import usa.cactuspuppy.uhc_automation.Tasks.DelayedPrep;
 import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
 
@@ -56,17 +58,24 @@ public class Main extends JavaPlugin {
             getLogger().severe("Database integration failed, not attempting reconnect.");
             connectionInfo = null;
         }
+        ScoreboardIO sbIO = new ScoreboardIO();
+        if (sbIO.scoreboardDataExists()) {
+            Optional<Scoreboard> optSB = sbIO.readScoreboardFromFile();
+            optSB.ifPresent(scoreboard -> getGameInstance().setScoreboard(scoreboard));
+        }
         if (gameInstance == null) {
             gameInstance = new GameInstance(this);
         }
         registerCommands();
         (new RestartTasks()).schedule();
+        (new DelayedPrep()).schedule();
         long timeElapsed = System.currentTimeMillis() - start;
         getLogger().info("UHC Automation loaded in " + timeElapsed + " ms");
     }
 
     @Override
     public void onDisable() {
+        (new ScoreboardIO()).saveScoreboardToFile();
         if (gameInstance.isActive()) {
             System.out.println("[UHC_Automation] Game is active, saving game data...");
             UHCUtils.saveWorldPlayers(this);

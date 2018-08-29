@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.ScoreboardUtils.ScoreboardIO;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,87 +50,84 @@ public class CommandTeam {
             mainSB.registerNewTeam(teamName);
             commandSender.sendMessage(ChatColor.GREEN + "Successfully created team " + ChatColor.WHITE + teamName);
             Main.getInstance().getLogger().info("Created team " + teamName + " in " + Main.getInstance().getConfig().getString("event-name"));
-            return;
-        }
-        Team team = mainSB.getTeam(args[1]);
-        if (team == null) {
-            commandSender.sendMessage(ChatColor.RED + "Could not find team " + ChatColor.WHITE + args[1]);
-            return;
-        }
-        /*Remove Team*/
-        if (subcommand.equals("remove")) {
-            team.unregister();
-            commandSender.sendMessage(ChatColor.GREEN + "Successfully removed team " + ChatColor.WHITE + args[1]);
-            Main.getInstance().getLogger().info("Removed team " + args[1] + " in " + Main.getInstance().getConfig().getString("event-name"));
-            return;
-        }
-        /*Join Team*/
-        if (subcommand.equals("join")) {
-            if (args.length < 3) {
-                commandSender.sendMessage(ChatColor.RED + "Usage: /uhc team join <team name> <player name>");
+        } else {
+            Team team = mainSB.getTeam(args[1]);
+            if (team == null) {
+                commandSender.sendMessage(ChatColor.RED + "Could not find team " + ChatColor.WHITE + args[1]);
                 return;
             }
-            if (Bukkit.getPlayerExact(args[2]) == null) {
-                commandSender.sendMessage(ChatColor.RED + "Could not find player " + ChatColor.WHITE + args[2]);
-                return;
-            }
-            team.addEntry(args[2]);
-            commandSender.sendMessage(ChatColor.GREEN + "Successfully added " + ChatColor.WHITE + args[2] + ChatColor.GREEN + " to team " + ChatColor.WHITE + team.getName());
-            Main.getInstance().getLogger().info("Added " + args[2] + "to team " + team.getName() + " in " + Main.getInstance().getConfig().getString("event-name"));
-            return;
-        }
-        /*Leave Team*/
-        if (subcommand.equals("leave")) {
-            if (args.length < 3) {
-                commandSender.sendMessage(ChatColor.RED + "Usage: /uhc team leave <team name> <player name>");
-                return;
-            }
-            if (Bukkit.getPlayerExact(args[2]) == null) {
-                commandSender.sendMessage(ChatColor.RED + "Could not find player " + ChatColor.WHITE + args[2]);
-                return;
-            }
-            team.removeEntry(args[2]);
-            commandSender.sendMessage(ChatColor.GREEN + "Successfully removed " + ChatColor.WHITE + args[2] + ChatColor.GREEN + " from team " + ChatColor.WHITE + team.getName());
-        }
-        /*Options*/
-        if (subcommand.equals("option")) {
-            if (args.length < 3) {
-                commandSender.sendMessage(ChatColor.RED + "Usage: /uhc team option <team name> <option> [value]");
-                return;
-            }
-            if (Arrays.stream(Team.Option.values()).noneMatch((v) -> v.name().equals(args[2].toUpperCase())) && !args[2].equals("color")) {
-                commandSender.sendMessage(ChatColor.RED + "Unknown option " + ChatColor.WHITE + args[2] + ChatColor.RED + ".\n"
-                        + ChatColor.YELLOW + "Acceptable options: " + ChatColor.WHITE + "color, name_tag_visibility, death_message_visibility, collision_rule");
-                return;
-            }
-            // color first
-            if (args[2].equals("color")) {
-                if (args.length == 3) {
-                    commandSender.sendMessage(ChatColor.GOLD + "The color of team " + ChatColor.WHITE + team.getName() + ChatColor.GOLD + " is " + ChatColor.WHITE + team.getColor().name());
+            /*Remove Team*/
+            if (subcommand.equals("remove")) {
+                team.unregister();
+                commandSender.sendMessage(ChatColor.GREEN + "Successfully removed team " + ChatColor.WHITE + args[1]);
+                Main.getInstance().getLogger().info("Removed team " + args[1] + " in " + Main.getInstance().getConfig().getString("event-name"));
+            /*Join Team*/
+            } else if (subcommand.equals("join")) {
+                if (args.length < 3) {
+                    commandSender.sendMessage(ChatColor.RED + "Usage: /uhc team join <team name> <player name>");
                     return;
                 }
-                if (Arrays.stream(ChatColor.values()).noneMatch((v) -> v.name().equalsIgnoreCase(args[3]))) {
-                    commandSender.sendMessage(ChatColor.RED + "Unknown color " + ChatColor.WHITE + args[3]);
+                if (Bukkit.getPlayerExact(args[2]) == null) {
+                    commandSender.sendMessage(ChatColor.RED + "Could not find player " + ChatColor.WHITE + args[2]);
                     return;
                 }
-                ChatColor color = ChatColor.valueOf(args[3].toUpperCase());
-                team.setColor(color);
-                commandSender.sendMessage(ChatColor.GREEN + "Successfully set team " + ChatColor.WHITE + team.getName() + ChatColor.GREEN + "'s color to " + ChatColor.WHITE + color.name());
-                return;
-            }
-            // other options
-            Team.Option option = Team.Option.valueOf(args[2].toUpperCase());
-            if (args.length == 3) {
-                commandSender.sendMessage(ChatColor.GOLD + "Option " + ChatColor.WHITE + option.name() + ChatColor.GOLD + " for team " + ChatColor.WHITE + team.getName() + ChatColor.GREEN + " is " + ChatColor.WHITE + team.getOption(option).name());
-            } else {
-                if (Arrays.stream(Team.OptionStatus.values()).noneMatch((v) -> v.name().equalsIgnoreCase(args[3].toUpperCase()))) {
-                    commandSender.sendMessage(ChatColor.RED + "Value must be" + ChatColor.WHITE + " always, never, for_other_teams, or for_own_team");
+                team.addEntry(args[2]);
+                commandSender.sendMessage(ChatColor.GREEN + "Successfully added " + ChatColor.WHITE + args[2] + ChatColor.GREEN + " to team " + ChatColor.WHITE + team.getName());
+                Main.getInstance().getLogger().info("Added " + args[2] + "to team " + team.getName() + " in " + Main.getInstance().getConfig().getString("event-name"));
+            /*Leave Team*/
+            } else if (subcommand.equals("leave")) {
+                if (args.length < 3) {
+                    commandSender.sendMessage(ChatColor.RED + "Usage: /uhc team leave <team name> <player name>");
                     return;
                 }
-                team.setOption(option, Team.OptionStatus.valueOf(args[3].toUpperCase()));
-                commandSender.sendMessage(ChatColor.GREEN + "Set option " + ChatColor.WHITE + option.name() + ChatColor.GREEN + " for team " + ChatColor.WHITE + team.getName() + ChatColor.GREEN + " to " + ChatColor.WHITE + args[3].toUpperCase());
+                if (Bukkit.getPlayerExact(args[2]) == null) {
+                    commandSender.sendMessage(ChatColor.RED + "Could not find player " + ChatColor.WHITE + args[2]);
+                    return;
+                }
+                team.removeEntry(args[2]);
+                commandSender.sendMessage(ChatColor.GREEN + "Successfully removed " + ChatColor.WHITE + args[2] + ChatColor.GREEN + " from team " + ChatColor.WHITE + team.getName());
+            /*Options*/
+            } else if (subcommand.equals("option")) {
+                if (args.length < 3) {
+                    commandSender.sendMessage(ChatColor.RED + "Usage: /uhc team option <team name> <option> [value]");
+                    return;
+                }
+                if (Arrays.stream(Team.Option.values()).noneMatch((v) -> v.name().equals(args[2].toUpperCase())) && !args[2].equals("color")) {
+                    commandSender.sendMessage(ChatColor.RED + "Unknown option " + ChatColor.WHITE + args[2] + ChatColor.RED + ".\n"
+                            + ChatColor.YELLOW + "Acceptable options: " + ChatColor.WHITE + "color, name_tag_visibility, death_message_visibility, collision_rule");
+                    return;
+                }
+                // color first
+                if (args[2].equals("color")) {
+                    if (args.length == 3) {
+                        commandSender.sendMessage(ChatColor.GOLD + "The color of team " + ChatColor.WHITE + team.getName() + ChatColor.GOLD + " is " + ChatColor.WHITE + team.getColor().name());
+                        return;
+                    }
+                    if (Arrays.stream(ChatColor.values()).noneMatch((v) -> v.name().equalsIgnoreCase(args[3]))) {
+                        commandSender.sendMessage(ChatColor.RED + "Unknown color " + ChatColor.WHITE + args[3]);
+                        return;
+                    }
+                    ChatColor color = ChatColor.valueOf(args[3].toUpperCase());
+                    team.setColor(color);
+                    commandSender.sendMessage(ChatColor.GREEN + "Successfully set team " + ChatColor.WHITE + team.getName() + ChatColor.GREEN + "'s color to " + ChatColor.WHITE + color.name());
+                // other options
+                } else {
+                    Team.Option option = Team.Option.valueOf(args[2].toUpperCase());
+                    if (args.length == 3) {
+                        commandSender.sendMessage(ChatColor.GOLD + "Option " + ChatColor.WHITE + option.name() + ChatColor.GOLD + " for team " + ChatColor.WHITE + team.getName() + ChatColor.GREEN + " is " + ChatColor.WHITE + team.getOption(option).name());
+                        return;
+                    } else {
+                        if (Arrays.stream(Team.OptionStatus.values()).noneMatch((v) -> v.name().equalsIgnoreCase(args[3].toUpperCase()))) {
+                            commandSender.sendMessage(ChatColor.RED + "Value must be" + ChatColor.WHITE + " always, never, for_other_teams, or for_own_team");
+                            return;
+                        }
+                        team.setOption(option, Team.OptionStatus.valueOf(args[3].toUpperCase()));
+                        commandSender.sendMessage(ChatColor.GREEN + "Set option " + ChatColor.WHITE + option.name() + ChatColor.GREEN + " for team " + ChatColor.WHITE + team.getName() + ChatColor.GREEN + " to " + ChatColor.WHITE + args[3].toUpperCase());
+                    }
+                }
             }
         }
+        (new ScoreboardIO()).saveScoreboardToFile();
     }
 
     public static List<String> onTabComplete(String[] args) {
