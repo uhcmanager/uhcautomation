@@ -30,7 +30,7 @@ public class SQLAPI {
         try {
             if (noUHCTimeTable()) {
                 Bukkit.getLogger().info("uhcinfo_mode table does not exist, creating...");
-                Optional<Connection> connection = Main.getInstance().getConnection();
+                Optional<Connection> connection = ConnectionHandler.getInstance().getConnection();
                 if (!connection.isPresent()) {
                     Main.getInstance().getLogger().warning("Could not get connection to database from connection info! Please check your config.yml.");
                     return;
@@ -53,7 +53,7 @@ public class SQLAPI {
 
     public boolean noUHCTimeTable() throws ConnectException {
         try {
-            Optional<Connection> connection = Main.getInstance().getConnection();
+            Optional<Connection> connection = ConnectionHandler.getInstance().getConnection();
             if (!connection.isPresent()) {
                 Main.getInstance().getLogger().warning("Could not get connection to database from connection info! Please check your config.yml.");
                 throw new ConnectException();
@@ -78,7 +78,7 @@ public class SQLAPI {
             if (tdm == null) {
                 tdm = InfoDisplayMode.CHAT;
             }
-            Optional<Connection> connection = Main.getInstance().getConnection();
+            Optional<Connection> connection = ConnectionHandler.getInstance().getConnection();
             if (!connection.isPresent()) {
                 Main.getInstance().getLogger().warning("Could not get connection to database from connection info! Please check your config.yml.");
                 throw new ConnectException();
@@ -105,7 +105,7 @@ public class SQLAPI {
             if (noUHCTimeTable()) {
                 return rv;
             }
-            Optional<Connection> connection = Main.getInstance().getConnection();
+            Optional<Connection> connection = ConnectionHandler.getInstance().getConnection();
             if (!connection.isPresent()) {
                 throw new ConnectException();
             }

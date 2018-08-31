@@ -23,9 +23,6 @@ import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
 
 import java.io.*;
 import java.net.ConnectException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Optional;
 import java.util.logging.Level;
 
@@ -143,27 +140,6 @@ public class Main extends JavaPlugin {
 
     private void createConnectionInfo() {
         connectionInfo = new ConnectionInfo(getConfig().getString("db.host"), getConfig().getString("db.database"), getConfig().getString("db.username"), getConfig().getString("db.password"), getConfig().getInt("db.port"), getConfig().getString("db.method", "sqlite"), getConfig().getString("db.file"));
-    }
-
-    public Optional<Connection> getConnection() {
-        synchronized (this) {
-            try {
-                if (connectionInfo == null) {
-                    return Optional.empty();
-                }
-                if (connectionInfo.getMethod().equals("sqlite")) {
-                    return Optional.ofNullable(DriverManager.getConnection("jdbc:sqlite:" + Main.getInstance().getDataFolder() + connectionInfo.getFile()));
-                } else if (connectionInfo.getMethod().equals("mysql")) {
-                    String connectionURL = "jdbc:mysql://" + connectionInfo.getHost() + ":" + connectionInfo.getPort();
-                    return Optional.ofNullable(DriverManager.getConnection(connectionURL, connectionInfo.getUsername(), connectionInfo.getPassword()));
-                }
-                return Optional.empty();
-            } catch (SQLException e) {
-                Main.getInstance().getLogger().warning("Unable to obtain database connection! Double check your config.yml is correct.");
-                e.printStackTrace();
-            }
-            return Optional.empty();
-        }
     }
 
     private void registerCommands() {
