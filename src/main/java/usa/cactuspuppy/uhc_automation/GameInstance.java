@@ -549,6 +549,6 @@ public class GameInstance {
 
     public void setUHCMode(boolean um) {
         uhcMode = um;
-        world.setGameRuleValue("naturalRegeneration", String.valueOf(!um));
+        world.setGameRule(GameRule.NATURAL_REGENERATION, !um);
     }
 }

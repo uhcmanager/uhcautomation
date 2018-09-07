@@ -18,6 +18,7 @@ import usa.cactuspuppy.uhc_automation.Database.ConnectionInfo;
 import usa.cactuspuppy.uhc_automation.Database.SQLAPI;
 import usa.cactuspuppy.uhc_automation.Database.SQLRepeating;
 import usa.cactuspuppy.uhc_automation.ScoreboardUtils.ScoreboardIO;
+import usa.cactuspuppy.uhc_automation.ScoreboardUtils.ScoreboardSaver;
 import usa.cactuspuppy.uhc_automation.Tasks.DelayedPrep;
 import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
 
@@ -55,14 +56,14 @@ public class Main extends JavaPlugin {
             getLogger().severe("Database integration failed, not attempting reconnect.");
             connectionInfo = null;
         }
-        ScoreboardIO sbIO = new ScoreboardIO();
-        if (sbIO.scoreboardDataExists()) {
-            Optional<Scoreboard> optSB = sbIO.readScoreboardFromFile();
+        if (ScoreboardIO.scoreboardDataExists()) {
+            Optional<Scoreboard> optSB = ScoreboardIO.readScoreboardFromFile();
             optSB.ifPresent(scoreboard -> getGameInstance().setScoreboard(scoreboard));
         }
         if (gameInstance == null) {
             gameInstance = new GameInstance(this);
         }
+        ScoreboardSaver.start();
         registerCommands();
         (new RestartTasks()).schedule();
         (new DelayedPrep()).schedule();
@@ -72,11 +73,11 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        (new ScoreboardIO()).saveScoreboardToFile();
         if (gameInstance.isActive()) {
             System.out.println("[UHC_Automation] Game is active, saving game data...");
             UHCUtils.saveWorldPlayers(this);
         }
+        ScoreboardSaver.shutdown();
         SQLRepeating.shutdown();
     }
 

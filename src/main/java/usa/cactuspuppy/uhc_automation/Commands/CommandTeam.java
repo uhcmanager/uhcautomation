@@ -1,16 +1,16 @@
 package usa.cactuspuppy.uhc_automation.Commands;
 
-import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.ScoreboardUtils.ScoreboardIO;
+import usa.cactuspuppy.uhc_automation.ScoreboardUtils.ScoreboardSaver;
+import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,18 +116,17 @@ public class CommandTeam {
                     if (args.length == 3) {
                         commandSender.sendMessage(ChatColor.GOLD + "Option " + ChatColor.WHITE + option.name() + ChatColor.GOLD + " for team " + ChatColor.WHITE + team.getName() + ChatColor.GREEN + " is " + ChatColor.WHITE + team.getOption(option).name());
                         return;
-                    } else {
-                        if (Arrays.stream(Team.OptionStatus.values()).noneMatch((v) -> v.name().equalsIgnoreCase(args[3].toUpperCase()))) {
-                            commandSender.sendMessage(ChatColor.RED + "Value must be" + ChatColor.WHITE + " always, never, for_other_teams, or for_own_team");
-                            return;
-                        }
-                        team.setOption(option, Team.OptionStatus.valueOf(args[3].toUpperCase()));
-                        commandSender.sendMessage(ChatColor.GREEN + "Set option " + ChatColor.WHITE + option.name() + ChatColor.GREEN + " for team " + ChatColor.WHITE + team.getName() + ChatColor.GREEN + " to " + ChatColor.WHITE + args[3].toUpperCase());
                     }
+                    if (Arrays.stream(Team.OptionStatus.values()).noneMatch((v) -> v.name().equalsIgnoreCase(args[3].toUpperCase()))) {
+                        commandSender.sendMessage(ChatColor.RED + "Value must be" + ChatColor.WHITE + " always, never, for_other_teams, or for_own_team");
+                        return;
+                    }
+                    team.setOption(option, Team.OptionStatus.valueOf(args[3].toUpperCase()));
+                    commandSender.sendMessage(ChatColor.GREEN + "Set option " + ChatColor.WHITE + option.name() + ChatColor.GREEN + " for team " + ChatColor.WHITE + team.getName() + ChatColor.GREEN + " to " + ChatColor.WHITE + args[3].toUpperCase());
                 }
             }
+            ScoreboardSaver.queueSave();
         }
-        (new ScoreboardIO()).saveScoreboardToFile();
     }
 
     public static List<String> onTabComplete(String[] args) {
