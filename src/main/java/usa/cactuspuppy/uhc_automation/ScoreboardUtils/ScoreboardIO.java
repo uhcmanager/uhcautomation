@@ -42,6 +42,7 @@ public class ScoreboardIO {
             in.close();
             fileIn.close();
         } catch (IOException e) {
+            e.printStackTrace();
             Main.getInstance().getLogger().warning("Could not load scoreboard data from " + inLoc + ". Attempting to clear corrupted data...");
             if (!(new File(inLoc)).delete()) {
                 Main.getInstance().getLogger().severe("Could not clear scoreboard data!");

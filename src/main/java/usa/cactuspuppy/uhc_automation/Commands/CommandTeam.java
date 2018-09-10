@@ -140,8 +140,8 @@ public class CommandTeam {
                     commandSender.sendMessage(ChatColor.GREEN + "Set option " + ChatColor.WHITE + option.name() + ChatColor.GREEN + " for team " + ChatColor.WHITE + team.getName() + ChatColor.GREEN + " to " + ChatColor.WHITE + args[3].toUpperCase());
                 }
             }
-            ScoreboardSaver.queueSave();
         }
+        ScoreboardSaver.queueSave();
     }
 
     public static List<String> onTabComplete(String[] args) {
@@ -161,9 +161,7 @@ public class CommandTeam {
                 return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).collect(Collectors.toList());
             }
             if (args[0].equals("option")) {
-                List<String> options = Arrays.stream(Team.Option.values()).map(Enum::name).collect(Collectors.toList());
-                options.add("COLOR");
-                return options.stream().filter(s -> s.startsWith(args[2].toUpperCase())).map(String::toLowerCase).collect(Collectors.toList());
+                return TEAM_OPTIONS;
             }
         } else if (args.length == 4) {
             if (args[0].equals("option")) {
