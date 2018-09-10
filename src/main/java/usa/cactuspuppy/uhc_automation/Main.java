@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import org.bukkit.scoreboard.Scoreboard;
 import usa.cactuspuppy.uhc_automation.Commands.CommandHandler;
 import usa.cactuspuppy.uhc_automation.Commands.TabCompleteHelper;
+import usa.cactuspuppy.uhc_automation.Database.ConnectionHandler;
 import usa.cactuspuppy.uhc_automation.Database.ConnectionInfo;
 import usa.cactuspuppy.uhc_automation.Database.SQLAPI;
 import usa.cactuspuppy.uhc_automation.Database.SQLRepeating;
@@ -45,25 +46,11 @@ public class Main extends JavaPlugin {
         instance = this;
         createConfig();
         createRules();
-        createConnectionInfo();
-        new SQLAPI();
-        SQLAPI sqlHandler = SQLAPI.getInstance();
-        try {
-            sqlHandler.createUHCTimeTable();
-            InfoModeCache.getInstance().addAllToCache(sqlHandler.getPlayerPrefs());
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), SQLRepeating::start, 1L);
-        } catch (ConnectException e) {
-            getLogger().severe("Database integration failed, not attempting reconnect.");
-            connectionInfo = null;
-        }
-        if (ScoreboardIO.scoreboardDataExists()) {
-            Optional<Scoreboard> optSB = ScoreboardIO.readScoreboardFromFile();
-            optSB.ifPresent(scoreboard -> getGameInstance().setScoreboard(scoreboard));
-        }
+        initDatabase();
+        initScoreboard();
         if (gameInstance == null) {
             gameInstance = new GameInstance(this);
         }
-        ScoreboardSaver.start();
         registerCommands();
         (new RestartTasks()).schedule();
         (new DelayedPrep()).schedule();
@@ -141,6 +128,28 @@ public class Main extends JavaPlugin {
 
     private void createConnectionInfo() {
         connectionInfo = new ConnectionInfo(getConfig().getString("db.host"), getConfig().getString("db.database"), getConfig().getString("db.username"), getConfig().getString("db.password"), getConfig().getInt("db.port"), getConfig().getString("db.method", "sqlite"), getConfig().getString("db.file"));
+    }
+
+    private void initDatabase() {
+        createConnectionInfo();
+        new ConnectionHandler(connectionInfo);
+        new SQLAPI();
+        try {
+            SQLAPI.getInstance().createUHCTimeTable();
+            InfoModeCache.getInstance().addAllToCache(SQLAPI.getInstance().getPlayerPrefs());
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), SQLRepeating::start, 1L);
+        } catch (ConnectException e) {
+            getLogger().warning("Database integration failed, not attempting reconnect.");
+            connectionInfo = null;
+        }
+    }
+
+    private void initScoreboard() {
+        if (ScoreboardIO.scoreboardDataExists()) {
+            Optional<Scoreboard> optSB = ScoreboardIO.readScoreboardFromFile();
+            optSB.ifPresent(scoreboard -> getGameInstance().setScoreboard(scoreboard));
+            ScoreboardSaver.start();
+        }
     }
 
     private void registerCommands() {

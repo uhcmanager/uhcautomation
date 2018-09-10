@@ -17,7 +17,6 @@ public class FixColoredNamesChatListener implements Listener {
      * setFormat from https://github.com/quat1024/FixNameColors/releases/tag/v0.2
      * @param e chat event
      */
-    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerChat(AsyncPlayerChatEvent e) {
         Team team = Main.getInstance().getGameInstance().getScoreboard().getEntryTeam(e.getPlayer().getName());

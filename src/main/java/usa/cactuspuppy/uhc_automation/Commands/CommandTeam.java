@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.Commands;
 
+import com.google.common.base.CaseFormat;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,11 +16,14 @@ import usa.cactuspuppy.uhc_automation.UHCUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 public class CommandTeam {
 
     public static final String[] SUBCOMMANDS = {"add", "remove", "join", "leave", "option"};
+    public static final String[] TEAM_OPTIONS_ADD = {"color", "displayName", "friendlyFire", "prefix", "seeFriendlyInvisibles", "suffix"} ;
+    public static final ArrayList<String> TEAM_OPTIONS = new ArrayList<>();
 
     public static void onCommand(CommandSender commandSender, String[] args) {
         if (args.length < 2) {
@@ -92,12 +96,13 @@ public class CommandTeam {
                     commandSender.sendMessage(ChatColor.RED + "Usage: /uhc team option <team name> <option> [value]");
                     return;
                 }
-                if (Arrays.stream(Team.Option.values()).noneMatch((v) -> v.name().equals(args[2].toUpperCase())) && !args[2].equals("color")) {
+                Arrays.stream(Team.Option.values()).map(Enum::name).map((o) -> CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, o)).forEach(TEAM_OPTIONS::add);
+                TEAM_OPTIONS.addAll(Arrays.stream(TEAM_OPTIONS_ADD).collect(Collectors.toList()));
+                if (TEAM_OPTIONS.stream().noneMatch((v) -> v.equals(args[2].toUpperCase()))) {
                     commandSender.sendMessage(ChatColor.RED + "Unknown option " + ChatColor.WHITE + args[2] + ChatColor.RED + ".\n"
-                            + ChatColor.YELLOW + "Acceptable options: " + ChatColor.WHITE + "color, name_tag_visibility, death_message_visibility, collision_rule");
+                            + ChatColor.YELLOW + "Acceptable options: " + ChatColor.WHITE + String.join(", ", TEAM_OPTIONS));
                     return;
                 }
-                // color first
                 if (args[2].equals("color")) {
                     if (args.length == 3) {
                         commandSender.sendMessage(ChatColor.GOLD + "The color of team " + ChatColor.WHITE + team.getName() + ChatColor.GOLD + " is " + ChatColor.WHITE + team.getColor().name());
@@ -110,7 +115,10 @@ public class CommandTeam {
                     ChatColor color = ChatColor.valueOf(args[3].toUpperCase());
                     team.setColor(color);
                     commandSender.sendMessage(ChatColor.GREEN + "Successfully set team " + ChatColor.WHITE + team.getName() + ChatColor.GREEN + "'s color to " + ChatColor.WHITE + color.name());
-                // other options
+                // Spigot handled options
+                } else if (args[2].equals()) {
+                } else if () {
+                } else if () {
                 } else {
                     Team.Option option = Team.Option.valueOf(args[2].toUpperCase());
                     if (args.length == 3) {
@@ -137,6 +145,11 @@ public class CommandTeam {
                 return Main.getInstance().getGameInstance().getScoreboard().getTeams().stream().map(Team::getName).filter(s -> s.startsWith(args[1])).collect(Collectors.toList());
             }
         } else if (args.length == 3) {
+            if (args[0].equals("add")) {
+                List<String> rv = new ArrayList<>();
+                rv.add("<team name>");
+                return rv;
+            }
             if (args[0].equals("join") || args[0].equals("leave")) {
                 return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).collect(Collectors.toList());
             }

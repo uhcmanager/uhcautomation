@@ -23,7 +23,7 @@ public class ScoreboardIO {
             fileOut.close();
             Main.getInstance().getLogger().info("Scoreboard data saved to " + outLoc);
         } catch (IOException e) {
-            Main.getInstance().getLogger().severe("Failed to save scoreboard data!");
+            Main.getInstance().getLogger().warning("Failed to save scoreboard data!");
             return false;
         }
         return true;
@@ -39,7 +39,10 @@ public class ScoreboardIO {
             in.close();
             fileIn.close();
         } catch (IOException e) {
-            Main.getInstance().getLogger().severe("Could not load scoreboard data from " + inLoc);
+            Main.getInstance().getLogger().warning("Could not load scoreboard data from " + inLoc + ". Attempting to clear corrupted data...");
+            if (!(new File(inLoc)).delete()) {
+                Main.getInstance().getLogger().severe("Could not clear scoreboard data!");
+            }
             return Optional.empty();
         } catch (ClassNotFoundException e) {
             Main.getInstance().getLogger().severe("Did not find expected scoreboard class at " + inLoc);

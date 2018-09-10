@@ -512,7 +512,7 @@ public class UHCUtils {
         Set<Team> teams = Sets.newHashSet();
 
         for (Player player : players) {
-            teams.add(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player));
+            teams.add(Main.getInstance().getGameInstance().getScoreboard().getPlayerTeam(player));
         }
 
         return teams.size();
