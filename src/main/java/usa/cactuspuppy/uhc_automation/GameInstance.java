@@ -283,8 +283,8 @@ public class GameInstance {
                 StringBuilder winningTeamPlayers = new StringBuilder();
                 collectNames(onlineWinners, winningTeamPlayers);
                 String winners = winningTeamPlayers.toString();
-                UHCUtils.broadcastMessagewithTitle(this, "\n" + t.getName() + ChatColor.GREEN + " has emerged victorious!\nMembers: " + ChatColor.RESET + winners,
-                        t.getName(), ChatColor.GREEN + "wins!", 0 , 80, 40);
+                UHCUtils.broadcastMessagewithTitle(this, "\n" + t.getDisplayName() + ChatColor.GREEN + " has emerged victorious!\nMembers: " + ChatColor.RESET + winners,
+                        t.getDisplayName(), ChatColor.GREEN + "wins!", 0 , 80, 40);
                 UHCUtils.broadcastMessage(this, ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + WordUtils.capitalize(UHCUtils.secsToFormatString(timeElapsed)));
             }
         } else {

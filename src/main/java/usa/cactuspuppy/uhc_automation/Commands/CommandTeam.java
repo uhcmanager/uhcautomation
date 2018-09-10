@@ -9,21 +9,19 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import usa.cactuspuppy.uhc_automation.Main;
-import usa.cactuspuppy.uhc_automation.ScoreboardUtils.ScoreboardIO;
 import usa.cactuspuppy.uhc_automation.ScoreboardUtils.ScoreboardSaver;
-import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CommandTeam {
 
     public static final String[] SUBCOMMANDS = {"add", "remove", "join", "leave", "option"};
     public static final String[] TEAM_OPTIONS_ADD = {"color", "displayName", "friendlyFire", "prefix", "seeFriendlyInvisibles", "suffix"} ;
-    public static final ArrayList<String> TEAM_OPTIONS = new ArrayList<>();
+    public static final ArrayList<String> TEAM_OPTIONS = new ArrayList<>(Stream.concat(Arrays.stream(TEAM_OPTIONS_ADD), Arrays.stream(Team.Option.values()).map(Enum::name).map((o) -> CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, o))).collect(Collectors.toList()));
 
     public static void onCommand(CommandSender commandSender, String[] args) {
         if (args.length < 2) {
@@ -96,9 +94,7 @@ public class CommandTeam {
                     commandSender.sendMessage(ChatColor.RED + "Usage: /uhc team option <team name> <option> [value]");
                     return;
                 }
-                Arrays.stream(Team.Option.values()).map(Enum::name).map((o) -> CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, o)).forEach(TEAM_OPTIONS::add);
-                TEAM_OPTIONS.addAll(Arrays.stream(TEAM_OPTIONS_ADD).collect(Collectors.toList()));
-                if (TEAM_OPTIONS.stream().noneMatch((v) -> v.equals(args[2].toUpperCase()))) {
+                if (TEAM_OPTIONS.stream().noneMatch((v) -> v.equals(args[2]))) {
                     commandSender.sendMessage(ChatColor.RED + "Unknown option " + ChatColor.WHITE + args[2] + ChatColor.RED + ".\n"
                             + ChatColor.YELLOW + "Acceptable options: " + ChatColor.WHITE + String.join(", ", TEAM_OPTIONS));
                     return;
@@ -115,10 +111,21 @@ public class CommandTeam {
                     ChatColor color = ChatColor.valueOf(args[3].toUpperCase());
                     team.setColor(color);
                     commandSender.sendMessage(ChatColor.GREEN + "Successfully set team " + ChatColor.WHITE + team.getName() + ChatColor.GREEN + "'s color to " + ChatColor.WHITE + color.name());
+                } else if (args[2].equals("displayName")) {
+                    if (args.length == 3) {
+                        commandSender.sendMessage(ChatColor.GOLD + "Team " + ChatColor.RESET + team.getName() + ChatColor.GOLD + "'s display name is " + ChatColor.RESET + team.getDisplayName());
+                        return;
+                    }
+                    try {
+                        team.setDisplayName(args[3]);
+                    } catch (IllegalArgumentException e) {
+                        commandSender.sendMessage(ChatColor.RED + "Display name cannot be longer than 128 characters!");
+                        return;
+                    }
+                    commandSender.sendMessage(ChatColor.GREEN + "Updated team " + ChatColor.RESET + team.getDisplayName() + ChatColor.GREEN + " display name.");
+                /*} else if () {
+                } else if () {*/
                 // Spigot handled options
-                } else if (args[2].equals()) {
-                } else if () {
-                } else if () {
                 } else {
                     Team.Option option = Team.Option.valueOf(args[2].toUpperCase());
                     if (args.length == 3) {
