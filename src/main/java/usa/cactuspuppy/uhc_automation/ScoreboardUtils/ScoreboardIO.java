@@ -31,6 +31,9 @@ public class ScoreboardIO {
 
     public static Optional<Scoreboard> readScoreboardFromFile() {
         String inLoc = Main.getInstance().getDataFolder() + "/scoreboard.dat";
+        if (!(new File(inLoc)).isFile()) {
+            return Optional.empty();
+        }
         Scoreboard scoreboard = null;
         try {
             FileInputStream fileIn = new FileInputStream(inLoc);
