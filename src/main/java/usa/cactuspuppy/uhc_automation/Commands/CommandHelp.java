@@ -68,8 +68,8 @@ public class CommandHelp extends UHCCommand {
         prepInteract.setColor(net.md_5.bungee.api.ChatColor.AQUA);
         prepInteract.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Prepares the game world for the game. If no second argument\nis specified, defaults to noload.\n").color(net.md_5.bungee.api.ChatColor.WHITE)
                 .append("Arguments:\n").color(net.md_5.bungee.api.ChatColor.BLUE).underlined(true).bold(true)
-                .append("load").color(net.md_5.bungee.api.ChatColor.GOLD).bold(true).append(" - ").color(net.md_5.bungee.api.ChatColor.DARK_GRAY).bold(false).append("Pre-generates all chunks which have not been loaded within the game area, or resumes said pre-generation.\n").color(net.md_5.bungee.api.ChatColor.WHITE)
-                .append("pause").color(net.md_5.bungee.api.ChatColor.GOLD).underlined(false).bold(true).append(" - ").color(net.md_5.bungee.api.ChatColor.DARK_GRAY).bold(false).append("Pauses chunk pre-generation, saving progress for future resumption.\n").color(net.md_5.bungee.api.ChatColor.WHITE)
+                .append("load").color(net.md_5.bungee.api.ChatColor.GOLD).bold(true).underlined(false).append(" - ").color(net.md_5.bungee.api.ChatColor.DARK_GRAY).bold(false).append("Pre-generates all chunks which have not been loaded within the game area, or resumes said pre-generation.\n").color(net.md_5.bungee.api.ChatColor.WHITE)
+                .append("pause").color(net.md_5.bungee.api.ChatColor.GOLD).bold(true).append(" - ").color(net.md_5.bungee.api.ChatColor.DARK_GRAY).bold(false).append("Pauses chunk pre-generation, saving progress for future resumption.\n").color(net.md_5.bungee.api.ChatColor.WHITE)
                 .append("Requires uhc.admin: ").color(net.md_5.bungee.api.ChatColor.GOLD).append("YES").color(net.md_5.bungee.api.ChatColor.GREEN).bold(true)
                 .append("\nConsole: ").color(net.md_5.bungee.api.ChatColor.GOLD).bold(false).append("YES").color(net.md_5.bungee.api.ChatColor.GREEN).bold(true).create()));
         prepInteract.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/uhc prep "));
