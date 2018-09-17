@@ -626,7 +626,7 @@ public class UHCUtils {
             message.append(ChatColor.YELLOW).append(ChatColor.BOLD).append("\nPVP Enabled in ").append(ChatColor.RESET).append(secsToFormatString(timeToPVP / 1000));
         }
         if (border) {
-            message.append(ChatColor.DARK_PURPLE).append(ChatColor.BOLD).append("\nWorld border shrinking!");
+            message.append(ChatColor.DARK_PURPLE).append(ChatColor.BOLD).append("\nWorld border shrinking to ±").append(Main.getInstance().getGameInstance().getFinalSize() / 2);
         } else {
             long timeToBorder = BorderCountdown.getInstance().getEnd() - currTime;
             message.append(ChatColor.GREEN).append(ChatColor.BOLD).append("\nBorder begins shrinking in ").append(ChatColor.RESET).append(secsToFormatString(timeToBorder / 1000));

@@ -59,9 +59,9 @@ public class InfoAnnouncer implements Runnable {
         obj.getScore(TIME_TEAM_ID).setScore(14);
         obj.getScore(ChatColor.GREEN + "» " + (Main.getInstance().getGameInstance().isTeamMode() ? "Teams" : "Players") +" Remaining:").setScore(13);
         obj.getScore(OPP_REMAIN_ID).setScore(12);
-        obj.getScore(ChatColor.BLUE + "» " + " World Border:").setScore(11);
+        obj.getScore(ChatColor.YELLOW + "» World Border:").setScore(11);
         obj.getScore(WORLD_BORDER_ID).setScore(10);
-        obj.getScore(ChatColor.RED + "» " + " PVP:").setScore(9);
+        obj.getScore(ChatColor.RED + "» PVP:").setScore(9);
         obj.getScore(PVP_ID).setScore(8);
     }
 

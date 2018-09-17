@@ -81,7 +81,7 @@ public class CommandSurface implements CommandExecutor, TabCompleter {
                     return;
                 }
                 if (now < ptpInfo.getTpTime() - ptpInfo.getNextSecond() * 1000) continue;
-                p.sendMessage(ChatColor.YELLOW + "Teleporting in " + UHCUtils.secsToFormatString(ptpInfo.nextSecond));
+                p.sendMessage(ChatColor.YELLOW + "Surfacing in " + UHCUtils.secsToFormatString(ptpInfo.nextSecond));
                 p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
                 ptpInfo.setNextSecond(ptpInfo.getNextSecond() - 1);
             }
