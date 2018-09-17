@@ -76,7 +76,7 @@ public class SQLAPI {
                 createUHCTimeTable();
             }
             if (tdm == null) {
-                tdm = InfoDisplayMode.CHAT;
+                tdm = InfoDisplayMode.SCOREBOARD;
             }
             Optional<Connection> connection = ConnectionHandler.getInstance().getConnection();
             if (!connection.isPresent()) {

@@ -72,8 +72,8 @@ public class InfoAnnouncer implements Runnable {
 
     @Override
     public void run() {
-        TimeDisplay.setPrefix(ChatColor.WHITE + "     " + UHCUtils.secsToFormatString2(UHCUtils.getSecsElapsed(Main.getInstance())));
-        PlayersDisplay.setPrefix(ChatColor.WHITE + "     " + String.valueOf(Main.getInstance().getGameInstance().isTeamMode() ? Main.getInstance().getGameInstance().getNumTeams() : Main.getInstance().getGameInstance().getLivePlayers().size()));
+        TimeDisplay.setPrefix(ChatColor.WHITE + "  " + UHCUtils.secsToFormatString2(UHCUtils.getSecsElapsed(Main.getInstance())));
+        PlayersDisplay.setPrefix(ChatColor.WHITE + "  " + String.valueOf(Main.getInstance().getGameInstance().isTeamMode() ? Main.getInstance().getGameInstance().getNumTeams() : Main.getInstance().getGameInstance().getLivePlayers().size()));
         WBDisplay.setPrefix(ChatColor.WHITE + (Main.getInstance().getGameInstance().isBorderShrinking() ?
                 "Shrinking to ±" + (Main.getInstance().getGameInstance().getFinalSize() / 2) :
                 "Shrinks in " + UHCUtils.secsToFormatString2((Main.getInstance().getGameInstance().getMinsToShrink() * 60) - UHCUtils.getSecsElapsed(Main.getInstance()))));
@@ -86,9 +86,10 @@ public class InfoAnnouncer implements Runnable {
     private void showInfoToPlayer(Player player) {
         InfoDisplayMode tdm = InfoModeCache.getInstance().getPlayerPref(player.getUniqueId());
         if (tdm == null) {
-            Bukkit.getLogger().warning(player.getName() + " possess an invalid InfoDisplayMode. Setting to default (CHAT)...");
-            InfoModeCache.getInstance().storePlayerPref(player.getUniqueId(), InfoDisplayMode.CHAT);
-        } else if (tdm == InfoDisplayMode.SCOREBOARD) {
+            Bukkit.getLogger().warning(player.getName() + " possess an invalid InfoDisplayMode. Setting to default (SCOREBOARD)...");
+            InfoModeCache.getInstance().storePlayerPref(player.getUniqueId(), InfoDisplayMode.SCOREBOARD);
+        }
+        if (tdm == InfoDisplayMode.SCOREBOARD) {
             if (!objectivePlayerSet.contains(player.getUniqueId())) {
                 player.setScoreboard(timeScoreboard);
                 objectivePlayerSet.add(player.getUniqueId());

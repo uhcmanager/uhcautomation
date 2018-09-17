@@ -40,7 +40,7 @@ public class InfoModeCache {
 
     public InfoDisplayMode getPlayerPref(UUID u) {
         if (cache.get(u) == null) {
-            return InfoDisplayMode.CHAT;
+            return InfoDisplayMode.SCOREBOARD;
         }
         return cache.get(u);
     }
