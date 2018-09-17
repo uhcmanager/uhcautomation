@@ -23,11 +23,17 @@ game:
   # Minimum distance between spawn locations at the start of the game.
   # Note that the game will fail to start if it cannot fit everyone into the map.
   spread-distance: 150
+mob-disable:
+  # Replaces all baby zombie spawns with normal zombies.
+  baby-zombie: true
+  # Prevents phantoms from spawning, full stop.
+  phantom: true
 
 ### Warnings ###
 warnings:
   border: true
   pvp: true
+
 # Times should be listed in seconds, comma-separated (spaces ok), in ascending order.
 # If the times are not numbers or not comma separated, loading of warning
 # times will default to the following values:
@@ -52,7 +58,6 @@ db:
   password: password_is_not_a_good_password
 
 allow-command-blocks: false
-use-main-scoreboard: false
 
 # Where to store game data
 data-location: data/<worldname>

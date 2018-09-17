@@ -41,7 +41,7 @@ public class GenerateChunksHelper implements Runnable {
         }
         sideLength = (maxChunkX - minChunkX) + 1;
         Main.getInstance().getLogger().info(String.format("Chunk pre-generation %s. Lag may occur during this time...", (running ? "resumed" : "initiated")));
-        UHCUtils.broadcastMessage("[" + ChatColor.GOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.DARK_RED + ChatColor.BOLD + "Chunk pre-generation beginning. Severe lag may occur.");
+        UHCUtils.broadcastMessage("[" + ChatColor.GOLD + ChatColor.BOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.DARK_RED + ChatColor.BOLD + "Chunk pre-generation beginning. Severe lag may occur.");
         running = true;
     }
 
@@ -52,6 +52,7 @@ public class GenerateChunksHelper implements Runnable {
             Main.getInstance().getLogger().fine("Generated chunk at chunk coords X: " + chunkX + ", Z: " + chunkZ);
             long timeElapsed = System.currentTimeMillis() - startTime;
             Main.getInstance().getLogger().info("Chunk pre-generation complete! Took " + ((timeElapsed + prevElapsed) / 1000) + " seconds (" + (timeElapsed + prevElapsed) + " ms)");
+            UHCUtils.broadcastMessage("[" + ChatColor.GOLD + ChatColor.BOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.GREEN + "Chunk pre-generation complete!");
             Bukkit.getScheduler().cancelTask(schedulerID);
             running = false;
             instance = null;
@@ -86,7 +87,7 @@ public class GenerateChunksHelper implements Runnable {
     }
 
     public static void stop() {
-        UHCUtils.broadcastMessage(ChatColor.YELLOW + "Chunk pre-generation stopped.");
+        UHCUtils.broadcastMessage("[" + ChatColor.GOLD + ChatColor.BOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.YELLOW + "Chunk pre-generation stopped.");
         Bukkit.getScheduler().cancelTask(getInstance().schedulerID);
         running = false;
         instance = null;
@@ -94,7 +95,7 @@ public class GenerateChunksHelper implements Runnable {
 
     public static void pause() {
         prevElapsed += System.currentTimeMillis() - getInstance().startTime;
-        UHCUtils.broadcastMessage(ChatColor.YELLOW + "Chunk pre-generation paused.");
+        UHCUtils.broadcastMessage("[" + ChatColor.GOLD + ChatColor.BOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.YELLOW + "Chunk pre-generation paused.");
         Bukkit.getScheduler().cancelTask(getInstance().schedulerID);
         instance = null;
     }
