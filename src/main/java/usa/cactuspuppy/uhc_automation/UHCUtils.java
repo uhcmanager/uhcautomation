@@ -6,6 +6,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
@@ -478,16 +479,10 @@ public class UHCUtils {
                 location = locations[i++];
             }
 
-            Location loc = new Location(world, Math.floor(location.getX()) + 0.5D, world.getHighestBlockYAt((int) location.getX(), (int) location.getZ()) - 1, Math.floor(location.getZ()) + 0.5D);
-            Material m = world.getBlockAt(loc).getType();
-            if (m.equals(Material.WATER)) {
-                loc.setY(loc.getY() + 1D);
-                loc.getBlock().setType(Material.STONE_BRICK_SLAB);
-                if (isOceanBiome(world.getBiome(loc.getBlockX(), loc.getBlockZ()))) {
-                    g.getGiveBoats().add(player);
-                }
+            Location loc = highestBlock(location);
+            if (isOceanBiome(world.getBiome(loc.getBlockX(), loc.getBlockZ()))) {
+                g.getGiveBoats().add(player);
             }
-            loc.setY(loc.getY() + 1D);
             player.teleport(loc);
 
             double value = Double.MAX_VALUE;
@@ -504,6 +499,23 @@ public class UHCUtils {
 
         distance /= list.size();
         return distance;
+    }
+
+    private static Location highestBlock(Location loc) {
+        World world = loc.getWorld();
+        for (int y = 255; y > 0; y--) {
+            Block block = world.getBlockAt(loc.getBlockX(), y, loc.getBlockZ());
+            if (block.isEmpty()) continue;
+            Location rv = new Location(world, loc.getBlockX(), y + 1, loc.getBlockZ());
+            Block blockBelow = world.getBlockAt(rv.add(0, -1, 0));
+            if (blockBelow.isLiquid() || blockBelow.getType().equals(Material.CACTUS) || blockBelow.getType().equals(Material.MAGMA_BLOCK)) {
+                world.getBlockAt(rv).setType(Material.STONE_SLAB);
+                rv = rv.add(0, 1, 0);
+            }
+            return rv;
+        }
+        Main.getInstance().getLogger().fine("Custom highestBlock function failed, using default backup for location " + loc.toString());
+        return new Location(world, loc.getBlockX(), world.getHighestBlockYAt(loc.getBlockX(), loc.getBlockZ()), loc.getBlockZ());
     }
 
     private static Location[] getSpreadLocations(World world, int size, double xRangeMin, double zRangeMin, double xRangeMax, double zRangeMax) {
