@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 
 public abstract class UHCCommand {
     @Getter String name = "";
-    @Getter boolean needsAdmin = true;
+    @Getter boolean adminOnly = true;
 
     public abstract void onCommand(CommandSender sender, Command command, String alias, String[] args);
 }

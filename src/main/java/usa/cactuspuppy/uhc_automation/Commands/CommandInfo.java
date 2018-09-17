@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class CommandInfo extends UHCCommand {
     public CommandInfo() {
         name = "info";
-        needsAdmin = false;
+        adminOnly = false;
     }
 
     @Override

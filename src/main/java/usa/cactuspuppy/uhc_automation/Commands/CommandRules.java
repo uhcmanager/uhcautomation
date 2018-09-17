@@ -9,7 +9,7 @@ public class CommandRules extends UHCCommand {
 
     public CommandRules() {
         name = "rules";
-        needsAdmin = false;
+        adminOnly = false;
     }
 
     @Override
