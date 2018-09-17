@@ -18,12 +18,15 @@ public class FixColoredNamesChatListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerChat(AsyncPlayerChatEvent e) {
-        Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(e.getPlayer().getName());
+        Team team = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(e.getPlayer().getName());
         if (team == null) {
+            System.out.println("No team found for player " + e.getPlayer().getName());
             return;
         }
+        System.out.println("Player " + e.getPlayer().getName() + " has team " + team.getDisplayName());
+        ChatColor color = team.getColor();
         String prefix = team.getPrefix();
         String suffix = team.getSuffix();
-        e.setFormat("<" + prefix + "%1$s" + suffix + ChatColor.RESET + "> %2$s");
+        e.setFormat("<" + prefix + color + "%1$s" + suffix + ChatColor.RESET + "> %2$s");
     }
 }

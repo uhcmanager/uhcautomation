@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @org.bukkit.plugin.java.annotation.command.Command(name = "uhc", desc = "Accesses the functionality of the UHC plugin", usage = "/uhc <subcommand> [args]")
 public class CommandHandler implements CommandExecutor, TabCompleter {
-    @Getter private static final String[] SUBCOMMANDS = {"help", "info", "options", "prep", "register", "reset", "rules", "setworld", "start", "status", "stop", "team", "unregister"};
+    @Getter private static final String[] SUBCOMMANDS = {"help", "info", "options", "prep", "register", "reset", "rules", "setworld", "start", "status", "stop", "unregister"};
     @Getter private static final String[] REGISTER_ALIASES = {"reg", "join", "add"};
     @Getter private static final String[] UNREGISTER_ALIASES = {"unreg", "remove", "rm"};
     @Getter private static final String[] OPTIONS_ALIASES = {"opt", "optn", "option"};
@@ -85,9 +85,6 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
         } else if (subcommand.equals("status")) {
             if (!hasPerm) denyPermission(sender);
             CommandStatus.onCommand(sender);
-        } else if (subcommand.equals("team")) {
-            if (!hasPerm) denyPermission(sender);
-            CommandTeam.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
         } else if (subcommand.equalsIgnoreCase("unregister")) {
             if (!hasPerm) denyPermission(sender);
             CommandUnregister.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));

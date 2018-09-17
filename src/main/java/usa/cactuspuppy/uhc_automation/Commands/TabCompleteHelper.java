@@ -34,9 +34,6 @@ public class TabCompleteHelper implements TabCompleter {
         } else if (subcommand.equals("setworld")) {
             if (!hasPerm) return new ArrayList<>();
             return CommandSetWorld.onTabComplete(Arrays.copyOfRange(args, 1, args.length));
-        } else if (subcommand.equals("team")) {
-            if (!hasPerm) return new ArrayList<>();
-            return CommandTeam.onTabComplete(Arrays.copyOfRange(args, 1, args.length));
         }
         return new ArrayList<>();
     }

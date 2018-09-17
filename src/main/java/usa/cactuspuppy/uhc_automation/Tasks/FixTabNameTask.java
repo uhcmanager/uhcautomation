@@ -16,12 +16,12 @@ public class FixTabNameTask implements Runnable {
     @SuppressWarnings("deprecation")
     public void run() {
         for (Player p : Bukkit.getOnlinePlayers()) {
-            Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(p.getName());
+            Team team = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(p.getName());
             String prefix;
             if (team == null) {
                 prefix = "";
             } else {
-                prefix = team.getPrefix();
+                prefix = team.getPrefix() + team.getColor();
             }
             if (p.getPlayerListName().equals(prefix + p.getName())) {
                 return;
