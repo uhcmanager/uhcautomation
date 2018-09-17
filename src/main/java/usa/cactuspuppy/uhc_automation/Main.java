@@ -12,6 +12,7 @@ import org.bukkit.plugin.java.annotation.plugin.LogPrefix;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import usa.cactuspuppy.uhc_automation.Commands.CommandHandler;
+import usa.cactuspuppy.uhc_automation.Commands.CommandSurface;
 import usa.cactuspuppy.uhc_automation.Commands.TabCompleteHelper;
 import usa.cactuspuppy.uhc_automation.Database.ConnectionHandler;
 import usa.cactuspuppy.uhc_automation.Database.ConnectionInfo;
@@ -141,6 +142,7 @@ public class Main extends JavaPlugin {
     private void registerCommands() {
         getCommand("uhc").setExecutor(new CommandHandler());
         getCommand("uhc").setTabCompleter(new TabCompleteHelper());
+        getCommand("surface").setExecutor(new CommandSurface());
     }
 
     public static Main getInstance() {

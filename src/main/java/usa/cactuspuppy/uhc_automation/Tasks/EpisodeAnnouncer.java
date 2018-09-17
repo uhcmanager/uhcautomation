@@ -3,6 +3,7 @@ package usa.cactuspuppy.uhc_automation.Tasks;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
@@ -43,7 +44,7 @@ public class EpisodeAnnouncer implements Runnable {
 
     private void markEpisode(Player p) {
         int mins = epCount * length;
-        p.playSound(p.getLocation(), "minecraft:entity.firework.launch", (float) 1, (float) 1);
+        p.playSound(p.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 1F, 1F);
         p.sendMessage(ChatColor.GOLD + "\nMARK: " + ChatColor.WHITE + "End of Episode " + ChatColor.GREEN + epCount);
         p.sendMessage(ChatColor.AQUA + "Time Elapsed: " + ChatColor.WHITE + WordUtils.capitalize(UHCUtils.secsToFormatString(mins * 60)));
     }

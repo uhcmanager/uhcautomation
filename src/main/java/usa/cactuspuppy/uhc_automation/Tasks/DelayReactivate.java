@@ -2,7 +2,10 @@ package usa.cactuspuppy.uhc_automation.Tasks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.GameRule;
+import org.bukkit.World;
 import org.bukkit.event.HandlerList;
+import usa.cactuspuppy.uhc_automation.Commands.CommandSurface;
 import usa.cactuspuppy.uhc_automation.GameInstance;
 import usa.cactuspuppy.uhc_automation.Listeners.PlayerDeathListener;
 import usa.cactuspuppy.uhc_automation.Listeners.WorldChangeListener;
@@ -50,11 +53,22 @@ public class DelayReactivate implements Runnable {
         Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(), Main.getInstance());
         g.getLivePlayers().stream().map(Bukkit::getPlayer).forEach(p -> p.setGameMode(GameMode.SURVIVAL));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd HH:mm:ss");
-        g.getMain().getLogger().info("Game Reinitiate Time - " + sdf.format(new Date(System.currentTimeMillis())));
+        long now = System.currentTimeMillis();
+        g.getMain().getLogger().info("Game Reinitiate Time - " + sdf.format(new Date(now)));
         if (g.getEpLength() != 0) {
             (new EpisodeAnnouncer(g.getEpLength(), g.getStartT())).schedule();
         }
-        if (g.getMinsToShrink() > 0) {
+        if (now >= g.getStartT() + g.getMinsToShrink() * 60000) {
+            Main.getInstance().getLogger().info("Border was shrinking before restart, initiating post-border-shrink mechanics now...");
+            World world = g.getWorld();
+            (new BorderAnnouncer()).schedule();
+            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+            world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+            world.setTime(6000L);
+            world.setStorm(false);
+            CommandSurface.startHelper();
+            g.setBorderShrinking(true);
+        } else if (g.getMinsToShrink() > 0) {
             g.setBorderCountdown((new BorderCountdown(g.getMinsToShrink() * 60, g.getStartT(), Main.getInstance().getConfig().getBoolean("warnings.border", true))).schedule());
         }
         if (g.getSecsToPVP() == 0) {
@@ -69,6 +83,6 @@ public class DelayReactivate implements Runnable {
     }
 
     public void schedule() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(g.getMain(), this, 1L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(g.getMain(), this, 0L);
     }
 }

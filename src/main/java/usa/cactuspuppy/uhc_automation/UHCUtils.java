@@ -506,11 +506,11 @@ public class UHCUtils {
         for (int y = 255; y > 0; y--) {
             Block block = world.getBlockAt(loc.getBlockX(), y, loc.getBlockZ());
             if (block.isEmpty()) continue;
-            Location rv = new Location(world, loc.getBlockX(), y + 1, loc.getBlockZ());
-            Block blockBelow = world.getBlockAt(rv.add(0, -1, 0));
+            Location rv = new Location(world, loc.getX(), y + 1, loc.getZ());
+            Block blockBelow = world.getBlockAt(rv.getBlockX(), rv.getBlockY() - 1, rv.getBlockZ());
             if (blockBelow.isLiquid() || blockBelow.getType().equals(Material.CACTUS) || blockBelow.getType().equals(Material.MAGMA_BLOCK)) {
                 world.getBlockAt(rv).setType(Material.STONE_SLAB);
-                rv = rv.add(0, 1, 0);
+                rv.add(0, 1, 0);
             }
             return rv;
         }

@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import usa.cactuspuppy.uhc_automation.Commands.CommandSurface;
 import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
 import usa.cactuspuppy.uhc_automation.Listeners.PlayerMoveListener;
 import usa.cactuspuppy.uhc_automation.Tasks.*;
@@ -39,7 +40,7 @@ public class GameInstance {
     private boolean uhcMode;
     @Getter private Scoreboard scoreboard;
     @Setter private int borderCountdown;
-    @Getter private boolean borderShrinking;
+    @Getter @Setter private boolean borderShrinking;
     @Getter private PlayerMoveListener freezePlayers;
     @Getter @Setter private InfoAnnouncer infoAnnouncer;
     @Getter @Setter private Set<Player> giveBoats;
@@ -196,14 +197,7 @@ public class GameInstance {
         if (minsToShrink > 0) {
             borderCountdown = (new BorderCountdown(minsToShrink * 60, startT, Main.getInstance().getConfig().getBoolean("warnings.border", true))).schedule();
         } else if (minsToShrink == 0) {
-            borderShrinking = true;
-            world.getWorldBorder().setSize(finalSize, calcBorderShrinkTime());
-            main.getLogger().info("Game border shrinking from " + initSize + " to " + finalSize
-                    + " over " + calcBorderShrinkTime() + " secs");
-            (new BorderAnnouncer()).schedule();
-            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-            world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-            world.setTime(6000L);
+            startBorderShrinkHelper();
         }
         if (epLength != 0) {
             (new EpisodeAnnouncer(epLength, startT)).schedule();
@@ -242,19 +236,24 @@ public class GameInstance {
     }
 
     public void startBorderShrink() {
-        borderShrinking = true;
-        world.getWorldBorder().setSize(finalSize, calcBorderShrinkTime());
-        main.getLogger().info("Game border shrinking from " + initSize + " to " + finalSize
-                + " over " + calcBorderShrinkTime() + " secs");
+        startBorderShrinkHelper();
         Bukkit.getScheduler().cancelTask(borderCountdown);
         for (UUID u : activePlayers) {
             alertPlayerBorder(u);
         }
+    }
+
+    private void startBorderShrinkHelper() {
+        borderShrinking = true;
+        world.getWorldBorder().setSize(finalSize, calcBorderShrinkTime());
+        main.getLogger().info("Game border shrinking from " + initSize + " to " + finalSize
+                + " over " + calcBorderShrinkTime() + " secs");
         (new BorderAnnouncer()).schedule();
         world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         world.setTime(6000L);
         world.setStorm(false);
+        CommandSurface.startHelper();
     }
 
     public void win() {
@@ -367,7 +366,7 @@ public class GameInstance {
         if (p == null) {
             return;
         }
-        p.sendMessage(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nBorder shrinking!");
+        p.sendMessage(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nBorder shrinking!\n" + ChatColor.RESET + ChatColor.AQUA + "Use /surface to begin surfacing!");
         p.sendTitle(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Border Shrinking!", "", 0, 80, 40);
         p.playSound(p.getLocation(), "minecraft:entity.ender_dragon.death", 1F, 1F);
     }
@@ -479,7 +478,7 @@ public class GameInstance {
     }
 
     private int calcBorderShrinkTime() {
-        double slowFactor = 1.5;
+        double slowFactor = 0.95;
         return (int) ((initSize - finalSize) * slowFactor);
     }
 
