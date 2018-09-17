@@ -459,7 +459,6 @@ public class GameInstance {
         s.sendMessage(builder.toString());
     }
 
-    @SuppressWarnings("deprecation")
     public int getNumTeams() {
         Set<Team> teams = new HashSet<>();
         for (UUID u : livePlayers) {

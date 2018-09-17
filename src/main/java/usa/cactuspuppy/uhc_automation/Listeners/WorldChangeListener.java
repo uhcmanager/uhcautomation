@@ -1,6 +1,7 @@
 package usa.cactuspuppy.uhc_automation.Listeners;
 
 import lombok.NoArgsConstructor;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -18,7 +19,7 @@ public class WorldChangeListener implements Listener {
             Main.getInstance().getGameInstance().bindPlayertoScoreboard(e.getPlayer());
             Main.getInstance().getGameInstance().registerPlayer(e.getPlayer());
         } else {
-            e.getPlayer().setScoreboard(Main.getInstance().getGameInstance().getScoreboard());
+            e.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
             Main.getInstance().getGameInstance().lostConnectPlayer(e.getPlayer());
         }
     }

@@ -1,6 +1,8 @@
 package usa.cactuspuppy.uhc_automation.Commands;
 
 import com.google.common.base.CaseFormat;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.chat.ComponentSerializer;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -9,7 +11,6 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import usa.cactuspuppy.uhc_automation.Main;
-import usa.cactuspuppy.uhc_automation.ScoreboardUtils.ScoreboardSaver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +34,7 @@ public class CommandTeam {
             commandSender.sendMessage(ChatColor.RED + "Subcommand " + ChatColor.WHITE + subcommand + ChatColor.RED + " not recognized. Acceptable options: " + ChatColor.WHITE + "add, remove, join, leave, option");
             return;
         }
-        Scoreboard mainSB = Main.getInstance().getGameInstance().getScoreboard();
+        Scoreboard mainSB = Bukkit.getScoreboardManager().getMainScoreboard();
         /*Add Team*/
         if (subcommand.equals("add")) {
             String teamName = args[1];
@@ -117,7 +118,7 @@ public class CommandTeam {
                         return;
                     }
                     try {
-                        team.setDisplayName(args[3]);
+                        team.setDisplayName(Arrays.toString((new ComponentBuilder("").append(ComponentSerializer.parse(args[3]))).create()));
                     } catch (IllegalArgumentException e) {
                         commandSender.sendMessage(ChatColor.RED + "Display name cannot be longer than 128 characters!");
                         return;
@@ -141,7 +142,6 @@ public class CommandTeam {
                 }
             }
         }
-        ScoreboardSaver.queueSave();
     }
 
     public static List<String> onTabComplete(String[] args) {
@@ -149,7 +149,7 @@ public class CommandTeam {
             return Arrays.stream(CommandTeam.SUBCOMMANDS).filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
         } else if (args.length == 2) {
             if (!args[0].equals("add")) {
-                return Main.getInstance().getGameInstance().getScoreboard().getTeams().stream().map(Team::getName).filter(s -> s.startsWith(args[1])).collect(Collectors.toList());
+                return Bukkit.getScoreboardManager().getMainScoreboard().getTeams().stream().map(Team::getName).filter(s -> s.startsWith(args[1])).collect(Collectors.toList());
             }
         } else if (args.length == 3) {
             if (args[0].equals("add")) {

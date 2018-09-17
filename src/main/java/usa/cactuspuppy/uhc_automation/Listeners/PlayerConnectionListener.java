@@ -39,7 +39,7 @@ public class PlayerConnectionListener implements Listener {
                 Main.getInstance().getGameInstance().registerPlayer(p);
             }
         } else {
-            p.setScoreboard(Main.getInstance().getGameInstance().getScoreboard());
+            p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
     }
 

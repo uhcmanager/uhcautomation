@@ -8,7 +8,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.scoreboard.Team;
-import usa.cactuspuppy.uhc_automation.Main;
 
 @NoArgsConstructor
 public class FixColoredNamesChatListener implements Listener {
@@ -19,7 +18,7 @@ public class FixColoredNamesChatListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerChat(AsyncPlayerChatEvent e) {
-        Team team = Main.getInstance().getGameInstance().getScoreboard().getEntryTeam(e.getPlayer().getName());
+        Team team = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(e.getPlayer().getName());
         if (team == null) {
             return;
         }

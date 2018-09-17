@@ -468,7 +468,7 @@ public class UHCUtils {
             Location location;
 
             if (teams) {
-                Team team = Main.getInstance().getGameInstance().getScoreboard().getEntryTeam(player.getName());
+                Team team = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(player.getName());
 
                 if (!hashmap.containsKey(team)) {
                     hashmap.put(team, locations[i++]);
@@ -512,7 +512,7 @@ public class UHCUtils {
         Set<Team> teams = Sets.newHashSet();
 
         for (Player player : players) {
-            teams.add(Main.getInstance().getGameInstance().getScoreboard().getPlayerTeam(player));
+            teams.add(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player));
         }
 
         return teams.size();
@@ -531,7 +531,7 @@ public class UHCUtils {
     }
 
     public static boolean isOceanBiome(Biome biome) {
-        return biome.equals(Biome.OCEAN) || biome.equals(Biome.DEEP_OCEAN) || biome.equals(Biome.FROZEN_OCEAN);
+        return biome.name().contains("ocean");
     }
 
     public static int getSecsElapsed(Main m) {
