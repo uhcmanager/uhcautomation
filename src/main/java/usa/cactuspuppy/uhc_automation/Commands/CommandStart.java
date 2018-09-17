@@ -2,14 +2,20 @@ package usa.cactuspuppy.uhc_automation.Commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.Tasks.GenerateChunksHelper;
 import usa.cactuspuppy.uhc_automation.Tasks.PreGameCountdown;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
-public class CommandStart {
-    public static void onCommand(CommandSender sender, String[] args) {
+public class CommandStart extends UHCCommand {
+    public CommandStart() {
+        name = "start";
+    }
+
+    @Override
+    public void onCommand(CommandSender sender, Command command, String alias, String[] args) {
         if (!Main.getInstance().getGameInstance().validate(sender)) {
             UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), ChatColor.RED + "Game aborted.");
             return;

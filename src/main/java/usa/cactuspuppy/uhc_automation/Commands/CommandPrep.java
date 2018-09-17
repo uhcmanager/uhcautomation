@@ -1,7 +1,7 @@
 package usa.cactuspuppy.uhc_automation.Commands;
 
-import lombok.NoArgsConstructor;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.Tasks.GenerateChunksHelper;
@@ -11,13 +11,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor
-public class CommandPrep {
+public class CommandPrep extends UHCCommand {
     private static final String[] OPTIONS = {"pause", "load", "stop"};
 
-    public static void onCommand(CommandSender sender, String[] args) {
+    public CommandPrep() {
+        name = "prep";
+    }
+
+    @Override
+    public void onCommand(CommandSender sender, Command command, String alias, String[] args) {
         if (Main.getInstance().getGameInstance().isActive()) {
-            sender.sendMessage(ChatColor.RED + "Game is currently active, use /uhcstop to stop the game or wait until the current game is finished before attempt to prep the world.");
+            sender.sendMessage(ChatColor.RED + "Game is currently active, use " + ChatColor.WHITE + "/uhc reset" + ChatColor.RED + " to stop the game or wait until the current game is finished before attempt to prep the world.");
             return;
         }
         if (args.length == 0) {

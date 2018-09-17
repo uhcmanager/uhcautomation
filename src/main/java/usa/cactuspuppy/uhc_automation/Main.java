@@ -11,7 +11,6 @@ import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.LogPrefix;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
-import org.bukkit.scoreboard.Scoreboard;
 import usa.cactuspuppy.uhc_automation.Commands.CommandHandler;
 import usa.cactuspuppy.uhc_automation.Commands.TabCompleteHelper;
 import usa.cactuspuppy.uhc_automation.Database.ConnectionHandler;
@@ -23,7 +22,6 @@ import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
 
 import java.io.*;
 import java.net.ConnectException;
-import java.util.Optional;
 import java.util.logging.Level;
 
 @Plugin(name = "UHC_Automation", version = "1.8")

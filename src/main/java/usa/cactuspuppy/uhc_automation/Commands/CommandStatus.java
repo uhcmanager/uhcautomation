@@ -1,12 +1,16 @@
 package usa.cactuspuppy.uhc_automation.Commands;
 
-import lombok.NoArgsConstructor;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import usa.cactuspuppy.uhc_automation.Main;
 
-@NoArgsConstructor
-public class CommandStatus {
-    public static void onCommand(CommandSender commandSender) {
-        Main.getInstance().getGameInstance().logStatus(commandSender);
+public class CommandStatus extends UHCCommand {
+    public CommandStatus() {
+        name = "status";
+    }
+
+    @Override
+    public void onCommand(CommandSender sender, Command command, String alias, String[] args) {
+        Main.getInstance().getGameInstance().logStatus(sender);
     }
 }

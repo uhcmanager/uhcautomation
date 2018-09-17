@@ -1,7 +1,6 @@
 package usa.cactuspuppy.uhc_automation;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.io.FileUtils;

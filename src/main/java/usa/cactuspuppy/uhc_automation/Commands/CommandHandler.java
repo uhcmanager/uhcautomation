@@ -11,19 +11,30 @@ import org.bukkit.command.TabCompleter;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @org.bukkit.plugin.java.annotation.command.Command(name = "uhc", desc = "Accesses the functionality of the UHC plugin", usage = "/uhc <subcommand> [args]")
 public class CommandHandler implements CommandExecutor, TabCompleter {
-    @Getter private static final String[] SUBCOMMANDS = {"help", "info", "options", "prep", "register", "reset", "rules", "setworld", "start", "status", "stop", "unregister"};
+    @Getter private static final Map<String, UHCCommand> SUBCOMMANDS = new HashMap<>();
     @Getter private static final String[] REGISTER_ALIASES = {"reg", "join", "add"};
     @Getter private static final String[] UNREGISTER_ALIASES = {"unreg", "remove", "rm"};
     @Getter private static final String[] OPTIONS_ALIASES = {"opt", "optn", "option"};
 
-    public static boolean validSubcommand(String subcommand) { return Arrays.asList(SUBCOMMANDS).contains(subcommand); }
+    public static boolean validSubcommand(String subcommand) { return SUBCOMMANDS.keySet().contains(subcommand); }
+
+    public CommandHandler() {
+        addCmd(new CommandInfo());
+        addCmd(new CommandOptions());
+        addCmd(new CommandPrep());
+        addCmd(new CommandRegister());
+        addCmd(new CommandReset());
+        addCmd(new CommandRules());
+        addCmd(new CommandSetWorld());
+        addCmd(new CommandStart());
+        addCmd(new CommandStatus());
+        addCmd(new CommandUnregister());
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
@@ -34,63 +45,47 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
         }
         String subcommand = args[0];
         //check subcommand is valid
-        if (!Arrays.asList(SUBCOMMANDS).contains(subcommand) && !Arrays.asList(REGISTER_ALIASES).contains(subcommand) && !Arrays.asList(UNREGISTER_ALIASES).contains(subcommand) && !Arrays.asList(OPTIONS_ALIASES).contains(subcommand)) {
+        if (!SUBCOMMANDS.keySet().contains(subcommand) && !Arrays.asList(REGISTER_ALIASES).contains(subcommand) && !Arrays.asList(UNREGISTER_ALIASES).contains(subcommand) && !Arrays.asList(OPTIONS_ALIASES).contains(subcommand)) {
             StringJoiner joiner = new StringJoiner(", ");
-            Arrays.stream(SUBCOMMANDS).forEach(joiner::add);
+            SUBCOMMANDS.keySet().forEach(joiner::add);
             sender.sendMessage(ChatColor.RED + "Unknown subcommand " + ChatColor.WHITE + subcommand.toLowerCase() + ChatColor.RED + ". Valid subcommands: " + ChatColor.WHITE + joiner.toString());
+            return true;
+        }
+
+        if (subcommand.equals("help")) {
+            help(sender);
+        }
+
+        UHCCommand executor = SUBCOMMANDS.get(subcommand);
+        //alias handling
+        if (Arrays.asList(REGISTER_ALIASES).contains(subcommand)) {
+            executor = SUBCOMMANDS.get("register");
+        } else if (Arrays.asList(UNREGISTER_ALIASES).contains(subcommand)) {
+            executor = SUBCOMMANDS.get("unregister");
+        } else if (Arrays.asList(OPTIONS_ALIASES).contains(subcommand)) {
+            executor = SUBCOMMANDS.get("options");
+        }
+
+        //No executor check
+        if (executor == null) {
+            Main.getInstance().getLogger().severe("Could not find subcommand executor for subcommand '" + subcommand + "'");
             return true;
         }
 
         //permission check
         boolean hasPerm = sender.hasPermission("uhc.admin");
-
-        //alias handling
-        if (Arrays.asList(REGISTER_ALIASES).contains(subcommand)) {
-            if (!hasPerm) denyPermission(sender);
-            CommandRegister.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
-        }
-        if (Arrays.asList(UNREGISTER_ALIASES).contains(subcommand)) {
-            if (!hasPerm) denyPermission(sender);
-            CommandUnregister.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
-        }
-        if (Arrays.asList(OPTIONS_ALIASES).contains(subcommand)) {
-            if (!hasPerm) denyPermission(sender);
-            CommandOptions.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
+        if (executor.isNeedsAdmin() && !hasPerm) {
+            denyPermission(sender);
+            return true;
         }
 
-        if (subcommand.equalsIgnoreCase("help")) {
-            help(sender);
-        } else if (subcommand.equalsIgnoreCase("info")) {
-            CommandInfo.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
-        } else if (subcommand.equalsIgnoreCase("options")) {
-            if (!hasPerm) denyPermission(sender);
-            CommandOptions.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
-        } else if (subcommand.equalsIgnoreCase("prep")) {
-            if (!hasPerm) denyPermission(sender);
-            CommandPrep.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
-        } else if (subcommand.equalsIgnoreCase("register")) {
-            if (!hasPerm) denyPermission(sender);
-            CommandRegister.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
-        } else if (subcommand.equals("reset") || subcommand.equalsIgnoreCase("stop")) {
-            if (!hasPerm) denyPermission(sender);
-            CommandReset.onCommand(sender);
-        } else if (subcommand.equals("rules")) {
-            CommandRules.onCommand(sender);
-        } else if (subcommand.equals("setworld")) {
-            if (!hasPerm) denyPermission(sender);
-            CommandSetWorld.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
-        } else if (subcommand.equals("start")) {
-            if (!hasPerm) denyPermission(sender);
-            CommandStart.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
-        } else if (subcommand.equals("status")) {
-            if (!hasPerm) denyPermission(sender);
-            CommandStatus.onCommand(sender);
-        } else if (subcommand.equalsIgnoreCase("unregister")) {
-            if (!hasPerm) denyPermission(sender);
-            CommandUnregister.onCommand(sender, subcommand, Arrays.copyOfRange(args, 1, args.length));
-        }
+        executor.onCommand(sender, command, args[0], Arrays.copyOfRange(args, 1, args.length));
 
         return true;
+    }
+
+    private void addCmd(UHCCommand command) {
+        SUBCOMMANDS.put(command.getName(), command);
     }
 
     private void help(CommandSender sender) {
@@ -102,7 +97,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
     }
 
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        return Arrays.stream(SUBCOMMANDS).filter(s -> s.startsWith(args[0])).map(String::toLowerCase).collect(Collectors.toList());
+        return SUBCOMMANDS.keySet().stream().filter(s -> s.startsWith(args[0])).map(String::toLowerCase).collect(Collectors.toList());
     }
 
     public BaseComponent[] buildHelpMsg(boolean hasPerm) {

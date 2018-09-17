@@ -1,6 +1,7 @@
 package usa.cactuspuppy.uhc_automation.Commands;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import usa.cactuspuppy.uhc_automation.InfoDisplayMode;
@@ -12,8 +13,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CommandInfo {
-    public static void onCommand(CommandSender commandSender, String[] args) {
+public class CommandInfo extends UHCCommand {
+    public CommandInfo() {
+        name = "info";
+        needsAdmin = false;
+    }
+
+    @Override
+    public void onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
         if (args.length > 1) {
             commandSender.sendMessage(ChatColor.RED + "Usage: /uhc info [toggle:chat:scoreboard]");
         } else if (args.length == 0) {
