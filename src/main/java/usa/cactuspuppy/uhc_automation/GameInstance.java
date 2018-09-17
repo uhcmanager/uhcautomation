@@ -69,7 +69,7 @@ public class GameInstance {
         borderShrinking = false;
         active = false;
         (new DelayReactivate(this)).schedule();
-        scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         if (scoreboard.getObjective("Health") == null) {
             scoreboard.registerNewObjective("Health", "health", ChatColor.RED + "Health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
         } else if (!scoreboard.getObjective("Health").getCriteria().equals("health")) {

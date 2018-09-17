@@ -339,7 +339,7 @@ public class UHCUtils {
 
         List<Player> players = g.getLivePlayers().stream().map(Bukkit::getPlayer).collect(toList());
 
-        final int spreadSize = teams ? getNumTeams(players) : players.size();
+        final int spreadSize = teams ? Main.getInstance().getGameInstance().getNumTeams() : players.size();
 
         final Location[] locations = getSpreadLocations(g.getWorld(), spreadSize, xRangeMin, zRangeMin, xRangeMax, zRangeMax);
         final int rangeSpread = range(g.getWorld(), g.getSpreadDistance(), xRangeMin, zRangeMin, xRangeMax, zRangeMax, locations);
@@ -507,17 +507,6 @@ public class UHCUtils {
         return distance;
     }
 
-    @SuppressWarnings("deprecation")
-    private static int getNumTeams(List<Player> players) {
-        Set<Team> teams = Sets.newHashSet();
-
-        for (Player player : players) {
-            teams.add(Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player));
-        }
-
-        return teams.size();
-    }
-
     private static Location[] getSpreadLocations(World world, int size, double xRangeMin, double zRangeMin, double xRangeMax, double zRangeMax) {
         Location[] locations = new Location[size];
 
@@ -667,7 +656,7 @@ public class UHCUtils {
     }
 
     public static void sendPluginInfo(CommandSender sender) {
-        sender.sendMessage(ChatColor.AQUA + "\nUHC Automation by CactusPuppy\n"
+        sender.sendMessage(ChatColor.GOLD + "\nUHC Automation by CactusPuppy\n"
                 + "Version " + Main.getInstance().getDescription().getVersion() + "\n"
                 + ChatColor.GREEN + "For command usage, type " + ChatColor.WHITE + ChatColor.ITALIC + "/uhc help");
     }

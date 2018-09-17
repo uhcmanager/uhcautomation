@@ -16,8 +16,7 @@ public class RestartTasks implements Runnable {
         Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(), Main.getInstance());
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(), Main.getInstance());
         Bukkit.getServer().getPluginManager().registerEvents(new GameModeChangeListener(), Main.getInstance());
-        Bukkit.getServer().getPluginManager().registerEvents(new FixColoredNamesChatListener(), Main.getInstance());
-        (new FixTabNameTask(Main.getInstance())).schedule();
+        (new NameColorFixTask(Main.getInstance())).schedule();
     }
 
     public void schedule() {
