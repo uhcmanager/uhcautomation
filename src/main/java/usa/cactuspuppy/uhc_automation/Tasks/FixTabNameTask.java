@@ -16,7 +16,7 @@ public class FixTabNameTask implements Runnable {
     @SuppressWarnings("deprecation")
     public void run() {
         for (Player p : Bukkit.getOnlinePlayers()) {
-            Team team = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(p.getName());
+            Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(p.getName());
             String prefix;
             if (team == null) {
                 prefix = "";

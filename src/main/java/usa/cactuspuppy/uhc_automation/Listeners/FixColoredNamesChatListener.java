@@ -18,7 +18,7 @@ public class FixColoredNamesChatListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerChat(AsyncPlayerChatEvent e) {
-        Team team = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(e.getPlayer().getName());
+        Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(e.getPlayer().getName());
         if (team == null) {
             return;
         }

@@ -531,7 +531,7 @@ public class UHCUtils {
     }
 
     public static boolean isOceanBiome(Biome biome) {
-        return biome.name().contains("ocean");
+        return biome.name().toLowerCase().contains("ocean");
     }
 
     public static int getSecsElapsed(Main m) {
