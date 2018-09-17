@@ -21,6 +21,9 @@ public class NameColorFixTask implements Runnable {
     @Override
     @SuppressWarnings("deprecation")
     public void run() {
+        for (Team t : Bukkit.getScoreboardManager().getMainScoreboard().getTeams()) {
+            t.setPrefix(t.getColor().toString());
+        }
         for (Player p : Bukkit.getOnlinePlayers()) {
             Team team = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(p.getName());
             String prefix;
@@ -33,9 +36,6 @@ public class NameColorFixTask implements Runnable {
                 return;
             }
             p.setPlayerListName(prefix + p.getName());
-        }
-        for (Team t : Bukkit.getScoreboardManager().getMainScoreboard().getTeams()) {
-            t.setPrefix(t.getColor().toString());
         }
     }
 
@@ -59,9 +59,10 @@ public class NameColorFixTask implements Runnable {
                 return;
             }
             System.out.println("Player " + e.getPlayer().getName() + " has team " + team.getDisplayName());
+            ChatColor color = team.getColor();
             String prefix = team.getPrefix();
             String suffix = team.getSuffix();
-            e.setFormat("<" + prefix + "%1$s" + suffix + ChatColor.RESET + "> %2$s");
+            e.setFormat("<" + prefix + color + "%1$s" + suffix + ChatColor.RESET + "> %2$s");
         }
     }
 }
