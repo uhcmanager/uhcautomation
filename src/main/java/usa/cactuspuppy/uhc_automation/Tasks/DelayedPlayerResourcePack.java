@@ -13,8 +13,6 @@ public class DelayedPlayerResourcePack implements Runnable {
 
     @Override
     public void run() {
-        //DEBUG
-        Main.getInstance().getLogger().info("Player " + Bukkit.getPlayer(player) + " has been sent RP request.");
         String hash = Main.getInstance().getConfig().getString("rp-hash");
         Bukkit.getPlayer(player).setResourcePack(Main.getInstance().getConfig().getString("rp-url"), UHCUtils.hexStringToByteArray(hash));
     }
