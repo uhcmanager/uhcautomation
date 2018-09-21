@@ -4,12 +4,14 @@ import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.Tasks.DelayedPlayerResourcePack;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 @NoArgsConstructor
@@ -19,6 +21,7 @@ public class PlayerConnectionListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         if (UHCUtils.worldEqualsExt(p.getWorld(), Main.getInstance().getGameInstance().getWorld())) {
+            new DelayedPlayerResourcePack(p.getUniqueId()).schedule();
             Main.getInstance().getGameInstance().bindPlayertoScoreboard(p);
             if (Main.getInstance().getGameInstance().isActive()) {
                 if (!Main.getInstance().getGameInstance().getBlacklistPlayers().contains(p.getUniqueId()) && Main.getInstance().getGameInstance().getRegPlayers().contains(p.getUniqueId())) {
@@ -33,6 +36,7 @@ public class PlayerConnectionListener implements Listener {
                     p.sendMessage(ChatColor.RED + "You are blacklisted from the upcoming game. Contact an admin if you believe this is in error.");
                     return;
                 }
+                p.teleport(new Location(Main.getInstance().getGameInstance().getWorld(), 0.5, 254, 0.5));
                 p.sendTitle(ChatColor.GOLD + "Welcome", "to " + Main.getInstance().getConfig().getString("event-name"), 20, 60, 20);
                 p.setHealth(19);
                 p.setHealth(20);

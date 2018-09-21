@@ -43,7 +43,7 @@ public class CommandUnregister extends UHCCommand {
                     UUID u = p.getUniqueId();
                     Main.getInstance().getGameInstance().blacklistPlayer(u);
                     sender.sendMessage(ChatColor.GREEN + "Unregistered " + ChatColor.WHITE + p.getName() + ChatColor.GREEN +  " from the UHC.");
-                    sender.sendMessage(ChatColor.YELLOW + "Remember that this player can now only be readded to the UHC with /uhcreg");
+                    sender.sendMessage(ChatColor.YELLOW + "Remember that this player can now only be readded to the UHC with /uhc register");
                     Main.getInstance().getLogger().info("Blacklisted " + p.getName() + " from " + Main.getInstance().getGameInstance().getWorld().getName() + "'s UHC");
                 } else {
                     sender.sendMessage(ChatColor.YELLOW + "Unable to find " + ChatColor.WHITE + name + ChatColor.YELLOW + " in the server database, requesting UUID from Mojang now...");
@@ -73,7 +73,7 @@ public class CommandUnregister extends UHCCommand {
                         String name = (String) response.get("name");
                         Main.getInstance().getGameInstance().blacklistPlayer(u);
                         sender.sendMessage(ChatColor.GREEN + "Unregistered " + ChatColor.WHITE + name + ChatColor.GREEN +  " from " + Main.getInstance().getConfig().getString("event-name"));
-                        sender.sendMessage(ChatColor.YELLOW + "Remember that this player can now only be readded to the UHC with /uhcreg");
+                        sender.sendMessage(ChatColor.YELLOW + "Remember that this player can now only be readded to the UHC with /uhc register");
                         Main.getInstance().getLogger().info("Blacklisted " + name + " from " + Main.getInstance().getConfig().getString("event-name"));
                         UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), ChatColor.RED + name + " has been removed from the UHC.");
                     } catch (IOException | ParseException e) {

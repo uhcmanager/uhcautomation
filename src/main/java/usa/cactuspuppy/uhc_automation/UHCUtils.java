@@ -501,7 +501,7 @@ public class UHCUtils {
         return distance;
     }
 
-    private static Location highestBlock(Location loc) {
+    public static Location highestBlock(Location loc) {
         World world = loc.getWorld();
         for (int y = 255; y > 0; y--) {
             Block block = world.getBlockAt(loc.getBlockX(), y, loc.getBlockZ());
@@ -514,7 +514,7 @@ public class UHCUtils {
             }
             return rv;
         }
-        Main.getInstance().getLogger().fine("Custom highestBlock function failed, using default backup for location " + loc.toString());
+        Main.getInstance().getLogger().warning("Custom highestBlock function failed, using default backup for location " + loc.toString());
         return new Location(world, loc.getBlockX(), world.getHighestBlockYAt(loc.getBlockX(), loc.getBlockZ()), loc.getBlockZ());
     }
 
@@ -699,5 +699,25 @@ public class UHCUtils {
         ArrayList<Long> times = new ArrayList<>();
         Arrays.stream(defaultTimes).forEach(times::add);
         return times;
+    }
+
+    /**
+     * Converts hex dump to byte array.
+     * Credit: https://stackoverflow.com/questions/140131/convert-a-string-representation-of-a-hex-dump-to-a-byte-array-using-java
+     * @param s Hex dump to convert to byte array
+     * @return byte array representation of
+     */
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        if (len % 2 != 0) {
+            Main.getInstance().getLogger().warning("Conversion of odd length hex dump to byte array requested; unable to comply.");
+            return null;
+        }
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i+1), 16));
+        }
+        return data;
     }
 }

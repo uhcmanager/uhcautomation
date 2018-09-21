@@ -27,15 +27,18 @@ public class NameColorFixTask implements Runnable {
         for (Player p : Bukkit.getOnlinePlayers()) {
             Team team = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(p.getName());
             String prefix;
+            ChatColor color;
             if (team == null) {
                 prefix = "";
+                color = ChatColor.WHITE;
             } else {
                 prefix = team.getPrefix() + team.getColor();
+                color = team.getColor();
             }
             if (p.getPlayerListName().equals(prefix + p.getName())) {
                 return;
             }
-            p.setPlayerListName(prefix + p.getName());
+            p.setPlayerListName(prefix + color + p.getName());
         }
     }
 
@@ -58,7 +61,6 @@ public class NameColorFixTask implements Runnable {
                 System.out.println("No team found for player " + e.getPlayer().getName());
                 return;
             }
-            System.out.println("Player " + e.getPlayer().getName() + " has team " + team.getDisplayName());
             ChatColor color = team.getColor();
             String prefix = team.getPrefix();
             String suffix = team.getSuffix();

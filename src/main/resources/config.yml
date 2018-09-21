@@ -23,6 +23,7 @@ game:
   # Minimum distance between spawn locations at the start of the game.
   # Note that the game will fail to start if it cannot fit everyone into the map.
   spread-distance: 150
+# Mob disabling options
 mob-disable:
   # Replaces all baby zombie spawns with normal zombies.
   baby-zombie: true
@@ -61,6 +62,11 @@ allow-command-blocks: false
 
 # Where to store game data
 data-location: data/<worldname>
+
+# Optional victory sound resource pack. Default is excerpt from "We are Overwatch" by Neal Acree and Derek Duke
+rp-url: https://www.dropbox.com/s/v5mbmgpgn6ot901/uhca_rp.zip?dl=1
+# Optional hash for rp-url
+rp-hash: E218C5A44673CCF7D4026CA82A7B5AD0F427D6C6
 
 # The plugin will also consider players in the game world's Nether and End by looking at suffixes if this is true. This is best explained by an example.
 # EXAMPLE:

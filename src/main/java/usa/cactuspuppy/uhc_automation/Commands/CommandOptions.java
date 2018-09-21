@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import usa.cactuspuppy.uhc_automation.Main;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -151,7 +152,7 @@ public class CommandOptions extends UHCCommand {
             } else if (isBooleanOption(option)) {
                 return Stream.of("true", "false").filter(s -> s.startsWith(args[1])).collect(Collectors.toList());
             }
-            return null;
+            return new ArrayList<>();
         }
         return null;
     }

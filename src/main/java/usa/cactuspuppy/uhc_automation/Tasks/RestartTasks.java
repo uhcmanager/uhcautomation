@@ -3,10 +3,7 @@ package usa.cactuspuppy.uhc_automation.Tasks;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
-import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
-import usa.cactuspuppy.uhc_automation.Listeners.PlayerConnectionListener;
-import usa.cactuspuppy.uhc_automation.Listeners.PlayerDeathListener;
-import usa.cactuspuppy.uhc_automation.Listeners.WorldChangeListener;
+import usa.cactuspuppy.uhc_automation.Listeners.*;
 import usa.cactuspuppy.uhc_automation.Main;
 
 @NoArgsConstructor
@@ -19,6 +16,7 @@ public class RestartTasks implements Runnable {
         Bukkit.getServer().getPluginManager().registerEvents(new WorldChangeListener(), Main.getInstance());
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerDeathListener(), Main.getInstance());
         Bukkit.getServer().getPluginManager().registerEvents(new GameModeChangeListener(), Main.getInstance());
+        Bukkit.getServer().getPluginManager().registerEvents(new MobSpawningListener(), Main.getInstance());
         (new NameColorFixTask(Main.getInstance())).schedule();
     }
 

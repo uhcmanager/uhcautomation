@@ -64,7 +64,7 @@ public class GenerateChunksHelper implements Runnable {
             chunkX++;
             chunkZ = minChunkZ;
             double completion = (sideLength * (chunkX - minChunkX)) / Math.pow(sideLength, 2);
-            System.out.print(String.format("Chunk pre-generation %.2f%% complete\r", completion * 100));
+            Main.getInstance().getLogger().info(String.format("Chunk pre-generation %.2f%% complete\r", completion * 100));
         } else {
             chunkZ++;
         }

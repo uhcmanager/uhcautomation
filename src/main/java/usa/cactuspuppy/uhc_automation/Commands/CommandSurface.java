@@ -88,9 +88,8 @@ public class CommandSurface implements CommandExecutor, TabCompleter {
         }
 
         private void surfacePlayer(Player p) {
-            Location curr = p.getLocation();
-            //TODO: Make safe teleport
-            p.teleport(new Location(curr.getWorld(), curr.getBlockX(), curr.getWorld().getHighestBlockYAt(curr.getBlockX(), curr.getBlockZ()), curr.getBlockZ()));
+            Location curr = UHCUtils.highestBlock(p.getLocation());
+            p.teleport(new Location(curr.getWorld(), curr.getBlockX() + 0.5, curr.getWorld().getHighestBlockYAt(curr.getBlockX(), curr.getBlockZ()), curr.getBlockZ() + 0.5));
             TP_QUEUE.remove(p.getUniqueId());
         }
 
@@ -104,10 +103,12 @@ public class CommandSurface implements CommandExecutor, TabCompleter {
             p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
         }
 
+        private static final double MOVE_THRESHOLD = 0.01;
+
         @EventHandler
         public void onPlayerMove(PlayerMoveEvent e) {
             if (!TP_QUEUE.keySet().contains(e.getPlayer().getUniqueId())) return;
-            if (e.getFrom().getWorld().equals(e.getTo().getWorld()) && e.getFrom().getX() == e.getTo().getX() && e.getFrom().getZ() == e.getTo().getZ()) return;
+            if (e.getFrom().getWorld().equals(e.getTo().getWorld()) && Math.abs(e.getFrom().getX() - e.getTo().getX()) < MOVE_THRESHOLD && (e.getFrom().getZ() - e.getTo().getZ()) < MOVE_THRESHOLD) return;
             TP_QUEUE.remove(e.getPlayer().getUniqueId());
             e.getPlayer().sendMessage(ChatColor.RED + "Surfacing cancelled; you moved!");
             e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);

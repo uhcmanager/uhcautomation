@@ -104,12 +104,15 @@ public class GameInstance {
             }
         }
         world.setSpawnLocation(0, 254, 0);
-        Location spawn = new Location(world, 0, 254, 0);
-        new GameModeChangeListener();
+        world.setGameRule(GameRule.SPAWN_RADIUS, 0);
+        Location spawn = new Location(world, 0.5, 254, 0.5);
+        (new RestartTasks()).run();
         for (Player p : activePlayers.stream().map(Bukkit::getPlayer).collect(Collectors.toList())) {
             p.teleport(spawn);
+            p.setFoodLevel(20);
+            p.setSaturation(20);
+            p.setHealth(20);
             p.setGameMode(GameMode.SURVIVAL);
-            livePlayers.add(p.getUniqueId());
         }
         world.setGameRule(GameRule.SPAWN_RADIUS, 0);
         world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
@@ -148,7 +151,7 @@ public class GameInstance {
         }
         boolean spread = UHCUtils.spreadplayers(this);
         if (!spread) {
-            s.sendMessage(ChatColor.RED + "Unable to spread this many players within specified gamespace! Consider decreasing the spread distance between players or increasing the initial size of the border with /uhcoptions. UHC aborted.");
+            s.sendMessage(ChatColor.RED + "Unable to spread this many players within specified gamespace! Consider decreasing the spread distance between players or increasing the initial size of the border with /uhc options. UHC aborted.");
             UHCUtils.broadcastMessage(this, ChatColor.RED.toString() + ChatColor.BOLD + "Could not start UHC.");
             prep();
             return;
@@ -265,8 +268,8 @@ public class GameInstance {
                 return;
             }
             if (livePlayers.size() == 0) {
-                UHCUtils.broadcastMessagewithTitle(this, ChatColor.RED + "\nWait... what? The game ended in a tie!",
-                        ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.RESET + "Game ended in a tie!", 0, 80, 40);
+                UHCUtils.broadcastMessagewithSoundandTitle(this, ChatColor.RED + "\nWait... what? The game ended in a tie!",
+                        ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.RESET + "Game ended in a tie!", 0, 80, 40, "minecraft:victory", 1, 1);
             } else {
                 Team t = livePlayers.stream().findFirst().map(u -> scoreboard.getEntryTeam(Bukkit.getPlayer(u).getName())).orElse(null);
                 if (t == null) {
@@ -282,19 +285,19 @@ public class GameInstance {
                 StringBuilder winningTeamPlayers = new StringBuilder();
                 collectNames(onlineWinners, winningTeamPlayers);
                 String winners = winningTeamPlayers.toString();
-                UHCUtils.broadcastMessagewithTitle(this, "\n" + t.getDisplayName() + ChatColor.GREEN + " has emerged victorious!\nMembers: " + ChatColor.RESET + winners,
-                        t.getDisplayName(), ChatColor.GREEN + "wins!", 0 , 80, 40);
+                UHCUtils.broadcastMessagewithSoundandTitle(this, "\n" + t.getDisplayName() + ChatColor.GREEN + " has emerged victorious!\nMembers: " + ChatColor.RESET + winners,
+                        t.getDisplayName(), ChatColor.GREEN + "wins!", 0 , 80, 40, "minecraft:victory", 1, 1);
                 UHCUtils.broadcastMessage(this, ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + WordUtils.capitalize(UHCUtils.secsToFormatString(timeElapsed)));
             }
         } else {
             if (livePlayers.size() == 1) {
                 Player winner = livePlayers.stream().findFirst().map(Bukkit::getPlayer).orElse(null);
                 assert winner != null;
-                UHCUtils.broadcastMessagewithTitle(this, "\n" + ChatColor.GREEN + winner.getDisplayName() + ChatColor.WHITE + " wins!\n"
+                UHCUtils.broadcastMessagewithSoundandTitle(this, "\n" + ChatColor.GREEN + winner.getDisplayName() + ChatColor.WHITE + " wins!\n"
                         + ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + WordUtils.capitalize(UHCUtils.secsToFormatString(timeElapsed)),
-                        winner.getDisplayName(), "Wins!", 0, 80, 40);
+                        winner.getDisplayName(), "Wins!", 0, 80, 40, "minecraft:victory", 1, 1);
             } else if (livePlayers.size() == 0) {
-                UHCUtils.broadcastMessagewithTitle(this, ChatColor.RED + "\nWait... what? The game ended in a tie!", ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.YELLOW + "Game ended in a tie!", 0, 80, 40);
+                UHCUtils.broadcastMessagewithSoundandTitle(this, ChatColor.RED + "\nWait... what? The game ended in a tie!", ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.YELLOW + "Game ended in a tie!", 0, 80, 40, "minecraft:victory", 1, 1);
             } else {
                 logStatus(Bukkit.getConsoleSender());
                 main.getLogger().severe("Win condition called early for game instance running on world " + world.getName() + ". Game status dumped to log.");
@@ -325,21 +328,18 @@ public class GameInstance {
      *  Helper/Access methods
      */
     public void checkForWin() {
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                if (teamMode) {
-                    int numTeams = getNumTeams();
-                    if (numTeams <= 1) {
-                        win();
-                    } else if (numTeams < teamsRemaining) {
-                        UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nA team has been eliminated! " + ChatColor.RESET + "\n" + numTeams + " teams remain!");
-                        teamsRemaining = numTeams;
-                    }
-                } else {
-                    if (livePlayers.size() <= 1) {
-                        win();
-                    }
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
+            if (teamMode) {
+                int numTeams = getNumTeams();
+                if (numTeams <= 1) {
+                    win();
+                } else if (numTeams < teamsRemaining) {
+                    UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nA team has been eliminated! " + ChatColor.RESET + "\n" + numTeams + " teams remain!");
+                    teamsRemaining = numTeams;
+                }
+            } else {
+                if (livePlayers.size() <= 1) {
+                    win();
                 }
             }
         }, 1L);
@@ -507,14 +507,17 @@ public class GameInstance {
             if (teamMode && active) {
                 teamsRemaining = getNumTeams();
             }
+        } else {
+            blacklistPlayer(p.getUniqueId());
         }
         if (InfoModeCache.getInstance().getPlayerPref(p.getUniqueId()) == null) {
-            InfoModeCache.getInstance().storePlayerPref(p.getUniqueId(), InfoDisplayMode.CHAT);
+            InfoModeCache.getInstance().storePlayerPref(p.getUniqueId(), InfoDisplayMode.SCOREBOARD);
         }
     }
 
     public void addPlayerToLive(Player p) {
         livePlayers.add(p.getUniqueId());
+        blacklistPlayers.remove(p.getUniqueId());
         UHCUtils.announcePlayerJoin(p);
     }
 
