@@ -47,7 +47,7 @@ public class GameInstance {
     private int loadChunksCDID;
     private int teamsRemaining;
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public GameInstance(Main p) {
         main = p;
