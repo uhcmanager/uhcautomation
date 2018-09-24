@@ -1,6 +1,9 @@
 world: GameWorld
 event-name: Event Name
 
+# Whether /surface can be used
+surface: true
+
 ### Game Options ###
 game:
   # Initial size of world border, in total width
