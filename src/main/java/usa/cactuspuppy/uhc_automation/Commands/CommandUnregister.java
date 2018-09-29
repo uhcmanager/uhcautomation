@@ -1,6 +1,5 @@
 package usa.cactuspuppy.uhc_automation.Commands;
 
-import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -75,7 +74,7 @@ public class CommandUnregister extends UHCCommand {
                         sender.sendMessage(ChatColor.GREEN + "Unregistered " + ChatColor.WHITE + name + ChatColor.GREEN +  " from " + Main.getInstance().getConfig().getString("event-name"));
                         sender.sendMessage(ChatColor.YELLOW + "Remember that this player can now only be readded to the UHC with /uhc register");
                         Main.getInstance().getLogger().info("Blacklisted " + name + " from " + Main.getInstance().getConfig().getString("event-name"));
-                        UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), ChatColor.RED + name + " has been removed from the UHC.");
+                        UHCUtils.broadcastChatMessage(Main.getInstance().getGameInstance(), ChatColor.RED + name + " has been removed from the UHC.");
                     } catch (IOException | ParseException e) {
                         e.printStackTrace();
                         sender.sendMessage(ChatColor.DARK_RED + "An error occurred, please try again later.");

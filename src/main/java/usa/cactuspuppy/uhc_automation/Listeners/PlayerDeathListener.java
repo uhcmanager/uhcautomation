@@ -64,7 +64,7 @@ public class PlayerDeathListener implements Listener {
         if (loc == null) { return; }
         respawnQueue.remove(e.getPlayer().getUniqueId());
         e.setRespawnLocation(loc);
-        e.getPlayer().setGameMode(GameMode.SPECTATOR);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> e.getPlayer().setGameMode(GameMode.SPECTATOR), 1L);
     }
 
     private void announceDeath(Player died, Player tell) {

@@ -47,7 +47,7 @@ public class GameInstance {
     private int loadChunksCDID;
     private int teamsRemaining;
 
-    public static final boolean DEBUG = false;
+    @Getter private static final boolean DEBUG = true;
 
     public GameInstance(Main p) {
         main = p;
@@ -134,12 +134,12 @@ public class GameInstance {
         if (!checkNumPlayers() && !DEBUG) {
             main.getLogger().warning("Not enough players are in the UHC!");
             s.sendMessage(ChatColor.RED + "UHC aborted! Not enough players in the UHC!");
-            UHCUtils.broadcastMessage(this, ChatColor.RED.toString() + ChatColor.BOLD + "Could not start UHC.");
+            UHCUtils.broadcastChatMessage(this, ChatColor.RED.toString() + ChatColor.BOLD + "Could not start UHC.");
             prep();
             return;
         }
         long initT = System.currentTimeMillis();
-        UHCUtils.broadcastMessage(this, ChatColor.GREEN + "Game starting!");
+        UHCUtils.broadcastChatMessage(this, ChatColor.GREEN + "Game starting!");
         HandlerList.unregisterAll(GameModeChangeListener.getInstance());
         livePlayers.stream().map(Bukkit::getPlayer).forEach(this::prepPlayer);
         for (int x = -10; x <= 10; x++) {
@@ -152,7 +152,7 @@ public class GameInstance {
         boolean spread = UHCUtils.spreadplayers(this);
         if (!spread) {
             s.sendMessage(ChatColor.RED + "Unable to spread this many players within specified gamespace! Consider decreasing the spread distance between players or increasing the initial size of the border with /uhc options. UHC aborted.");
-            UHCUtils.broadcastMessage(this, ChatColor.RED.toString() + ChatColor.BOLD + "Could not start UHC.");
+            UHCUtils.broadcastChatMessage(this, ChatColor.RED.toString() + ChatColor.BOLD + "Could not start UHC.");
             prep();
             return;
         }
@@ -286,8 +286,8 @@ public class GameInstance {
                 collectNames(onlineWinners, winningTeamPlayers);
                 String winners = winningTeamPlayers.toString();
                 UHCUtils.broadcastMessagewithSoundandTitle(this, "\n" + t.getDisplayName() + ChatColor.GREEN + " has emerged victorious!\nMembers: " + ChatColor.RESET + winners,
-                        t.getDisplayName(), ChatColor.GREEN + "wins!", 0 , 80, 40, "minecraft:victory", 1, 1);
-                UHCUtils.broadcastMessage(this, ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + WordUtils.capitalize(UHCUtils.secsToFormatString(timeElapsed)));
+                        t.getDisplayName(), ChatColor.GREEN + "wins!", 0 , 100, 40, "minecraft:victory", 1, 1);
+                UHCUtils.broadcastChatMessage(this, ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + WordUtils.capitalize(UHCUtils.secsToFormatString(timeElapsed)));
             }
         } else {
             if (livePlayers.size() == 1) {
@@ -334,7 +334,7 @@ public class GameInstance {
                 if (numTeams <= 1) {
                     win();
                 } else if (numTeams < teamsRemaining) {
-                    UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nA team has been eliminated! " + ChatColor.RESET + "\n" + numTeams + " teams remain!");
+                    UHCUtils.broadcastChatMessage(Main.getInstance().getGameInstance(), ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nA team has been eliminated! " + ChatColor.RESET + "\n" + numTeams + " teams remain!");
                     teamsRemaining = numTeams;
                 }
             } else {

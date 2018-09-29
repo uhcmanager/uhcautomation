@@ -17,7 +17,7 @@ public class CommandStart extends UHCCommand {
     @Override
     public void onCommand(CommandSender sender, Command command, String alias, String[] args) {
         if (!Main.getInstance().getGameInstance().validate(sender)) {
-            UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), ChatColor.RED + "Game aborted.");
+            UHCUtils.broadcastChatMessage(Main.getInstance().getGameInstance(), ChatColor.RED + "Game aborted.");
             return;
         } else if (Main.getInstance().getGameInstance().isActive()) {
             sender.sendMessage(ChatColor.RED + "A game is already in progress! Use " + ChatColor.RESET + "/uhcreset " + ChatColor.RED + "to stop the game first!");

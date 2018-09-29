@@ -30,6 +30,10 @@ public class CommandSurface implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
+        if (!Main.getInstance().getConfig().getBoolean("surface", false)) {
+            sender.sendMessage(ChatColor.RED + "/surface is not enabled! Ask an admin if you think this is incorrect.");
+            return true;
+        }
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "Command is player only!");
             return true;

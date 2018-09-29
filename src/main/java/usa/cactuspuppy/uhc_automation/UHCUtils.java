@@ -42,22 +42,22 @@ public class UHCUtils {
     //do not instantiate
     public UHCUtils() { }
 
-    public static void broadcastMessage(GameInstance gi, String msg) {
+    public static void broadcastChatMessage(GameInstance gi, String msg) {
         for (UUID u : gi.getActivePlayers()) {
             Bukkit.getPlayer(u).sendMessage(msg);
         }
     }
 
-    public static void broadcastMessage(String msg) {
-        broadcastMessage(Main.getInstance().getGameInstance(), msg);
+    public static void broadcastSound(GameInstance gi, String sound, float volume, float pitch) {
+        gi.getActivePlayers().stream().map(Bukkit::getPlayer).forEach(p -> p.playSound(p.getLocation(), sound, volume, pitch));
     }
 
-    public static void broadcastMessagewithTitle(GameInstance gi, String chat, String title, String subtitle, int in, int stay, int out) {
-        for (UUID u: gi.getActivePlayers()) {
-            Player p = Bukkit.getPlayer(u);
-            p.sendMessage(chat);
-            p.sendTitle(title, subtitle, in, stay, out);
-        }
+    public static void broadcastTitle(GameInstance gi, String title, String subtitle, int in, int stay, int out) {
+
+    }
+
+    public static void broadcastChatMessage(String msg) {
+        broadcastChatMessage(Main.getInstance().getGameInstance(), msg);
     }
 
     public static void broadcastMessagewithSound(GameInstance gi, String chat, String sound, float volume, float pitch) {
@@ -673,11 +673,11 @@ public class UHCUtils {
     }
 
     public static void announcePlayerJoin(Player p) {
-        UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), "[" + ChatColor.GOLD + ChatColor.BOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.BOLD + p.getDisplayName() + ChatColor.GREEN +  ChatColor.ITALIC + " has joined the game!");
+        UHCUtils.broadcastChatMessage(Main.getInstance().getGameInstance(), "[" + ChatColor.GOLD + ChatColor.BOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.BOLD + p.getDisplayName() + ChatColor.GREEN +  ChatColor.ITALIC + " has joined the game!");
     }
 
     public static void announcePlayerSpectate(Player p) {
-        UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), "[" + ChatColor.GOLD + ChatColor.BOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.BOLD + p.getDisplayName() + ChatColor.YELLOW +  ChatColor.ITALIC + " is now spectating.");
+        UHCUtils.broadcastChatMessage(Main.getInstance().getGameInstance(), "[" + ChatColor.GOLD + ChatColor.BOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.BOLD + p.getDisplayName() + ChatColor.YELLOW +  ChatColor.ITALIC + " is now spectating.");
     }
 
     public static Optional<List<Long>> getConfigCSLongs(String path) {

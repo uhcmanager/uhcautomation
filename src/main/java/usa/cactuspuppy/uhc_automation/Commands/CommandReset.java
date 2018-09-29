@@ -17,15 +17,15 @@ public class CommandReset extends UHCCommand {
     @Override
     public void onCommand(CommandSender sender, Command command, String alias, String[] args) {
         if (Main.getInstance().getGameInstance().isActive()) {
-            UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(), ChatColor.RED.toString() + ChatColor.BOLD + "Stopping game!");
+            UHCUtils.broadcastChatMessage(Main.getInstance().getGameInstance(), ChatColor.RED.toString() + ChatColor.BOLD + "Stopping game!");
             Main.getInstance().getLogger().info(sender.getName() + " initiated command to halt game");
             Main.getInstance().getGameInstance().stop();
         } else if (PreGameCountdown.getInstance() != null) {
             PreGameCountdown.stop();
-            UHCUtils.broadcastMessage(ChatColor.RED + "Countdown halted!");
+            UHCUtils.broadcastChatMessage(ChatColor.RED + "Countdown halted!");
             Main.getInstance().getLogger().info(sender.getName() + " halted game countdown");
         } else {
-            UHCUtils.broadcastMessage(Main.getInstance().getGameInstance(),ChatColor.YELLOW.toString() + ChatColor.BOLD + "Resetting game!");
+            UHCUtils.broadcastChatMessage(Main.getInstance().getGameInstance(),ChatColor.YELLOW.toString() + ChatColor.BOLD + "Resetting game!");
             Main.getInstance().getLogger().log(Level.INFO, sender.getName() + " initiated command to reset the game");
         }
         Main.getInstance().getGameInstance().prep();

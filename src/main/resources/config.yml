@@ -1,8 +1,10 @@
+# The default config does not
+
 world: GameWorld
 event-name: Event Name
 
 # Whether /surface can be used
-surface: true
+surface: false
 
 ### Game Options ###
 game:
@@ -29,15 +31,14 @@ game:
 # Mob disabling options
 mob-disable:
   # Replaces all baby zombie spawns with normal zombies.
-  baby-zombie: true
+  baby-zombie: false
   # Prevents phantoms from spawning, full stop.
-  phantom: true
+  phantom: false
 
 ### Warnings ###
 warnings:
   border: true
   pvp: true
-
 # Times should be listed in seconds, comma-separated (spaces ok), in ascending order.
 # If the times are not numbers or not comma separated, loading of warning
 # times will default to the following values:
@@ -61,14 +62,16 @@ db:
   username: Krusher99
   password: password_is_not_a_good_password
 
+# Whether command can be run from a command block
 allow-command-blocks: false
 
 # Where to store game data
 data-location: data/<worldname>
 
 # Optional victory sound resource pack. Default is excerpt from "We are Overwatch" by Neal Acree and Derek Duke
+# If adding own resource pack, simply put the victory sound as 'victory.ogg' under 'assets/minecraft/sounds'
 rp-url: https://www.dropbox.com/s/v5mbmgpgn6ot901/uhca_rp.zip?dl=1
-# Optional hash for rp-url
+# Optional hash for rp-url (SHA-1)
 rp-hash: E218C5A44673CCF7D4026CA82A7B5AD0F427D6C6
 
 # The plugin will also consider players in the game world's Nether and End by looking at suffixes if this is true. This is best explained by an example.

@@ -30,6 +30,7 @@ public class InfoAnnouncer implements Runnable {
     private static final String OPP_REMAIN_ID = ChatColor.WHITE.toString() + ChatColor.AQUA.toString();
     private static final String WORLD_BORDER_ID = ChatColor.WHITE.toString() + ChatColor.BLACK.toString();
     private static final String PVP_ID = ChatColor.WHITE.toString() + ChatColor.RED.toString();
+    private static final String BREAK_TOGGLE_INFO = ChatColor.YELLOW.toString() + ChatColor.BLACK.toString();
 
     public InfoAnnouncer() {
         timeScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -63,6 +64,8 @@ public class InfoAnnouncer implements Runnable {
         obj.getScore(WORLD_BORDER_ID).setScore(10);
         obj.getScore(ChatColor.RED + "» PVP:").setScore(9);
         obj.getScore(PVP_ID).setScore(8);
+        obj.getScore(BREAK_TOGGLE_INFO).setScore(7);
+        obj.getScore(ChatColor.GRAY + "Show/Hide: /uhc info toggle");
     }
 
     public void removePlayerFromObjectiveSet(Player p) {
@@ -75,11 +78,11 @@ public class InfoAnnouncer implements Runnable {
         TimeDisplay.setPrefix(ChatColor.WHITE + "  " + UHCUtils.secsToFormatString2(UHCUtils.getSecsElapsed(Main.getInstance())));
         PlayersDisplay.setPrefix(ChatColor.WHITE + "  " + String.valueOf(Main.getInstance().getGameInstance().isTeamMode() ? Main.getInstance().getGameInstance().getNumTeams() : Main.getInstance().getGameInstance().getLivePlayers().size()));
         WBDisplay.setPrefix(ChatColor.WHITE + (Main.getInstance().getGameInstance().isBorderShrinking() ?
-                "Shrinking to ±" + (Main.getInstance().getGameInstance().getFinalSize() / 2) :
-                "Shrinks in " + UHCUtils.secsToFormatString2((Main.getInstance().getGameInstance().getMinsToShrink() * 60) - UHCUtils.getSecsElapsed(Main.getInstance()))));
+                "  Shrinking to ±" + (Main.getInstance().getGameInstance().getFinalSize() / 2) :
+                "  Shrinks in " + UHCUtils.secsToFormatString2((Main.getInstance().getGameInstance().getMinsToShrink() * 60) - UHCUtils.getSecsElapsed(Main.getInstance()))));
         PVPDisplay.setPrefix(ChatColor.WHITE + (Main.getInstance().getGameInstance().getWorld().getPVP() ?
-                "Enabled" :
-                "Enabled in " + UHCUtils.secsToFormatString2(((int) Main.getInstance().getGameInstance().getSecsToPVP()) - UHCUtils.getSecsElapsed(Main.getInstance()))));
+                "  Enabled" :
+                "  Enabled in " + UHCUtils.secsToFormatString2(((int) Main.getInstance().getGameInstance().getSecsToPVP()) - UHCUtils.getSecsElapsed(Main.getInstance()))));
         Main.getInstance().getGameInstance().getActivePlayers().stream().map(Bukkit::getPlayer).forEach(this::showInfoToPlayer);
     }
 
