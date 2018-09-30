@@ -53,9 +53,10 @@ public class GenerateChunksHelper implements Runnable {
     public void run() {
         try {
             for (halt = false; !halt; Thread.sleep(100L)) {
+                Main.getInstance().getLogger().finer("Attempting to generate chunk at X: " + chunkX + ", Z: " + chunkZ);
+                generateChunk(world.getChunkAt(chunkX, chunkZ));
+                Main.getInstance().getLogger().fine("Generated chunk at chunk coords X: " + chunkX + ", Z: " + chunkZ);
                 if (chunkX == maxChunkX && chunkZ == maxChunkZ) {
-                    generateChunk(world.getChunkAt(chunkX, chunkZ));
-                    if (GameInstance.isDEBUG()) Main.getInstance().getLogger().info("Generated chunk at chunk coords X: " + chunkX + ", Z: " + chunkZ);
                     long timeElapsed = System.currentTimeMillis() - startTime;
                     Main.getInstance().getLogger().info("Chunk pre-generation complete! Took " + ((timeElapsed + prevElapsed) / 1000) + " seconds (" + (timeElapsed + prevElapsed) + " ms)");
                     UHCUtils.broadcastChatMessage("[" + ChatColor.GOLD + ChatColor.BOLD + "UHC" + ChatColor.RESET + "] " + ChatColor.GREEN + "Chunk pre-generation complete!");
@@ -64,9 +65,6 @@ public class GenerateChunksHelper implements Runnable {
                     instance = null;
                     return;
                 }
-                if (GameInstance.isDEBUG()) Main.getInstance().getLogger().info("Attempting to generate chunk at X: " + chunkX + ", Z: " + chunkZ);
-                generateChunk(world.getChunkAt(chunkX, chunkZ));
-                if (GameInstance.isDEBUG()) Main.getInstance().getLogger().info("Generated chunk at chunk coords X: " + chunkX + ", Z: " + chunkZ);
                 if (chunkZ == maxChunkZ) {
                     chunkX++;
                     chunkZ = minChunkZ;
@@ -82,11 +80,15 @@ public class GenerateChunksHelper implements Runnable {
     }
 
     private static void generateChunk(Chunk chunk) {
-        if (chunk.isLoaded()) {
-            return;
+        try {
+            if (chunk.isLoaded()) {
+                return;
+            }
+            chunk.load(true);
+            chunk.unload(true);
+        } catch (IllegalStateException e) {
+            Main.getInstance().getLogger().fine("async chunk load complaint");
         }
-        chunk.load(true);
-        chunk.unload(true);
     }
 
     private static int blockCoordtoChunkCoord(int i) {
