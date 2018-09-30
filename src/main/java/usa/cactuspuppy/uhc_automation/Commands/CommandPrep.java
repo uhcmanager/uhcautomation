@@ -41,7 +41,7 @@ public class CommandPrep extends UHCCommand {
                 sender.sendMessage(ChatColor.RED + "Game is starting or has started! Halt the game first with " + ChatColor.RESET + "/uhc reset" + ChatColor.RED + " or wait for the game to complete before pre-generating chunks!");
                 return;
             }
-            (new GenerateChunksHelper()).schedule();
+            (new GenerateChunksHelper()).start();
         } else if (args[0].equalsIgnoreCase("stop")) {
             if (GenerateChunksHelper.getInstance() == null) {
                 sender.sendMessage(ChatColor.RED + "No chunk generation is currently in progress.");

@@ -56,8 +56,10 @@ public class BorderCountdown implements Runnable {
                 silent = true;
             }
             if (timeTo <= 10) {
-                UHCUtils.broadcastSoundandTitle(Main.getInstance().getGameInstance(), );
-                UHCUtils.broadcastMessagewithSoundandTitle(Main.getInstance().getGameInstance(), ChatColor.RED.toString() + ChatColor.BOLD + "[Alert] " + ChatColor.RESET + "Border shrinks in " + UHCUtils.secsToFormatString(timeTo), String.valueOf(timeTo), ChatColor.RED + "secs to border shrink", 0, 80, 40, "minecraft:block.note_block.chime", (float) (0.5 + (10 - timeTo) / 40), 1.18F);
+                if (timeTo == 10) {
+                    UHCUtils.broadcastChatMessage(ChatColor.RED.toString() + ChatColor.BOLD + "[Alert] " + ChatColor.RESET + "Border shrinks in " + UHCUtils.secsToFormatString(timeTo));
+                }
+                UHCUtils.broadcastSoundandTitle(Main.getInstance().getGameInstance(), "minecraft:block.note_block.chime", (float) (0.5 + (10 - timeTo) / 40), 1.18F, String.valueOf(timeTo), ChatColor.RED + "secs to border shrink", 0, 80, 40);
             } else {
                 UHCUtils.broadcastMessagewithSound(Main.getInstance().getGameInstance(), ChatColor.YELLOW.toString() + ChatColor.BOLD + "[Warning] " + ChatColor.RESET + "Border shrinks in " + UHCUtils.secsToFormatString(timeTo), "minecraft:entity.player.levelup", 0.5F, 0.4F);
             }

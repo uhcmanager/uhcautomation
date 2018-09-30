@@ -65,7 +65,7 @@ public class InfoAnnouncer implements Runnable {
         obj.getScore(ChatColor.RED + "» PVP:").setScore(9);
         obj.getScore(PVP_ID).setScore(8);
         obj.getScore(BREAK_TOGGLE_INFO).setScore(7);
-        obj.getScore(ChatColor.GRAY + "Show/Hide: /uhc info toggle");
+        obj.getScore(ChatColor.GRAY + "Show/Hide: /uhc info toggle").setScore(6);
     }
 
     public void removePlayerFromObjectiveSet(Player p) {

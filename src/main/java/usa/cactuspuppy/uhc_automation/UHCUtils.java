@@ -53,7 +53,7 @@ public class UHCUtils {
     }
 
     public static void broadcastTitle(GameInstance gi, String title, String subtitle, int in, int stay, int out) {
-
+        gi.getActivePlayers().stream().map(Bukkit::getPlayer).forEach(p -> p.sendTitle(title, subtitle, in, stay, out));
     }
 
     public static void broadcastChatMessage(String msg) {
@@ -74,6 +74,14 @@ public class UHCUtils {
             p.sendMessage(chat);
             p.sendTitle(title, subtitle, in, stay, out);
             p.playSound(p.getLocation(), sound, volume, pitch);
+        }
+    }
+
+    public static void broadcastSoundandTitle(GameInstance gi, String sound, float volume, float pitch, String title, String subtitle, int in, int stay, int out) {
+        for (UUID u : gi.getActivePlayers()) {
+            Player p = Bukkit.getPlayer(u);
+            p.playSound(p.getLocation(), sound, volume, pitch);
+            p.sendTitle(title, subtitle, in, stay, out);
         }
     }
 
