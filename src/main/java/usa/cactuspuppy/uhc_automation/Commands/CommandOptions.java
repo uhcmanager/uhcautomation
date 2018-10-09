@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.Tasks.InfoAnnouncer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,12 +33,14 @@ public class CommandOptions extends UHCCommand {
             String eventName = StringUtils.join(Arrays.copyOfRange(args, 1, args.length), " ");
             Main.getInstance().getConfig().set("event-name", eventName);
             Main.getInstance().saveConfig();
+            InfoAnnouncer.getInstance().getObj().setDisplayName(ChatColor.GOLD + Main.getInstance().getConfig().getString("event-name", "Game Info"));
             sender.sendMessage("Successfully set " + args[0] + " to be " + eventName);
             return;
         } else if (args.length != 2) {
             sender.sendMessage(ChatColor.RED + "Usage: /uhc " + alias + " <option> <value>");
         }
         if (Arrays.asList(OPTIONS).contains(args[0])) {
+            boolean regen = false;
             try {
                 //init-size
                 if (args[0].equalsIgnoreCase(OPTIONS[0])) {
@@ -71,7 +74,7 @@ public class CommandOptions extends UHCCommand {
                     if (finalSize > 59999999 || finalSize == 0) { finalSize = 59999999; }
                     Main.getInstance().getGameInstance().setFinalSize(finalSize);
                     Main.getInstance().getConfig().set("game.final-size", finalSize);
-                //minx-to-shrink
+                //mins-to-shrink
                 } else if (args[0].equalsIgnoreCase(OPTIONS[2])) {
                     if (Integer.valueOf(args[1]) < -1) {
                         sender.sendMessage(ChatColor.RED + "ERROR: Requested final border size " + ChatColor.RESET + Integer.valueOf(args[1])
@@ -91,6 +94,7 @@ public class CommandOptions extends UHCCommand {
                         return;
                     }
                     Main.getInstance().getConfig().set("game.team-mode", Boolean.valueOf(args[1]));
+                    regen = true;
                 //spread-distance
                 } else if (args[0].equalsIgnoreCase(OPTIONS[4])) {
                     if (Integer.valueOf(args[1]) < 0) {
@@ -130,15 +134,13 @@ public class CommandOptions extends UHCCommand {
                     Main.getInstance().getConfig().set("game.episode-length", Integer.valueOf(args[1]));
                 }
                 Main.getInstance().saveConfig();
+                if (regen) InfoAnnouncer.getInstance().regenerateObjective();
                 sender.sendMessage("Successfully set " + args[0] + " to be " + args[1]);
-                return;
             } catch (NumberFormatException e) {
                 sender.sendMessage(ChatColor.RED + "ERROR: Option " + args[0] + " only accepts integers. If you typed a number, it may be too large or too small. Try a number closer to zero.");
-                return;
             }
         } else {
             sender.sendMessage(ChatColor.RED + "ERROR: Option " + args[0] + " not recognized.\nValid options: " + ChatColor.RESET + StringUtils.join(OPTIONS, ", "));
-            return;
         }
     }
 

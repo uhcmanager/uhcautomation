@@ -5,7 +5,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import usa.cactuspuppy.uhc_automation.InfoDisplayMode;
+import usa.cactuspuppy.uhc_automation.InfoModeCache;
 import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.Tasks.InfoAnnouncer;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 @NoArgsConstructor
@@ -16,7 +19,12 @@ public class WorldChangeListener implements Listener {
             return;
         }
         if ((UHCUtils.worldEqualsExt(e.getTo().getWorld(), Main.getInstance().getGameInstance().getWorld()) && Main.getInstance().getConfig().getBoolean("extended-world-detection", true)) || e.getTo().getWorld().equals(Main.getInstance().getGameInstance().getWorld())) {
-            Main.getInstance().getGameInstance().bindPlayertoScoreboard(e.getPlayer());
+            if (Main.getInstance().getGameInstance().getActivePlayers().contains(e.getPlayer().getUniqueId())) return;
+            if (InfoModeCache.getInstance().getPlayerPref(e.getPlayer().getUniqueId()).equals(InfoDisplayMode.SCOREBOARD)) {
+                e.getPlayer().setScoreboard(InfoAnnouncer.getInstance().getTimeScoreboard());
+            } else {
+                Main.getInstance().getGameInstance().bindPlayertoScoreboard(e.getPlayer());
+            }
             Main.getInstance().getGameInstance().registerPlayer(e.getPlayer());
         } else {
             e.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());

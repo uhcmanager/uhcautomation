@@ -10,8 +10,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import usa.cactuspuppy.uhc_automation.Database.SQLAPI;
+import usa.cactuspuppy.uhc_automation.InfoDisplayMode;
+import usa.cactuspuppy.uhc_automation.InfoModeCache;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.Tasks.DelayedPlayerResourcePack;
+import usa.cactuspuppy.uhc_automation.Tasks.InfoAnnouncer;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
 @NoArgsConstructor
@@ -22,7 +26,11 @@ public class PlayerConnectionListener implements Listener {
         Player p = e.getPlayer();
         if (UHCUtils.worldEqualsExt(p.getWorld(), Main.getInstance().getGameInstance().getWorld())) {
             new DelayedPlayerResourcePack(p.getUniqueId()).schedule();
-            Main.getInstance().getGameInstance().bindPlayertoScoreboard(p);
+            if (InfoModeCache.getInstance().getPlayerPref(p.getUniqueId()).equals(InfoDisplayMode.SCOREBOARD)) {
+                p.setScoreboard(InfoAnnouncer.getInstance().getTimeScoreboard());
+            } else {
+                Main.getInstance().getGameInstance().bindPlayertoScoreboard(p);
+            }
             if (Main.getInstance().getGameInstance().isActive()) {
                 if (!Main.getInstance().getGameInstance().getBlacklistPlayers().contains(p.getUniqueId()) && Main.getInstance().getGameInstance().getRegPlayers().contains(p.getUniqueId())) {
                     Main.getInstance().getGameInstance().registerPlayerSilent(p);
@@ -52,5 +60,6 @@ public class PlayerConnectionListener implements Listener {
         if (Main.getInstance().getGameInstance().getActivePlayers().contains(e.getPlayer().getUniqueId())) {
             Main.getInstance().getGameInstance().lostConnectPlayer(e.getPlayer());
         }
+        InfoAnnouncer.getInstance().removePlayerFromObjectiveSet(e.getPlayer());
     }
 }

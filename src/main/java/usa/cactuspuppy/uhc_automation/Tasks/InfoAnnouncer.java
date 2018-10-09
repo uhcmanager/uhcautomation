@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.Tasks;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -18,13 +19,14 @@ import java.util.UUID;
 
 public class InfoAnnouncer implements Runnable {
     private Set<UUID> objectivePlayerSet = new HashSet<>();
-    private Scoreboard timeScoreboard;
-    private Objective obj;
+    @Getter private Scoreboard timeScoreboard;
+    @Getter private Objective obj;
     private Team TimeDisplay;
     private Team PlayersDisplay;
     private Team WBDisplay;
     private Team PVPDisplay;
 
+    @Getter private static InfoAnnouncer instance;
 
     private static final String TIME_TEAM_ID = ChatColor.BLACK.toString() + ChatColor.WHITE.toString();
     private static final String OPP_REMAIN_ID = ChatColor.WHITE.toString() + ChatColor.AQUA.toString();
@@ -33,25 +35,28 @@ public class InfoAnnouncer implements Runnable {
     private static final String BREAK_TOGGLE_INFO = ChatColor.YELLOW.toString() + ChatColor.BLACK.toString();
 
     public InfoAnnouncer() {
+        instance = this;
         timeScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        if (timeScoreboard.getObjective("InfoDisplay") == null) {
-            timeScoreboard.registerNewObjective("InfoDisplay", "dummy", "Game Info");
-        } else if (!timeScoreboard.getObjective("InfoDisplay").getCriteria().equals("dummy")) {
-            timeScoreboard.getObjective("InfoDisplay").unregister();
-            timeScoreboard.registerNewObjective("InfoDisplay", "dummy", "Game Info");
-        }
         if (timeScoreboard.getObjective("Health2") == null) {
             timeScoreboard.registerNewObjective("Health2", "health", "Health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
         } else if (!timeScoreboard.getObjective("Health2").getCriteria().equals("health")) {
             timeScoreboard.getObjective("Health2").unregister();
             timeScoreboard.registerNewObjective("Health2", "health", "Health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
         }
-        obj = timeScoreboard.getObjective("InfoDisplay");
-        obj.setDisplayName(ChatColor.GOLD + Main.getInstance().getConfig().getString("event-name", "Game Info"));
         TimeDisplay = timeScoreboard.registerNewTeam("Time");
         PlayersDisplay = timeScoreboard.registerNewTeam("Players");
         WBDisplay = timeScoreboard.registerNewTeam("Worldborder");
         PVPDisplay = timeScoreboard.registerNewTeam("PVP");
+        regenerateObjective();
+    }
+
+    public void regenerateObjective() {
+        if (timeScoreboard.getObjective("InfoDisplay") != null) {
+            timeScoreboard.getObjective("InfoDisplay").unregister();
+        }
+        obj = timeScoreboard.registerNewObjective("InfoDisplay", "dummy", "Game Info");
+        obj = timeScoreboard.getObjective("InfoDisplay");
+        obj.setDisplayName(ChatColor.GOLD + Main.getInstance().getConfig().getString("event-name", "Game Info"));
         TimeDisplay.addEntry(TIME_TEAM_ID);
         PlayersDisplay.addEntry(OPP_REMAIN_ID);
         WBDisplay.addEntry(WORLD_BORDER_ID);

@@ -11,6 +11,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.scoreboard.Team;
 import usa.cactuspuppy.uhc_automation.Main;
 
+import java.util.UUID;
+
 public class NameColorFixTask implements Runnable {
     private Main m;
 
@@ -24,7 +26,8 @@ public class NameColorFixTask implements Runnable {
         for (Team t : Bukkit.getScoreboardManager().getMainScoreboard().getTeams()) {
             t.setPrefix(t.getColor().toString());
         }
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (UUID u : Main.getInstance().getGameInstance().getActivePlayers()) {
+            Player p = Bukkit.getPlayer(u);
             Team team = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(p.getName());
             String prefix;
             ChatColor color;
@@ -57,10 +60,7 @@ public class NameColorFixTask implements Runnable {
         @EventHandler(priority = EventPriority.LOWEST)
         public void onPlayerChat(AsyncPlayerChatEvent e) {
             Team team = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(e.getPlayer().getName());
-            if (team == null) {
-                System.out.println("No team found for player " + e.getPlayer().getName());
-                return;
-            }
+            if (team == null) return;
             ChatColor color = team.getColor();
             String prefix = team.getPrefix();
             String suffix = team.getSuffix();

@@ -123,6 +123,10 @@ public class GameInstance {
         world.getWorldBorder().setCenter(0D, 0D);
         world.getWorldBorder().setSize(initSize);
         world.setGameRule(GameRule.NATURAL_REGENERATION, !uhcMode);
+        if (Main.getInstance().getConfig().getBoolean("extended-world-detection")) {
+            Bukkit.getWorld(world.getName() + "_nether").setGameRule(GameRule.NATURAL_REGENERATION, false);
+            Bukkit.getWorld(world.getName() + "_the_end").setGameRule(GameRule.NATURAL_REGENERATION, false);
+        }
     }
 
     public void start(CommandSender s) {
@@ -269,7 +273,7 @@ public class GameInstance {
             }
             if (livePlayers.size() == 0) {
                 UHCUtils.broadcastMessagewithSoundandTitle(this, ChatColor.RED + "\nWait... what? The game ended in a tie!",
-                        ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.RESET + "Game ended in a tie!", 0, 80, 40, "minecraft:victory", 1, 1);
+                        ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.RESET + "Game ended in a tie!", 0, 80, 40, "minecraft:victory", 2, 1);
             } else {
                 Team t = livePlayers.stream().findFirst().map(u -> scoreboard.getEntryTeam(Bukkit.getPlayer(u).getName())).orElse(null);
                 if (t == null) {
@@ -286,7 +290,7 @@ public class GameInstance {
                 collectNames(onlineWinners, winningTeamPlayers);
                 String winners = winningTeamPlayers.toString();
                 UHCUtils.broadcastMessagewithSoundandTitle(this, "\n" + t.getDisplayName() + ChatColor.GREEN + " has emerged victorious!\nMembers: " + ChatColor.RESET + winners,
-                        t.getDisplayName(), ChatColor.GREEN + "wins!", 0 , 100, 40, "minecraft:victory", 1, 1);
+                        t.getDisplayName(), ChatColor.GREEN + "wins!", 0 , 100, 40, "minecraft:victory", 2, 1);
                 UHCUtils.broadcastChatMessage(this, ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + WordUtils.capitalize(UHCUtils.secsToFormatString(timeElapsed)));
             }
         } else {
@@ -295,9 +299,9 @@ public class GameInstance {
                 assert winner != null;
                 UHCUtils.broadcastMessagewithSoundandTitle(this, "\n" + ChatColor.GREEN + winner.getDisplayName() + ChatColor.WHITE + " wins!\n"
                         + ChatColor.AQUA + "\nTime Elapsed: " + ChatColor.RESET + WordUtils.capitalize(UHCUtils.secsToFormatString(timeElapsed)),
-                        winner.getDisplayName(), "Wins!", 0, 80, 40, "minecraft:victory", 1, 1);
+                        winner.getDisplayName(), "Wins!", 0, 80, 40, "minecraft:victory", 2, 1);
             } else if (livePlayers.size() == 0) {
-                UHCUtils.broadcastMessagewithSoundandTitle(this, ChatColor.RED + "\nWait... what? The game ended in a tie!", ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.YELLOW + "Game ended in a tie!", 0, 80, 40, "minecraft:victory", 1, 1);
+                UHCUtils.broadcastMessagewithSoundandTitle(this, ChatColor.RED + "\nWait... what? The game ended in a tie!", ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DRAW", ChatColor.YELLOW + "Game ended in a tie!", 0, 80, 40, "minecraft:victory", 2, 1);
             } else {
                 logStatus(Bukkit.getConsoleSender());
                 main.getLogger().severe("Win condition called early for game instance running on world " + world.getName() + ". Game status dumped to log.");
@@ -334,7 +338,7 @@ public class GameInstance {
                 if (numTeams <= 1) {
                     win();
                 } else if (numTeams < teamsRemaining) {
-                    UHCUtils.broadcastChatMessage(Main.getInstance().getGameInstance(), ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nA team has been eliminated! " + ChatColor.RESET + "\n" + numTeams + " teams remain!");
+                    UHCUtils.broadcastChatMessage(Main.getInstance().getGameInstance(), ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nA team has been eliminated! " + ChatColor.GOLD + "\n" + numTeams + " teams remain!\n");
                     teamsRemaining = numTeams;
                 }
             } else {
@@ -542,10 +546,6 @@ public class GameInstance {
     public void setInitSize(int s) {
         initSize = s;
         world.getWorldBorder().setSize(initSize);
-    }
-
-    void setScoreboard(Scoreboard scoreboard) {
-        this.scoreboard = scoreboard;
     }
 
     public void setUHCMode(boolean um) {
