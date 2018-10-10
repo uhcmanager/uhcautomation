@@ -48,10 +48,6 @@ warning-times:
   border: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 60, 120, 180, 300, 600, 900, 1200, 1800, 3600
   pvp: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 60, 120, 180, 300, 600, 900, 1200, 1800, 3600
 
-### TIPS (WIP) ###
-game-start-tips: false
-tips: false
-
 ### (Optional) Database Information ###
 db:
   method: sqlite
