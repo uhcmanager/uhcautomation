@@ -123,7 +123,7 @@ public class GameInstance {
         world.getWorldBorder().setCenter(0D, 0D);
         world.getWorldBorder().setSize(initSize);
         world.setGameRule(GameRule.NATURAL_REGENERATION, !uhcMode);
-        if (Main.getInstance().getConfig().getBoolean("extended-world-detection")) {
+        if (Main.getInstance().getConfig().getBoolean("extended-world-detection") && !Main.getInstance().getConfig().getBoolean("nether-end-exclusion", true)) {
             Bukkit.getWorld(world.getName() + "_nether").setGameRule(GameRule.NATURAL_REGENERATION, false);
             Bukkit.getWorld(world.getName() + "_the_end").setGameRule(GameRule.NATURAL_REGENERATION, false);
         }

@@ -80,5 +80,5 @@ rp-hash: E218C5A44673CCF7D4026CA82A7B5AD0F427D6C6
 # Plugin will also include players in world001_nether and world001_the_end
 extended-world-detection: true
 # By default, the plugin prevents games from being held in Nether or End Worlds.
-# Change this value to false to disable.
+# Change this value to false to disable. Note that this should **NOT** be used if players are going to be changing dimensions.
 nether-end-exclusion: true
