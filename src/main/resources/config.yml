@@ -78,3 +78,11 @@ extended-world-detection: true
 # By default, the plugin prevents games from being held in Nether or End Worlds.
 # Change this value to false to disable. Note that this should **NOT** be used if players are going to be changing dimensions.
 nether-end-exclusion: true
+
+### One-Shot Module ###
+# This module adds a sword that will instantly one-shot the target player, while dealing no damage to any other players
+
+# Whether the one-shot sword will be enabled
+one-shot: true
+#
+one-shot-target:
