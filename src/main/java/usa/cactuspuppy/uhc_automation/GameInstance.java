@@ -14,6 +14,7 @@ import org.bukkit.scoreboard.Team;
 import usa.cactuspuppy.uhc_automation.Commands.CommandSurface;
 import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
 import usa.cactuspuppy.uhc_automation.Listeners.PlayerMoveListener;
+import usa.cactuspuppy.uhc_automation.OneShot.DelayTimer;
 import usa.cactuspuppy.uhc_automation.Tasks.*;
 
 import java.text.SimpleDateFormat;
@@ -47,7 +48,7 @@ public class GameInstance {
     private int loadChunksCDID;
     private int teamsRemaining;
 
-    @Getter private static final boolean DEBUG = true;
+    @Getter private static final boolean DEBUG = false;
 
     public GameInstance(Main p) {
         main = p;
@@ -201,6 +202,15 @@ public class GameInstance {
         world.setGameRule(GameRule.DO_WEATHER_CYCLE, true);
         world.setStorm(false);
         world.setWeatherDuration((new Random()).nextInt(48000) + 24000);
+        minsToShrink = main.getConfig().getInt("game.mins-to-shrink");
+        initSize = main.getConfig().getInt("game.init-size");
+        finalSize = main.getConfig().getInt("game.final-size");
+        teamMode = main.getConfig().getBoolean("game.team-mode");
+        respectTeams = main.getConfig().getBoolean("game.respect-teams");
+        spreadDistance = main.getConfig().getInt("game.spread-distance");
+        uhcMode = main.getConfig().getBoolean("game.uhc-mode");
+        epLength = main.getConfig().getInt("game.episode-length");
+        secsToPVP = main.getConfig().getLong("game.secs-to-pvp");
         if (minsToShrink > 0) {
             borderCountdown = (new BorderCountdown(minsToShrink * 60, startT, Main.getInstance().getConfig().getBoolean("warnings.border", true))).schedule();
         } else if (minsToShrink == 0) {
@@ -213,6 +223,9 @@ public class GameInstance {
             world.setPVP(true);
         } else if (secsToPVP > 0) {
             (new PVPEnableCountdown(secsToPVP, startT, Main.getInstance().getConfig().getBoolean("warnings.pvp", true))).schedule();
+        }
+        if (Main.getInstance().getConfig().getBoolean("one-shot.enabled")) {
+            new DelayTimer(Main.getInstance().getConfig().getInt("one-shot.delay"), startT, true).schedule();
         }
         HandlerList.unregisterAll(freezePlayers);
         livePlayers.forEach(this::startPlayer);
@@ -377,13 +390,13 @@ public class GameInstance {
 
     public boolean validate(CommandSender s) {
         boolean valid;
-        valid = initSize > finalSize;
+        valid = initSize > finalSize || minsToShrink == -1;
         if (!valid) {
             s.sendMessage(String.format(ChatColor.RED + "Initial size %d is not greater than final size %d. UHC aborted.", initSize, finalSize));
         }
         valid = valid && spreadDistance < initSize;
         if (!valid) {
-            s.sendMessage(String.format(ChatColor.RED + "Player separation distance %d is not less than spread range %d. UHC aborted.", spreadDistance, initSize / 2));
+            s.sendMessage(String.format(ChatColor.RED + "Player separation distance %d is not less than spread range %d. UHC aborted.", spreadDistance, initSize));
         }
         return valid;
     }

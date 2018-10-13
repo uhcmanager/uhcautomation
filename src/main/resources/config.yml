@@ -1,5 +1,3 @@
-# The default config does not
-
 world: GameWorld
 event-name: Event Name
 
@@ -43,10 +41,11 @@ warnings:
 # If the times are not numbers or not comma separated, loading of warning
 # times will default to the following values:
 #
-# 1,2,3,4,5,6,7,8,9,10,15,20,30,45,60,120,180,300,600,900,1200,1800,3600
+# 1,2,3,4,5,6,7,8,9,10,30,60,300,600,900,1200,1800,3600
 warning-times:
-  border: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 60, 120, 180, 300, 600, 900, 1200, 1800, 3600
-  pvp: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 60, 120, 180, 300, 600, 900, 1200, 1800, 3600
+  border: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 60, 300, 600, 900, 1200, 1800, 3600
+  pvp: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 60, 300, 600, 900, 1200, 1800, 3600
+  one-shot: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 60, 300, 600, 900, 1200, 1800, 3600
 
 ### (Optional) Database Information ###
 db:
@@ -81,8 +80,12 @@ nether-end-exclusion: true
 
 ### One-Shot Module ###
 # This module adds a sword that will instantly one-shot the target player, while dealing no damage to any other players
-
-# Whether the one-shot sword will be enabled
-one-shot: true
-#
-one-shot-target:
+one-shot:
+  # Whether the one-shot sword will be enabled
+  enabled: false
+  # Seconds until the one-shot sword is spawned
+  delay: 1500
+  # Player name to target. This person will be one-shot by any strike from the one-shot sword.
+  target: REPLACE+THIS+STRING
+  # Whether the sword should deal any damage to other players besides the target
+  other-damage: true

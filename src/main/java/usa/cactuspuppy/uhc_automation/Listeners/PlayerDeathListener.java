@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.Listeners;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,9 +14,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @NoArgsConstructor
 public class PlayerDeathListener implements Listener {
@@ -39,14 +38,6 @@ public class PlayerDeathListener implements Listener {
         Main.getInstance().getLogger().info(p.getName() + " died at [" + p.getLocation().getWorld().getName() + "] "
                 + p.getLocation().getX() + ", " + p.getLocation().getY() + ", " + p.getLocation().getZ());
         Location drops = p.getLocation();
-        /*if (e.getKeepInventory()) {
-            p.getInventory().clear();
-        } else {
-            for (ItemStack i : p.getInventory()) {
-                if (i == null) continue;
-                drops.getWorld().dropItemNaturally(drops, i);
-            }
-        }*/
         Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> p.spigot().respawn(), 1L);
         respawnQueue.put(p.getUniqueId(), drops);
         for (UUID u : Main.getInstance().getGameInstance().getActivePlayers()) {

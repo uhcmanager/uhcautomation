@@ -60,8 +60,16 @@ public class UHCUtils {
         broadcastChatMessage(Main.getInstance().getGameInstance(), msg);
     }
 
-    public static void broadcastMessagewithSound(GameInstance gi, String chat, String sound, float volume, float pitch) {
+    public static void broadcastMessageWithSound(GameInstance gi, String chat, String sound, float volume, float pitch) {
         for (UUID u: gi.getActivePlayers()) {
+            Player p = Bukkit.getPlayer(u);
+            p.sendMessage(chat);
+            p.playSound(p.getLocation(), sound, volume, pitch);
+        }
+    }
+
+    public static void broadcastMessageWithSound(String chat, Sound sound, float volume, float pitch) {
+        for (UUID u : Main.getInstance().getGameInstance().getActivePlayers()) {
             Player p = Bukkit.getPlayer(u);
             p.sendMessage(chat);
             p.playSound(p.getLocation(), sound, volume, pitch);
@@ -703,7 +711,7 @@ public class UHCUtils {
     }
 
     public static List<Long> getDefaultTimes() {
-        long[] defaultTimes = {1,2,3,4,5,6,7,8,9,10,15,20,30,45,60,120,180,300,600,900,1200,1800,3600};
+        long[] defaultTimes = {1,2,3,4,5,6,7,8,9,10,30,60,300,600,900,1200,1800,3600};
         ArrayList<Long> times = new ArrayList<>();
         Arrays.stream(defaultTimes).forEach(times::add);
         return times;

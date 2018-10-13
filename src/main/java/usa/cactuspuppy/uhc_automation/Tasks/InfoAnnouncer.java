@@ -82,9 +82,9 @@ public class InfoAnnouncer implements Runnable {
     public void run() {
         TimeDisplay.setPrefix(ChatColor.WHITE + "  " + UHCUtils.secsToFormatString2(UHCUtils.getSecsElapsed(Main.getInstance())));
         PlayersDisplay.setPrefix(ChatColor.WHITE + "  " + String.valueOf(Main.getInstance().getGameInstance().isTeamMode() ? Main.getInstance().getGameInstance().getNumTeams() : Main.getInstance().getGameInstance().getLivePlayers().size()));
-        WBDisplay.setPrefix(ChatColor.WHITE + (Main.getInstance().getGameInstance().isBorderShrinking() ?
+        WBDisplay.setPrefix(ChatColor.WHITE + ((Main.getInstance().getGameInstance().getMinsToShrink() == -1) ? "  ±" + (Main.getInstance().getGameInstance().getInitSize() / 2) : (Main.getInstance().getGameInstance().isBorderShrinking() ?
                 "  Shrinking to ±" + (Main.getInstance().getGameInstance().getFinalSize() / 2) :
-                "  Shrinks in " + UHCUtils.secsToFormatString2((Main.getInstance().getGameInstance().getMinsToShrink() * 60) - UHCUtils.getSecsElapsed(Main.getInstance()))));
+                "  Shrinks in " + UHCUtils.secsToFormatString2((Main.getInstance().getGameInstance().getMinsToShrink() * 60) - UHCUtils.getSecsElapsed(Main.getInstance())))));
         PVPDisplay.setPrefix(ChatColor.WHITE + (Main.getInstance().getGameInstance().getWorld().getPVP() ?
                 "  Enabled" :
                 "  Enabled in " + UHCUtils.secsToFormatString2(((int) Main.getInstance().getGameInstance().getSecsToPVP()) - UHCUtils.getSecsElapsed(Main.getInstance()))));
