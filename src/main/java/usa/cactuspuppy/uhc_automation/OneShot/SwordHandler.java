@@ -4,12 +4,16 @@ import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scoreboard.Team;
 import usa.cactuspuppy.uhc_automation.GameInstance;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
@@ -52,8 +56,8 @@ public class SwordHandler implements Listener {
         if (!(e.getDamager() instanceof Player) || !(e.getEntity() instanceof Player)) return;
         Player attacker = (Player) e.getDamager();
         Player target = (Player) e.getEntity();
-        if (!isPlayerKiller(attacker.getInventory().getItemInMainHand())) return;
-        if (!isTarget(target) && !Main.getInstance().getConfig().getBoolean("one-shot.other-damage")) {
+        if (isNotPlayerKiller(attacker.getInventory().getItemInMainHand())) return;
+        if (isNotTarget(target) && !Main.getInstance().getConfig().getBoolean("one-shot.other-damage")) {
             e.setCancelled(true);
             return;
         }
@@ -61,13 +65,47 @@ public class SwordHandler implements Listener {
         UHCUtils.broadcastMessageWithSound(ChatColor.DARK_RED + target.getDisplayName() + " has been struck down!", Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
     }
 
-    private boolean isTarget(Player p) {
+    @EventHandler
+    public void inventoryHandler(InventoryClickEvent e) {
+        Player p = (Player) e.getWhoClicked();
+        if (isNotTarget(p) && !onTargetTeam(p)) return;
+        ItemStack itemStack = e.getCurrentItem();
+        if (isNotPlayerKiller(itemStack)) return;
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void pickupHandler(EntityPickupItemEvent e) {
+        if (!e.getEntity().getType().equals(EntityType.PLAYER)) return;
+        Player p = (Player) e.getEntity();
+        if (isNotTarget(p) && !onTargetTeam(p)) return;
+        ItemStack itemStack = e.getItem().getItemStack();
+        if (isNotPlayerKiller(itemStack)) return;
+        e.setCancelled(true);
+    }
+
+    private boolean isNotTarget(Player p) {
+        return !p.getName().equals(getTargetName());
+    }
+
+    private boolean onTargetTeam(Player check) {
+        if (!Main.getInstance().getGameInstance().isTeamMode()) return false;
+        if (Bukkit.getPlayer(getTargetName()) == null) return false;
+        Team team1 = Main.getInstance().getGameInstance().getScoreboard().getEntryTeam(check.getName());
+        Team team2 = Main.getInstance().getGameInstance().getScoreboard().getEntryTeam(getTargetName());
+        if (team1 == null || team2 == null) return false;
+        return team1.equals(team2);
+    }
+
+    private String getTargetName() {
         String string = Main.getInstance().getConfig().getString("one-shot.target");
-        if (string == null) return false;
+        if (string == null) return null;
         if (string.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}")) {
-            return p.getUniqueId().equals(UUID.fromString(string));
+            Player p = Bukkit.getPlayer(UUID.fromString(string));
+            if (p == null) return null;
+            return p.getName();
         }
-        return p.getName().equals(string);
+        return string;
     }
 
     private ItemStack createPlayerKiller() {
@@ -79,20 +117,22 @@ public class SwordHandler implements Listener {
             rvLore = new ArrayList<>();
         }
         rvLore.addAll(Arrays.asList(lore));
+        rvLore.add(ChatColor.GOLD.toString() + ChatColor.BOLD + "Target: " + ChatColor.RESET + ChatColor.UNDERLINE + getTargetName());
         rvMeta.setLore(rvLore);
         rv.setItemMeta(rvMeta);
 
         return rv;
     }
 
-    private boolean isPlayerKiller(ItemStack item) {
-        if (item.getType() != Material.DIAMOND_SWORD) return false;
+    private boolean isNotPlayerKiller(ItemStack item) {
+        if (item == null) return true;
+        if (item.getType() != Material.DIAMOND_SWORD) return true;
         List<String> itemLore = item.getItemMeta().getLore();
         for (String lorette : lore) {
             if (!itemLore.contains(lorette)) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 }

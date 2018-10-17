@@ -383,7 +383,9 @@ public class GameInstance {
         if (p == null) {
             return;
         }
-        p.sendMessage(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nBorder shrinking!\n" + ChatColor.RESET + ChatColor.AQUA + "Use /surface to begin surfacing!");
+        p.sendMessage(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nBorder shrinking!");
+        if (Main.getInstance().getConfig().getBoolean("surface", false)) p.sendMessage(ChatColor.AQUA + "Use /surface to begin surfacing!");
+        p.sendMessage(ChatColor.GREEN + "==================");
         p.sendTitle(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Border Shrinking!", "", 0, 80, 40);
         p.playSound(p.getLocation(), "minecraft:entity.ender_dragon.death", 1F, 1F);
     }

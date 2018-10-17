@@ -47,6 +47,7 @@ public class EpisodeAnnouncer implements Runnable {
         p.playSound(p.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 1F, 1F);
         p.sendMessage(ChatColor.GOLD + "\nMARK: " + ChatColor.WHITE + "End of Episode " + ChatColor.GREEN + epCount);
         p.sendMessage(ChatColor.AQUA + "Time Elapsed: " + ChatColor.WHITE + WordUtils.capitalize(UHCUtils.secsToFormatString(mins * 60)));
+        p.sendMessage(ChatColor.GREEN + "==================");
     }
 
     public void schedule() {
