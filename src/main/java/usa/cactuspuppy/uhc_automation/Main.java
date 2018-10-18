@@ -63,9 +63,6 @@ public class Main extends JavaPlugin {
         SQLRepeating.shutdown();
     }
 
-    /**
-     * @source Innectic's Permissify plugin. https://github.com/ifydev/Permissify
-     */
     private void createConfig() {
         try {
             if (!getDataFolder().exists()) {
@@ -78,7 +75,20 @@ public class Main extends JavaPlugin {
             File config = new File(getDataFolder(), "config.yml");
             if (!config.exists()) {
                 getLogger().info("config.yml not found, creating...");
-                saveDefaultConfig();
+
+                Reader configReader = getTextResource("config.yml");
+                BufferedReader configBuffR = new BufferedReader(configReader);
+
+                FileWriter configWriter = new FileWriter(config.getPath());
+                BufferedWriter configBuffW = new BufferedWriter(configWriter);
+
+                String line;
+                while ((line = configBuffR.readLine()) != null) {
+                    configBuffW.write(line);
+                    configBuffW.newLine();
+                }
+
+                configBuffW.close();
             } else {
                 getLogger().info("Loading config.yml...");
             }
