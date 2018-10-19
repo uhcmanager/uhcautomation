@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.Tasks;
 
+import io.papermc.lib.PaperLib;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,6 +11,10 @@ import usa.cactuspuppy.uhc_automation.GameInstance;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
 public class GenerateChunksHelper implements Runnable {
@@ -52,9 +57,9 @@ public class GenerateChunksHelper implements Runnable {
     @Override
     public void run() {
         try {
-            for (halt = false; !halt; Thread.sleep(100L)) {
+            for (halt = false; !halt; Thread.sleep(50L)) {
                 Main.getInstance().getLogger().finer("Attempting to generate chunk at X: " + chunkX + ", Z: " + chunkZ);
-                generateChunk(world.getChunkAt(chunkX, chunkZ));
+                generateChunk(world, chunkX, chunkZ);
                 Main.getInstance().getLogger().fine("Generated chunk at chunk coords X: " + chunkX + ", Z: " + chunkZ);
                 if (chunkX == maxChunkX && chunkZ == maxChunkZ) {
                     long timeElapsed = System.currentTimeMillis() - startTime;
@@ -79,15 +84,9 @@ public class GenerateChunksHelper implements Runnable {
         }
     }
 
-    private static void generateChunk(Chunk chunk) {
-        try {
-            if (chunk.isLoaded()) {
-                return;
-            }
-            chunk.load(true);
-            chunk.unload(true);
-        } catch (IllegalStateException e) {
-            Main.getInstance().getLogger().fine("async chunk load complaint");
+    private static void generateChunk(World world, int chunkX, int chunkZ) {
+        if (!PaperLib.isChunkGenerated(world, chunkX, chunkZ)) {
+            PaperLib.getChunkAtAsync(world, chunkX, chunkZ, true).thenAccept(chunk -> chunk.unload(true));
         }
     }
 

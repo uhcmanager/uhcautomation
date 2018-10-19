@@ -1,6 +1,7 @@
 package usa.cactuspuppy.uhc_automation;
 
 import com.google.common.collect.Maps;
+import io.papermc.lib.PaperLib;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.io.FileUtils;
@@ -58,6 +59,10 @@ public class UHCUtils {
 
     public static void broadcastChatMessage(String msg) {
         broadcastChatMessage(Main.getInstance().getGameInstance(), msg);
+    }
+
+    public static void messageGameAdmins(String msg) {
+        Bukkit.getOnlinePlayers().stream().filter(p -> p.hasPermission("uhc.admin")).forEach(p -> p.sendMessage(msg));
     }
 
     public static void broadcastMessageWithSound(GameInstance gi, String chat, String sound, float volume, float pitch) {
@@ -499,7 +504,15 @@ public class UHCUtils {
             if (isOceanBiome(world.getBiome(loc.getBlockX(), loc.getBlockZ()))) {
                 g.getGiveBoats().add(player);
             }
-            player.teleport(loc);
+            PaperLib.teleportAsync(player, loc).thenAccept(result -> {
+                if (!result) {
+                    Main.getInstance().getLogger().warning("Could not teleport " + player.getName() + " to location: " + loc.toString());
+                    messageGameAdmins(ChatColor.RED + "Could not teleport players. Please ensure chunks have been pre-loaded and that no player is riding any vehicles.");
+                    UHCUtils.broadcastChatMessage(ChatColor.RED + "Could not spread all players around game area, game halted!");
+                    Main.getInstance().getGameInstance().stop();
+                    Main.getInstance().getGameInstance().prep();
+                }
+            });
 
             double value = Double.MAX_VALUE;
 

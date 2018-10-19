@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation;
 
+import io.papermc.lib.PaperLib;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.PermissionDefault;
@@ -41,6 +42,7 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         long start = System.currentTimeMillis();
         instance = this;
+        PaperLib.suggestPaper(this);
         createConfig();
         createRules();
         initDatabase();
