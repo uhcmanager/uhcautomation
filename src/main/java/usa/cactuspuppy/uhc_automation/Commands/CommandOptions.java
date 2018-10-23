@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 public class CommandOptions extends UHCCommand {
     private static final String[] OPTIONS =
-            {"init-size", "final-size", "mins-to-shrink", "team-mode", "spread-distance", "uhc-mode", "respect-teams", "episode-length", "event-name"};
+            {"init-size", "final-size", "mins-to-shrink", "team-mode", "spread-distance", "uhc-mode", "respect-teams", "episode-length", "event-name", "secs-to-pvp"};
 
     public CommandOptions() {
         name = "options";
@@ -132,7 +132,16 @@ public class CommandOptions extends UHCCommand {
                     }
                     Main.getInstance().getGameInstance().setEpLength(Integer.valueOf(args[1]));
                     Main.getInstance().getConfig().set("game.episode-length", Integer.valueOf(args[1]));
-                }
+                //secs-to-pvp
+                } else if (args[0].equalsIgnoreCase(OPTIONS[8])) {
+                    if (Integer.valueOf(args[1]) < 0) {
+                        sender.sendMessage(ChatColor.RED + "ERROR: Requested seconds to pvp " + ChatColor.RESET + Integer.valueOf(args[1])
+                                + ChatColor.RED + " is not greater than or equal to zero.");
+                        return;
+                    }
+                    Main.getInstance().getGameInstance().setSecsToPVP(Integer.valueOf(args[1]));
+                    Main.getInstance().getConfig().set("game.secs-to-pvp", Integer.valueOf(args[1]));
+                } else if ()
                 Main.getInstance().saveConfig();
                 if (regen) InfoAnnouncer.getInstance().regenerateObjective();
                 sender.sendMessage("Successfully set " + args[0] + " to be " + args[1]);

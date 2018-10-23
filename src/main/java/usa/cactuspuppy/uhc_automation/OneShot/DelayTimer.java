@@ -61,11 +61,11 @@ public class DelayTimer implements Runnable {
             }
             if (timeTo <= 10) {
                 if (timeTo == 10) {
-                    UHCUtils.broadcastChatMessage(ChatColor.RED.toString() + ChatColor.BOLD + "[Alert] " + ChatColor.RESET + "One-shot sword created in " + UHCUtils.secsToFormatString(timeTo));
+                    UHCUtils.broadcastChatMessage(ChatColor.RED.toString() + ChatColor.BOLD + "[Alert] " + ChatColor.RESET + "Player-bane blade created in " + UHCUtils.secsToFormatString(timeTo));
                 }
-                UHCUtils.broadcastSoundandTitle(Main.getInstance().getGameInstance(), "minecraft:block.note_block.chime", (float) (0.5 + (10 - timeTo) / 40), 1.18F, String.valueOf(timeTo), ChatColor.RED + "until one-shot sword active", 0, 80, 40);
+                UHCUtils.broadcastSoundandTitle(Main.getInstance().getGameInstance(), "minecraft:block.note_block.chime", (float) (0.5 + (10 - timeTo) / 40), 1.18F, String.valueOf(timeTo), ChatColor.RED + "Player-bane summoned in", 0, 80, 40);
             } else {
-                UHCUtils.broadcastMessageWithSound(ChatColor.YELLOW.toString() + ChatColor.BOLD + "[Warning] " + ChatColor.RESET + "One-shot sword created in " + UHCUtils.secsToFormatString(timeTo), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 0.4F);
+                UHCUtils.broadcastMessageWithSound(ChatColor.YELLOW.toString() + ChatColor.BOLD + "[Warning] " + ChatColor.RESET + "Player-bane blade created in " + UHCUtils.secsToFormatString(timeTo), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 0.4F);
             }
         }
     }
