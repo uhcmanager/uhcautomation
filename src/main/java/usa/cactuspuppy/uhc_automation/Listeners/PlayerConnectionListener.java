@@ -10,7 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import usa.cactuspuppy.uhc_automation.Database.SQLAPI;
 import usa.cactuspuppy.uhc_automation.InfoDisplayMode;
 import usa.cactuspuppy.uhc_automation.InfoModeCache;
 import usa.cactuspuppy.uhc_automation.Main;
