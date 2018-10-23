@@ -43,6 +43,11 @@ public class UHCUtils {
     //do not instantiate
     public UHCUtils() { }
 
+    public static void logBug(GameInstance gi, String issue) {
+        Main.getInstance().getLogger().severe("An unexpected error has occurred with UHC Automation!\nPlease report this bug to github.com/CactusPuppy/uhcautomation/issues.\nIssue: "
+                + issue + "\nGame Instance World: " + gi.getWorld());
+    }
+
     public static void broadcastChatMessage(GameInstance gi, String msg) {
         for (UUID u : gi.getActivePlayers()) {
             Bukkit.getPlayer(u).sendMessage(msg);

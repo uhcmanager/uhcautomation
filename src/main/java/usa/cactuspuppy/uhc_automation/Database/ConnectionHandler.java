@@ -17,6 +17,7 @@ public class ConnectionHandler {
     }
 
     public Optional<Connection> getConnection() {
+        String method = connInfo.getMethod();
         return Optional.empty();
     }
 }

@@ -2,20 +2,10 @@ package usa.cactuspuppy.uhc_automation.Tasks;
 
 import io.papermc.lib.PaperLib;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
 import org.bukkit.World;
-import org.bukkit.scheduler.BukkitTask;
-import usa.cactuspuppy.uhc_automation.GameInstance;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
 
 public class GenerateChunksHelper implements Runnable {
     @Getter private static GenerateChunksHelper instance;
