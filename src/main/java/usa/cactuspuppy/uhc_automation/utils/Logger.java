@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.utils;
 
+import lombok.Setter;
 import usa.cactuspuppy.uhc_automation.Main;
 
 import java.util.Optional;
@@ -9,7 +10,28 @@ import java.util.Optional;
  * No other class should report directly to terminal; instead, report messages to this class first to ensure template consistency.
  */
 public class Logger {
-    private static boolean printStackTraces;
+    @Setter private static boolean printStackTraces = false;
+    @Setter private static Level level = Level.INFO;
+    @Setter private static boolean debug = false;
+
+    public enum Level {
+        SEVERE (5),
+        WARNING (4),
+        INFO (3),
+        FINE (2),
+        FINER (1),
+        FINEST (0);
+
+        private int tier;
+        Level (int t) {
+            tier = t;
+        }
+
+        static boolean insufficientLevel(Level check, Level required) {
+            return check.tier < required.tier;
+        }
+    }
+
     /**
      * Logs a message at level SEVERE.
      * @param c Class reporting error
@@ -17,12 +39,73 @@ public class Logger {
      * @param optionalE Optional containing exception, if needed.
      */
     public static void logError(Class c, String reason, Optional<Exception> optionalE) {
+        if (Level.insufficientLevel(Level.SEVERE, level)) return;
         String message = "[UHC] " + c.getSimpleName() + " error: " + reason;
         if (optionalE.isPresent()) {
             Exception e = optionalE.get();
             message = message + ". Exception: " + e.getMessage();
         }
         Main.getInstance().getLogger().severe(message);
+        if (printStackTraces && optionalE.isPresent()) optionalE.get().printStackTrace();
+    }
 
+    /**
+     * Logs a message at level WARNING.
+     * @param c Class reporting warning
+     * @param reason Reason for warning. If exception thrown, do not repeat info in exception
+     * @param optionalE Optional containing exception, if needed.
+     */
+    public static void logWarning(Class c, String reason, Optional<Exception> optionalE) {
+        if (Level.insufficientLevel(Level.WARNING, level)) return;
+        String message = "[UHC] " + c.getSimpleName() + " warning: " + reason;
+        if (optionalE.isPresent()) {
+            Exception e = optionalE.get();
+            message = message + ". Exception: " + e.getMessage();
+        }
+        Main.getInstance().getLogger().warning(message);
+        if (printStackTraces && optionalE.isPresent()) optionalE.get().printStackTrace();
+    }
+
+    /**
+     * Logs a message at level INFO.
+     * @param c Class reporting info
+     * @param reason Reason/message
+     */
+    public static void logInfo(Class c, String reason) {
+        if (Level.insufficientLevel(Level.INFO, level)) return;
+        String message;
+        if (debug) {
+            message = "[UHC] " + c.getSimpleName() + ": " + reason;
+        } else {
+            message = "[UHC] " + reason;
+        }
+        Main.getInstance().getLogger().info(message);
+    }
+
+    /**
+     * Logs a message from FINE to FINEST.
+     * @param c class reporting fine info
+     * @param info Info being reported
+     * @param fineLevel Level of fineness
+     *                  0 - FINE
+     *                  1 - FINER
+     *                  2 - FINEST
+     *                  DEFAULT - FINEST
+     */
+    public static void logFineMsg(Class c, String info, int fineLevel) {
+        Level level;
+        if (fineLevel == 0) {
+            level = Level.FINE;
+        } else if (fineLevel == 1) {
+            level = Level.FINER;
+        } else {
+            level = Level.FINEST;
+        }
+        if (Level.insufficientLevel(level, Logger.level)) return;
+        if (debug) {
+            Main.getInstance().getLogger().info("[UHC] <" + level.name() + " | " + c.getCanonicalName() + "> " + info);
+        } else {
+            Main.getInstance().getLogger().log(java.util.logging.Level.parse(level.name()), "[UHC] " + info);
+        }
     }
 }
