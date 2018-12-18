@@ -9,6 +9,10 @@ import java.util.Optional;
 public class Main extends JavaPlugin {
     @Getter private static Main instance;
 
+    public void setUseStdOut(boolean b) {
+        Logger.setUseStdOut(b);
+    }
+
     @Override
     public void onEnable() {
         long start = System.nanoTime();
@@ -19,7 +23,7 @@ public class Main extends JavaPlugin {
             return;
         }
         long elapsed = System.nanoTime() - start;
-        Logger.logInfo(this.getClass(), String.format("UHC Automation startup complete in %1$.2f ms (%2$d ns).", elapsed / 1000.0, elapsed));
+        Logger.logInfo(this.getClass(), String.format("UHC Automation startup complete in %1$.2fms (%2$dns).", elapsed / 1000.0, elapsed));
     }
 
     @Override
@@ -27,7 +31,7 @@ public class Main extends JavaPlugin {
 
     }
 
-    private boolean initBase() {
+    boolean initBase() {
         //TODO: Initiate base plugin
         return true;
     }

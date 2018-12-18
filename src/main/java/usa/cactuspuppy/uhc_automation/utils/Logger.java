@@ -4,15 +4,17 @@ import lombok.Setter;
 import usa.cactuspuppy.uhc_automation.Main;
 
 import java.util.Optional;
+import java.util.logging.Level;
 
 /**
  * Provides feedback to server terminal. Logs at levels SEVERE, WARNING, INFO, FINE, and FINER
  * No other class should report directly to terminal; instead, report messages to this class first to ensure template consistency.
  */
-public class Logger {
+public final class Logger {
     @Setter private static boolean printStackTraces = false;
     @Setter private static Level level = Level.INFO;
     @Setter private static boolean debug = false;
+    @Setter private static boolean useStdOut = true;
 
     public enum Level {
         SEVERE (5),
@@ -33,6 +35,19 @@ public class Logger {
     }
 
     /**
+     * Relay message to appropriate output channel
+     * @param msg
+     * @param lvl
+     */
+    private static void relayMessage(String msg, Level lvl) {
+        if (useStdOut || Main.getInstance() == null) {
+            System.out.println(msg);
+        } else {
+            Main.getInstance().getLogger().log(java.util.logging.Level.parse(lvl.name()), msg);
+        }
+    }
+
+    /**
      * Logs a message at level SEVERE.
      * @param c Class reporting error
      * @param reason Reason for error. If exception thrown, do not repeat info in exception
@@ -45,7 +60,7 @@ public class Logger {
             Exception e = optionalE.get();
             message = message + ". Exception: " + e.getMessage();
         }
-        Main.getInstance().getLogger().severe(message);
+        relayMessage(message, Level.SEVERE);
         if (printStackTraces && optionalE.isPresent()) optionalE.get().printStackTrace();
     }
 
@@ -62,7 +77,7 @@ public class Logger {
             Exception e = optionalE.get();
             message = message + ". Exception: " + e.getMessage();
         }
-        Main.getInstance().getLogger().warning(message);
+        relayMessage(message, Level.WARNING);
         if (printStackTraces && optionalE.isPresent()) optionalE.get().printStackTrace();
     }
 
@@ -79,7 +94,7 @@ public class Logger {
         } else {
             message = "[UHC] " + reason;
         }
-        Main.getInstance().getLogger().info(message);
+        relayMessage(message, Level.INFO);
     }
 
     /**
@@ -102,10 +117,12 @@ public class Logger {
             level = Level.FINEST;
         }
         if (Level.insufficientLevel(level, Logger.level)) return;
+        String message;
         if (debug) {
-            Main.getInstance().getLogger().info("[UHC] <" + level.name() + " | " + c.getCanonicalName() + "> " + info);
+            message = "[UHC] <" + level.name() + " | " + c.getCanonicalName() + "> " + info;
         } else {
-            Main.getInstance().getLogger().log(java.util.logging.Level.parse(level.name()), "[UHC] " + info);
+            message = "[UHC] " + info;
         }
+        relayMessage(message, level);
     }
 }
