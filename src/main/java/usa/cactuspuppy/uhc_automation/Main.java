@@ -15,7 +15,7 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import usa.cactuspuppy.uhc_automation.Commands.CommandHandler;
 import usa.cactuspuppy.uhc_automation.Commands.CommandSurface;
 import usa.cactuspuppy.uhc_automation.Commands.TabCompleteHelper;
-import usa.cactuspuppy.uhc_automation.Database.ConnectionHandler;
+import usa.cactuspuppy.uhc_automation.Database.SQLHandler;
 import usa.cactuspuppy.uhc_automation.Database.ConnectionInfo;
 import usa.cactuspuppy.uhc_automation.Database.SQLAPI;
 import usa.cactuspuppy.uhc_automation.Database.SQLRepeating;
@@ -139,7 +139,7 @@ public class Main extends JavaPlugin {
 
     private void initDatabase() {
         createConnectionInfo();
-        new ConnectionHandler(connectionInfo);
+        new SQLHandler(connectionInfo);
         new SQLAPI();
         try {
             SQLAPI.getInstance().createUHCTimeTable();

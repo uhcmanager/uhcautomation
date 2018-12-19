@@ -47,7 +47,7 @@ public class DelayTimer implements Runnable {
             if (playerName.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}")) {
                 playerName = Bukkit.getPlayer(UUID.fromString(playerName)).getName();
             }
-            UHCUtils.broadcastMessagewithSoundandTitle(Main.getInstance().getGameInstance(), ChatColor.GOLD.toString() + ChatColor.BOLD + "The Blade of Destiny is now in play!\nTarget: " + ChatColor.RESET + ChatColor.ITALIC + Bukkit.getPlayer(playerName).getDisplayName() + ChatColor.AQUA + "\nLocation: (" + ChatColor.RESET + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + ChatColor.AQUA + ")","Instakill", ChatColor.GREEN + "now available", 0, 80, 40, "minecraft:entity.lightning_bolt.thunder",2,1);
+            UHCUtils.broadcastMessagewithSoundandTitle(Main.getInstance().getGameInstance(), ChatColor.GOLD.toString() + ChatColor.BOLD + "The Player Slayer is now in play!\nTarget: " + ChatColor.RESET + ChatColor.ITALIC + Bukkit.getPlayer(playerName).getDisplayName() + ChatColor.AQUA + "\nLocation: (" + ChatColor.RESET + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + ChatColor.AQUA + ")","Player Slayer", ChatColor.GREEN + "now available", 0, 80, 40, "minecraft:entity.lightning_bolt.thunder",2,1);
             if (assignedID != null) { Bukkit.getScheduler().cancelTask(assignedID); }
             return;
         }
@@ -61,11 +61,11 @@ public class DelayTimer implements Runnable {
             }
             if (timeTo <= 10) {
                 if (timeTo == 10) {
-                    UHCUtils.broadcastChatMessage(ChatColor.RED.toString() + ChatColor.BOLD + "[Alert] " + ChatColor.RESET + "Player-bane blade created in " + UHCUtils.secsToFormatString(timeTo));
+                    UHCUtils.broadcastChatMessage(ChatColor.RED.toString() + ChatColor.BOLD + "[Alert] " + ChatColor.RESET + "Player Slayer created in " + UHCUtils.secsToFormatString(timeTo));
                 }
-                UHCUtils.broadcastSoundandTitle(Main.getInstance().getGameInstance(), "minecraft:block.note_block.chime", (float) (0.5 + (10 - timeTo) / 40), 1.18F, String.valueOf(timeTo), ChatColor.RED + "Player-bane summoned in", 0, 80, 40);
+                UHCUtils.broadcastSoundandTitle(Main.getInstance().getGameInstance(), "minecraft:block.note_block.chime", (float) (0.5 + (10 - timeTo) / 40), 1.18F, String.valueOf(timeTo), ChatColor.RED + "Player Slayer summoned in", 0, 80, 40);
             } else {
-                UHCUtils.broadcastMessageWithSound(ChatColor.YELLOW.toString() + ChatColor.BOLD + "[Warning] " + ChatColor.RESET + "Player-bane blade created in " + UHCUtils.secsToFormatString(timeTo), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 0.4F);
+                UHCUtils.broadcastMessageWithSound(ChatColor.YELLOW.toString() + ChatColor.BOLD + "[Warning] " + ChatColor.RESET + "Player Slayer blade created in " + UHCUtils.secsToFormatString(timeTo), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 0.4F);
             }
         }
     }
