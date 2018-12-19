@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.utils;
 
+import lombok.Getter;
 import lombok.Setter;
 import usa.cactuspuppy.uhc_automation.Main;
 
@@ -13,7 +14,7 @@ import java.util.logging.Level;
 public final class Logger {
     @Setter private static boolean printStackTraces = false;
     @Setter private static Level level = Level.INFO;
-    @Setter private static boolean debug = false;
+    @Getter @Setter private static boolean debug = false;
     @Setter private static boolean useStdOut = true;
 
     public enum Level {
