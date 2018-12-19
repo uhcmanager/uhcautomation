@@ -37,8 +37,8 @@ public final class Logger {
 
     /**
      * Relay message to appropriate output channel
-     * @param msg
-     * @param lvl
+     * @param msg message to relay
+     * @param lvl to relay at
      */
     private static void relayMessage(String msg, Level lvl) {
         if (useStdOut || Main.getInstance() == null) {
