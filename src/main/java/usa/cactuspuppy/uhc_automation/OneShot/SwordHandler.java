@@ -8,6 +8,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -27,6 +29,7 @@ public class SwordHandler implements Listener {
             ChatColor.AQUA + "My target had best flee from you, my friend",
             ChatColor.AQUA + "For with a single blow from me, their life I shall end",
             ChatColor.BLUE.toString() + ChatColor.WHITE.toString() + ChatColor.BLUE};
+    private Block chest;
 
     public SwordHandler() {
         instance = this;
@@ -35,12 +38,25 @@ public class SwordHandler implements Listener {
     public Location spawnPlayerKiller(GameInstance gameInstance) {
         World world = gameInstance.getWorld();
         Random random = new Random();
-        int x = random.nextInt(gameInstance.getFinalSize() - 1) - (gameInstance.getFinalSize() / 2);
-        int z = random.nextInt(gameInstance.getFinalSize() - 1) - (gameInstance.getFinalSize() / 2);
+        int bound;
+        if (gameInstance.getFinalSize() <= 1) {
+            bound = 1;
+        } else {
+            bound = (gameInstance.getFinalSize() + 1) / 2;
+        }
+        int x = random.nextInt(bound);
+        int z = random.nextInt(bound);
         int y = world.getHighestBlockYAt(x, z) + 1;
+        if (y < 2) y = 2;
         Location location = new Location(world, x, y, z);
         Block block = world.getBlockAt(location);
         block.setType(Material.CHEST);
+        world.getBlockAt(x, y - 1, z).setType(Material.BEACON);
+        for (int x1 = x - 1; x1 <= x + 1; x1++) {
+            for (int z1 = z - 1; z1 <= z + 1; z1++) {
+                world.getBlockAt(x1, y - 2, z1).setType(Material.IRON_BLOCK);
+            }
+        }
         if (!(block.getType().equals(Material.CHEST))) {
             Main.getInstance().getLogger().warning("Could not summon player-killer chest.");
             return null;
@@ -48,6 +64,7 @@ public class SwordHandler implements Listener {
         Chest chest = (Chest) block.getState();
         chest.getBlockInventory().addItem(createPlayerKiller());
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
+        this.chest = block;
         return location;
     }
 
@@ -56,7 +73,7 @@ public class SwordHandler implements Listener {
         if (!(e.getDamager() instanceof Player) || !(e.getEntity() instanceof Player)) return;
         Player attacker = (Player) e.getDamager();
         Player target = (Player) e.getEntity();
-        if (isNotPlayerKiller(attacker.getInventory().getItemInMainHand())) return;
+        if (!isPlayerKiller(attacker.getInventory().getItemInMainHand())) return;
         if (isNotTarget(target) && !Main.getInstance().getConfig().getBoolean("one-shot.other-damage")) {
             e.setCancelled(true);
             return;
@@ -68,10 +85,19 @@ public class SwordHandler implements Listener {
     @EventHandler
     public void inventoryHandler(InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
-        if (isNotTarget(p) && !onTargetTeam(p)) return;
-        ItemStack itemStack = e.getCurrentItem();
-        if (isNotPlayerKiller(itemStack)) return;
-        e.setCancelled(true);
+        ItemStack i = e.getCurrentItem();
+        if (isNotTarget(p) && !onTargetTeam(p)) {
+            if (isPlayerKiller(i)) {
+                //TODO: Deactivate beacon
+                World world = chest.getWorld();
+                int x = chest.getX();
+                int y = chest.getY() - 2;
+                int z = chest.getZ();
+                world.getBlockAt(x, y, z).setType(Material.OBSIDIAN);
+            }
+            return;
+        }
+        if (isPlayerKiller(i)) e.setCancelled(true);
     }
 
     @EventHandler
@@ -80,8 +106,18 @@ public class SwordHandler implements Listener {
         Player p = (Player) e.getEntity();
         if (isNotTarget(p) && !onTargetTeam(p)) return;
         ItemStack itemStack = e.getItem().getItemStack();
-        if (isNotPlayerKiller(itemStack)) return;
+        if (!isPlayerKiller(itemStack)) return;
         e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void blockBreak(BlockBreakEvent e) {
+        if (isSpawnedStructure(e.getBlock())) e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void blockBurn(BlockIgniteEvent e) {
+        if (isSpawnedStructure(e.getBlock())) e.setCancelled(true);
     }
 
     private boolean isNotTarget(Player p) {
@@ -124,14 +160,23 @@ public class SwordHandler implements Listener {
         return rv;
     }
 
-    private boolean isNotPlayerKiller(ItemStack item) {
-        if (item == null) return true;
-        if (item.getType() != Material.DIAMOND_SWORD) return true;
+    private boolean isPlayerKiller(ItemStack item) {
+        if (item == null) return false;
+        if (item.getType() != Material.DIAMOND_SWORD) return false;
         List<String> itemLore = item.getItemMeta().getLore();
         for (String lorette : lore) {
             if (!itemLore.contains(lorette)) {
-                return true;
+                return false;
             }
+        }
+        return true;
+    }
+
+    private boolean isSpawnedStructure(Block block) {
+        if (block.getY() == chest.getY() || block.getY() == chest.getY() - 1) {
+            return block.getX() == chest.getX() && block.getZ() == chest.getZ();
+        } else if (block.getY() == chest.getY() - 2) {
+            return Math.abs(block.getX() - chest.getX()) <= 1 && Math.abs(block.getZ() - chest.getZ()) <= 1;
         }
         return false;
     }

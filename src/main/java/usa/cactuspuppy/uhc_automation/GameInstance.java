@@ -48,7 +48,7 @@ public class GameInstance {
     private int loadChunksCDID;
     private int teamsRemaining;
 
-    @Getter private static final boolean DEBUG = false;
+    @Getter private static final boolean DEBUG = true;
 
     public GameInstance(Main p) {
         main = p;
@@ -121,7 +121,7 @@ public class GameInstance {
         world.setTime(0L);
         world.setStorm(false);
         world.setPVP(false);
-        world.getWorldBorder().setCenter(0D, 0D);
+        world.getWorldBorder().setCenter(0.5D, 0.5D);
         world.getWorldBorder().setSize(initSize);
         world.setGameRule(GameRule.NATURAL_REGENERATION, !uhcMode);
         if (Main.getInstance().getConfig().getBoolean("extended-world-detection") && !Main.getInstance().getConfig().getBoolean("nether-end-exclusion", true)) {
