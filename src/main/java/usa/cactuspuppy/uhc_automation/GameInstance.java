@@ -15,6 +15,7 @@ import usa.cactuspuppy.uhc_automation.Commands.CommandSurface;
 import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
 import usa.cactuspuppy.uhc_automation.Listeners.PlayerMoveListener;
 import usa.cactuspuppy.uhc_automation.OneShot.DelayTimer;
+import usa.cactuspuppy.uhc_automation.OneShot.SwordHandler;
 import usa.cactuspuppy.uhc_automation.Tasks.*;
 
 import java.text.SimpleDateFormat;
@@ -237,6 +238,7 @@ public class GameInstance {
     public void stop() {
         (new RestartTasks()).schedule();
         infoAnnouncer.clearBoard();
+        SwordHandler.getInstance()
         long stopT = System.currentTimeMillis();
         long timeElapsed;
         if (startT == 0) {

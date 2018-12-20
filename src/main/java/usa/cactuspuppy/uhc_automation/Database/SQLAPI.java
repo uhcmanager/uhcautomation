@@ -36,7 +36,7 @@ public class SQLAPI {
                 Main.getInstance().getLogger().warning("Could not get connection to database from connection info! Please check your config.yml.");
                 throw new ConnectException();
             }
-            PreparedStatement statement = connection.get().prepareStatement("INSERT INTO uhcinfo_mode VALUES ('" + u.toString() + "', '" + tdm.name() +"') ON DUPLICATE KEY UPDATE Mode = '" + tdm.name() + "';");
+            PreparedStatement statement = connection.get().prepareStatement("REPLACE INTO uhcinfo_mode VALUES ('" + u.toString() + "', '" + tdm.name() +"')");
             statement.execute();
             statement.close();
             connection.get().close();
@@ -63,6 +63,7 @@ public class SQLAPI {
             while (result.next()) {
                 rv.put(UUID.fromString(result.getString("UniqueID")), InfoDisplayMode.fromString(result.getString("Mode")));
             }
+            connection.get().close();
             return rv;
         } catch (SQLException | ConnectException e) {
             Main.getInstance().getLogger().severe("SQLAPI Error: Could not get player timemodes from timetable.");

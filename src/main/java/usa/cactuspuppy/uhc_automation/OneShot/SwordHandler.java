@@ -180,4 +180,18 @@ public class SwordHandler implements Listener {
         }
         return false;
     }
+
+    public void removeSpawnedStructure() {
+        for (int y = chest.getY() - 2; y <= chest.getY(); y++) {
+            if (y == chest.getY() - 2) {
+                for (int x = chest.getX() - 1; x <= chest.getX() + 1; x++) {
+                    for (int z = chest.getZ() - 1; z <= chest.getZ() + 1; z++) {
+
+                    }
+                }
+            } else {
+                chest.getWorld().getBlockAt(chest.getX(), y, chest.getZ()).setType(Material.AIR);
+            }
+        }
+    }
 }
