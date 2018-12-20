@@ -49,7 +49,7 @@ public class GameInstance {
     private int loadChunksCDID;
     private int teamsRemaining;
 
-    @Getter private static final boolean DEBUG = true;
+    @Getter private static final boolean DEBUG = false;
 
     public GameInstance(Main p) {
         main = p;
