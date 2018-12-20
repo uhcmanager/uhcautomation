@@ -26,7 +26,7 @@ import java.io.*;
 import java.net.ConnectException;
 import java.util.logging.Level;
 
-@Plugin(name = "UHC_Automation", version = "1.8")
+@Plugin(name = "UHC_Automation", version = "1.8.1")
 @Description("Automates the process of running a UHC")
 @Author("CactusPuppy")
 @LogPrefix("UHC")
