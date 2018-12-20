@@ -238,7 +238,7 @@ public class GameInstance {
     public void stop() {
         (new RestartTasks()).schedule();
         infoAnnouncer.clearBoard();
-        SwordHandler.getInstance()
+        SwordHandler.getInstance().removeSpawnedStructure();
         long stopT = System.currentTimeMillis();
         long timeElapsed;
         if (startT == 0) {

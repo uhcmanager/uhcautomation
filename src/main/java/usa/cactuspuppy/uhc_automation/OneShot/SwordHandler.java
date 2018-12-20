@@ -186,7 +186,7 @@ public class SwordHandler implements Listener {
             if (y == chest.getY() - 2) {
                 for (int x = chest.getX() - 1; x <= chest.getX() + 1; x++) {
                     for (int z = chest.getZ() - 1; z <= chest.getZ() + 1; z++) {
-
+                        chest.getWorld().getBlockAt(x, y, z).setType(Material.AIR);
                     }
                 }
             } else {
