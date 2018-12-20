@@ -79,24 +79,28 @@ public class Main extends JavaPlugin {
                 getLogger().info("config.yml not found, creating...");
 
                 Reader configReader = getTextResource("config.yml");
-                BufferedReader configBuffR = new BufferedReader(configReader);
-
-                FileWriter configWriter = new FileWriter(config.getPath());
-                BufferedWriter configBuffW = new BufferedWriter(configWriter);
-
-                String line;
-                while ((line = configBuffR.readLine()) != null) {
-                    configBuffW.write(line);
-                    configBuffW.newLine();
-                }
-
-                configBuffW.close();
+                writeReaderToFile(config, configReader);
             } else {
                 getLogger().info("Loading config.yml...");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void writeReaderToFile(File config, Reader configReader) throws IOException {
+        BufferedReader configBuffR = new BufferedReader(configReader);
+
+        FileWriter configWriter = new FileWriter(config.getPath());
+        BufferedWriter configBuffW = new BufferedWriter(configWriter);
+
+        String line;
+        while ((line = configBuffR.readLine()) != null) {
+            configBuffW.write(line);
+            configBuffW.newLine();
+        }
+
+        configBuffW.close();
     }
 
     void createRules() {
@@ -113,18 +117,7 @@ public class Main extends JavaPlugin {
                 getLogger().info("rules.txt not found, creating...");
 
                 Reader jarRulesReader = getTextResource("rules.txt");
-                BufferedReader jarRulesBuffR = new BufferedReader(jarRulesReader);
-
-                FileWriter rulesWriter = new FileWriter(rules.getPath());
-                BufferedWriter rulesBuffW = new BufferedWriter(rulesWriter);
-
-                String line;
-                while ((line = jarRulesBuffR.readLine()) != null) {
-                    rulesBuffW.write(line);
-                    rulesBuffW.newLine();
-                }
-
-                rulesBuffW.close();
+                writeReaderToFile(rules, jarRulesReader);
             } else {
                 getLogger().info("Loading rules.txt...");
             }
@@ -141,14 +134,8 @@ public class Main extends JavaPlugin {
         createConnectionInfo();
         new SQLHandler(connectionInfo);
         new SQLAPI();
-        try {
-            SQLAPI.getInstance().createUHCTimeTable();
-            InfoModeCache.getInstance().addAllToCache(SQLAPI.getInstance().getPlayerPrefs());
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), SQLRepeating::start, 1L);
-        } catch (ConnectException e) {
-            getLogger().warning("Database integration failed, not attempting reconnect.");
-            connectionInfo = null;
-        }
+        InfoModeCache.getInstance().addAllToCache(SQLAPI.getInstance().getPlayerPrefs());
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), SQLRepeating::start, 1L);
     }
 
     private void registerCommands() {

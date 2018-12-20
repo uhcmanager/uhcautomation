@@ -13,7 +13,7 @@ import java.util.Optional;
 public class SQLHandler {
     @Getter private static SQLHandler instance;
 
-    @Getter @Setter private ConnectionInfo connInfo;
+    @Getter private ConnectionInfo connInfo;
     private String baseConnectionURL;
     private boolean sqlLite = false;
 
