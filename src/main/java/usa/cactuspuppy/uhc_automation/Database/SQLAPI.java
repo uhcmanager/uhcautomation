@@ -26,64 +26,17 @@ public class SQLAPI {
         return sqlapi;
     }
 
-    public void createUHCTimeTable() throws ConnectException {
-        try {
-            if (noUHCTimeTable()) {
-                Bukkit.getLogger().info("uhcinfo_mode table does not exist, creating...");
-                Optional<Connection> connection = ConnectionHandler.getInstance().getConnection();
-                if (!connection.isPresent()) {
-                    Main.getInstance().getLogger().warning("Could not get connection to database from connection info! Please check your config.yml.");
-                    return;
-                }
-                PreparedStatement statement = connection.get().prepareStatement("CREATE TABLE uhcinfo_mode (UniqueID VARCHAR(255) NOT NULL, Mode TINYTEXT NOT NULL, Primary Key (UniqueID));");
-                statement.execute();
-                statement.close();
-                connection.get().close();
-            } else {
-                Main.getInstance().getLogger().info("uhcinfo_mode table exists, using that...");
-            }
-        } catch (SQLException e) {
-            Bukkit.getLogger().severe("SQLAPI Error: Could not create uhcinfo_mode table.");
-            e.printStackTrace();
-        } catch (ConnectException e) {
-            Bukkit.getLogger().warning("Could not establish connection to database! Check your config.yml");
-            throw new ConnectException();
-        }
-    }
-
-    public boolean noUHCTimeTable() throws ConnectException {
-        try {
-            Optional<Connection> connection = ConnectionHandler.getInstance().getConnection();
-            if (!connection.isPresent()) {
-                Main.getInstance().getLogger().warning("Could not get connection to database from connection info! Please check your config.yml.");
-                throw new ConnectException();
-            }
-            PreparedStatement statement = connection.get().prepareStatement("SHOW TABLES LIKE 'uhcinfo_mode'");
-            ResultSet resultSet = statement.executeQuery();
-            boolean isTable = !resultSet.next();
-            statement.close();
-            connection.get().close();
-            return isTable;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new ConnectException();
-        }
-    }
-
     private void storePlayerPref(UUID u, InfoDisplayMode tdm) {
         try {
-            if (noUHCTimeTable()) {
-                createUHCTimeTable();
-            }
             if (tdm == null) {
                 tdm = InfoDisplayMode.SCOREBOARD;
             }
-            Optional<Connection> connection = ConnectionHandler.getInstance().getConnection();
+            Optional<Connection> connection = SQLHandler.getInstance().getConnection();
             if (!connection.isPresent()) {
                 Main.getInstance().getLogger().warning("Could not get connection to database from connection info! Please check your config.yml.");
                 throw new ConnectException();
             }
-            PreparedStatement statement = connection.get().prepareStatement("INSERT INTO uhcinfo_mode VALUES ('" + u.toString() + "', '" + tdm.name() +"') ON DUPLICATE KEY UPDATE Mode = '" + tdm.name() + "';");
+            PreparedStatement statement = connection.get().prepareStatement("REPLACE INTO uhcinfo_mode VALUES ('" + u.toString() + "', '" + tdm.name() +"')");
             statement.execute();
             statement.close();
             connection.get().close();
@@ -102,10 +55,7 @@ public class SQLAPI {
     public Map<UUID, InfoDisplayMode> getPlayerPrefs() {
         try {
             Map<UUID, InfoDisplayMode> rv = new HashMap<>();
-            if (noUHCTimeTable()) {
-                return rv;
-            }
-            Optional<Connection> connection = ConnectionHandler.getInstance().getConnection();
+            Optional<Connection> connection = SQLHandler.getInstance().getConnection();
             if (!connection.isPresent()) {
                 throw new ConnectException();
             }
@@ -113,6 +63,7 @@ public class SQLAPI {
             while (result.next()) {
                 rv.put(UUID.fromString(result.getString("UniqueID")), InfoDisplayMode.fromString(result.getString("Mode")));
             }
+            connection.get().close();
             return rv;
         } catch (SQLException | ConnectException e) {
             Main.getInstance().getLogger().severe("SQLAPI Error: Could not get player timemodes from timetable.");
