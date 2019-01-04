@@ -1,9 +1,9 @@
 package usa.cactuspuppy.uhc_automation.event;
 
-import usa.cactuspuppy.uhc_automation.event.events.game.GameStartEvent;
-import usa.cactuspuppy.uhc_automation.event.events.player.PlayerDeathEvent;
-import usa.cactuspuppy.uhc_automation.event.events.player.PlayerJoinEvent;
-import usa.cactuspuppy.uhc_automation.event.events.player.PlayerLeaveEvent;
+import usa.cactuspuppy.uhc_automation.event.game.GameStartEvent;
+import usa.cactuspuppy.uhc_automation.event.game.player.PlayerDeathEvent;
+import usa.cactuspuppy.uhc_automation.event.game.player.PlayerJoinEvent;
+import usa.cactuspuppy.uhc_automation.event.game.player.PlayerLeaveEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +14,12 @@ public class EventDistributor {
 
     public static void addListener(EventListener e) {
         listeners.add(e);
+    }
+
+    public static void onEnable() {
+        for (EventListener l : listeners) {
+            l.onEnable();
+        }
     }
 
     public static void start(GameStartEvent e) {

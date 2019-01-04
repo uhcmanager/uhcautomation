@@ -1,4 +1,4 @@
-package usa.cactuspuppy.uhc_automation.event.events.player;
+package usa.cactuspuppy.uhc_automation.event.game.player;
 
 import lombok.Getter;
 import org.bukkit.entity.Player;

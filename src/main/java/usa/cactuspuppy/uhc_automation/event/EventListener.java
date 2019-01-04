@@ -1,15 +1,18 @@
 package usa.cactuspuppy.uhc_automation.event;
 
-import usa.cactuspuppy.uhc_automation.event.events.game.GameStartEvent;
-import usa.cactuspuppy.uhc_automation.event.events.player.PlayerDeathEvent;
-import usa.cactuspuppy.uhc_automation.event.events.player.PlayerJoinEvent;
-import usa.cactuspuppy.uhc_automation.event.events.player.PlayerLeaveEvent;
+import usa.cactuspuppy.uhc_automation.event.game.GameStartEvent;
+import usa.cactuspuppy.uhc_automation.event.game.player.PlayerDeathEvent;
+import usa.cactuspuppy.uhc_automation.event.game.player.PlayerJoinEvent;
+import usa.cactuspuppy.uhc_automation.event.game.player.PlayerLeaveEvent;
 
 public abstract class EventListener {
 
     public EventListener() {
         EventDistributor.addListener(this);
     }
+
+    /** Called when the plugin is enabled */
+    public void onEnable() {}
 
     /**
      * Called when any game starts

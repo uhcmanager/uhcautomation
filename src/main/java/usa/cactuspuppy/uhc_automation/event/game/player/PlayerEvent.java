@@ -1,15 +1,16 @@
-package usa.cactuspuppy.uhc_automation.event.events.player;
+package usa.cactuspuppy.uhc_automation.event.game.player;
 
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import usa.cactuspuppy.uhc_automation.GameInstance;
-import usa.cactuspuppy.uhc_automation.event.events.Event;
+import usa.cactuspuppy.uhc_automation.event.game.GameEvent;
 
 import java.util.UUID;
 
-public abstract class PlayerEvent extends Event {
-    @Getter private UUID uniqueID;
+public abstract class PlayerEvent extends GameEvent {
+    @Getter
+    private UUID uniqueID;
 
     public PlayerEvent(GameInstance gameInstance, UUID u) {
         super(gameInstance);
