@@ -4,6 +4,8 @@ import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class Main extends JavaPlugin {

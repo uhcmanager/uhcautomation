@@ -17,6 +17,7 @@ public final class Logger {
     @Getter @Setter private static boolean debug = false;
     @Setter private static boolean useStdOut = true;
 
+
     public enum Level {
         SEVERE (5),
         WARNING (4),
