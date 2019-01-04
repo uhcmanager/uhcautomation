@@ -22,6 +22,10 @@ public class Main extends JavaPlugin {
         Logger.logInfo(this.getClass(), String.format("UHC Automation startup complete in %1$.2fms (%2$dns).", elapsed / 1000.0, elapsed));
     }
 
+    public void onRestart() {
+        //TODO: restart
+    }
+
     @Override
     public void onDisable() {
 

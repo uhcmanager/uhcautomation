@@ -5,6 +5,6 @@ import lombok.Getter;
 import usa.cactuspuppy.uhc_automation.GameInstance;
 
 @AllArgsConstructor
-public abstract class GameEvent {
+public abstract class Event {
     @Getter private GameInstance gameInstance;
 }

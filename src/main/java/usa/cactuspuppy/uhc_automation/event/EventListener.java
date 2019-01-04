@@ -1,9 +1,12 @@
 package usa.cactuspuppy.uhc_automation.event;
 
-import usa.cactuspuppy.uhc_automation.event.events.GameStartEvent;
-import usa.cactuspuppy.uhc_automation.event.events.PlayerJoinEvent;
+import usa.cactuspuppy.uhc_automation.event.events.game.GameStartEvent;
+import usa.cactuspuppy.uhc_automation.event.events.player.PlayerDeathEvent;
+import usa.cactuspuppy.uhc_automation.event.events.player.PlayerJoinEvent;
+import usa.cactuspuppy.uhc_automation.event.events.player.PlayerLeaveEvent;
 
 public abstract class EventListener {
+
     public EventListener() {
         EventDistributor.addListener(this);
     }
@@ -16,9 +19,9 @@ public abstract class EventListener {
 
     public void onPlayerJoin(PlayerJoinEvent e) {}
 
-    public void onPlayerLeave() {}
+    public void onPlayerLeave(PlayerLeaveEvent e) {}
 
-    public void onPlayerDeath() {}
+    public void onPlayerDeath(PlayerDeathEvent e) {}
 
-    public void onGroup() {}
+    public void onPlayerGroup() {}
 }
