@@ -9,10 +9,6 @@ import java.util.Optional;
 public class Main extends JavaPlugin {
     @Getter private static Main instance;
 
-    public void setUseStdOut(boolean b) {
-        Logger.setUseStdOut(b);
-    }
-
     @Override
     public void onEnable() {
         long start = System.nanoTime();
