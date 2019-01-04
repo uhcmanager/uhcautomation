@@ -12,18 +12,17 @@ import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.LogPrefix;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
-import usa.cactuspuppy.uhc_automation.Commands.CommandHandler;
-import usa.cactuspuppy.uhc_automation.Commands.CommandSurface;
-import usa.cactuspuppy.uhc_automation.Commands.TabCompleteHelper;
+import usa.cactuspuppy.uhc_automation.commands.CommandHandler;
+import usa.cactuspuppy.uhc_automation.commands.CommandSurface;
+import usa.cactuspuppy.uhc_automation.commands.TabCompleteHelper;
 import usa.cactuspuppy.uhc_automation.Database.SQLHandler;
 import usa.cactuspuppy.uhc_automation.Database.ConnectionInfo;
 import usa.cactuspuppy.uhc_automation.Database.SQLAPI;
 import usa.cactuspuppy.uhc_automation.Database.SQLRepeating;
-import usa.cactuspuppy.uhc_automation.Tasks.DelayedPrep;
-import usa.cactuspuppy.uhc_automation.Tasks.RestartTasks;
+import usa.cactuspuppy.uhc_automation.task.DelayedPrep;
+import usa.cactuspuppy.uhc_automation.task.RestartTasks;
 
 import java.io.*;
-import java.net.ConnectException;
 import java.util.logging.Level;
 
 @Plugin(name = "UHC_Automation", version = "1.8.1")

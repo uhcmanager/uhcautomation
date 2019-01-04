@@ -11,8 +11,8 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
-import usa.cactuspuppy.uhc_automation.Tasks.BorderCountdown;
-import usa.cactuspuppy.uhc_automation.Tasks.PVPEnableCountdown;
+import usa.cactuspuppy.uhc_automation.task.BorderCountdown;
+import usa.cactuspuppy.uhc_automation.task.PVPEnableCountdown;
 
 import java.io.*;
 import java.util.*;

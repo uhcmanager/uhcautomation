@@ -11,12 +11,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-import usa.cactuspuppy.uhc_automation.Commands.CommandSurface;
-import usa.cactuspuppy.uhc_automation.Listeners.GameModeChangeListener;
-import usa.cactuspuppy.uhc_automation.Listeners.PlayerMoveListener;
-import usa.cactuspuppy.uhc_automation.OneShot.DelayTimer;
-import usa.cactuspuppy.uhc_automation.OneShot.SwordHandler;
-import usa.cactuspuppy.uhc_automation.Tasks.*;
+import usa.cactuspuppy.uhc_automation.commands.CommandSurface;
+import usa.cactuspuppy.uhc_automation.listeners.GameModeChangeListener;
+import usa.cactuspuppy.uhc_automation.listeners.PlayerMoveListener;
+import usa.cactuspuppy.uhc_automation.oneshot.DelayTimer;
+import usa.cactuspuppy.uhc_automation.oneshot.SwordHandler;
+import usa.cactuspuppy.uhc_automation.task.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
