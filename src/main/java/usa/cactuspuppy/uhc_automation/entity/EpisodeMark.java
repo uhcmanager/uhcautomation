@@ -38,7 +38,7 @@ public class EpisodeMark extends Entity {
         for (int i = 0; i < quantities.size() && i < units.size(); i++) {
             long result = safeAdd(secsElapsed, units.get(i).toSeconds(quantities.get(i)));
             if (result == Long.MAX_VALUE) {
-                Logger.logWarning(this.getClass(), "Overflow while calculating secsElapsed", Optional.empty());
+                Logger.logWarning(this.getClass(), "Overflow while calculating secsElapsed");
                 return;
             }
             secsElapsed = result;

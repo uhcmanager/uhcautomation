@@ -34,7 +34,7 @@ public final class MojangAPIHook {
                     Logger.logWarning(MojangAPIHook.class, "Bad response code while querying Mojang API.\n" +
                             "Code: " + responseCode + "\n" +
                             "Message: " + responseMessage + "\n" +
-                            "Queried Name: " + username, Optional.empty());
+                            "Queried Name: " + username);
                     return null;
                 }
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
@@ -49,11 +49,11 @@ public final class MojangAPIHook {
                 uuidString = uuidString.replaceAll("(.{8})(.{4})(.{4})(.{4})(.+)", "$1-$2-$3-$4-$5");
                 return UUID.fromString(uuidString);
             } catch (MalformedURLException e) {
-                Logger.logWarning(MojangAPIHook.class, "API URL invalid!", Optional.of(e));
+                Logger.logWarning(MojangAPIHook.class, "API URL invalid!", e);
             } catch (IOException e) {
-                Logger.logWarning(MojangAPIHook.class, "Issue retrieving JSON payload", Optional.of(e));
+                Logger.logWarning(MojangAPIHook.class, "Issue retrieving JSON payload", e);
             } catch (ParseException e) {
-                Logger.logWarning(MojangAPIHook.class, "Issue parsing JSON payload", Optional.of(e));
+                Logger.logWarning(MojangAPIHook.class, "Issue parsing JSON payload", e);
             }
             return null;
         }

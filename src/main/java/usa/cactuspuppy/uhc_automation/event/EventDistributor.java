@@ -40,14 +40,14 @@ public class EventDistributor {
                     try {
                         method.invoke(l, e);
                     } catch (IllegalAccessException | InvocationTargetException e1) {
-                        Logger.logWarning(EventDistributor.class, "Could not pass " + e.getClass().getSimpleName() + " to " + l.getClass().getName(), Optional.of(e1));
+                        Logger.logWarning(EventDistributor.class, "Could not pass " + e.getClass().getSimpleName() + " to " + l.getClass().getName(), e1);
                     }
                 }
             } catch (NoSuchMethodException e1) {
-                Logger.logWarning(EventDistributor.class, "Could not find corresponding EventListener method: " + methodName, Optional.empty());
+                Logger.logWarning(EventDistributor.class, "Could not find corresponding EventListener method: " + methodName);
             }
         } else {
-            Logger.logWarning(EventDistributor.class, "Could not distribute GameEvent " + e.toString(), Optional.empty());
+            Logger.logWarning(EventDistributor.class, "Could not distribute GameEvent " + e.toString());
         }
     }
 }

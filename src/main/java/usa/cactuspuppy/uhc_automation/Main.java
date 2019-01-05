@@ -18,7 +18,7 @@ public class Main extends JavaPlugin {
         instance = this;
         boolean success = initBase();
         if (!success) {
-            Logger.logError(this.getClass(), "Failure to initiate base plugin", Optional.empty());
+            Logger.logError(this.getClass(), "Failure to initiate base plugin");
             return;
         }
         long elapsed = System.nanoTime() - start;

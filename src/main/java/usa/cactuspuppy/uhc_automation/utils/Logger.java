@@ -53,34 +53,49 @@ public final class Logger {
      * Logs a message at level SEVERE.
      * @param c Class reporting error
      * @param reason Reason for error. If exception thrown, do not repeat info in exception
-     * @param optionalE Optional containing exception, if needed.
+     * @param e Exception if one was thrown, else {@code null}
      */
-    public static void logError(Class c, String reason, Optional<Exception> optionalE) {
+    public static void logError(Class c, String reason, Exception e) {
         if (Level.insufficientLevel(Level.SEVERE, level)) return;
         String message = (debug ? c.getName() : c.getSimpleName()) + " error: " + reason;
-        if (optionalE.isPresent()) {
-            Exception e = optionalE.get();
+        if (e != null) {
             message = message + ". Exception: " + e.getMessage();
         }
         relayMessage(message, Level.SEVERE);
-        if (printStackTraces && optionalE.isPresent()) optionalE.get().printStackTrace();
+        if (printStackTraces && e != null) e.printStackTrace();
+    }
+
+    /**
+     * Logs a message at level SEVERE.
+     * @param c Class reporting error
+     * @param reason Reason for error.
+     */
+    public static void logError(Class c, String reason) {
+        logError(c, reason, null);
     }
 
     /**
      * Logs a message at level WARNING.
      * @param c Class reporting warning
      * @param reason Reason for warning. If exception thrown, do not repeat info in exception
-     * @param optionalE Optional containing exception, if needed.
+     * @param e Exception, if thrown, else {@code null}
      */
-    public static void logWarning(Class c, String reason, Optional<Exception> optionalE) {
+    public static void logWarning(Class c, String reason, Exception e) {
         if (Level.insufficientLevel(Level.WARNING, level)) return;
         String message = (debug ? c.getName() : c.getSimpleName()) + " warning: " + reason;
-        if (optionalE.isPresent()) {
-            Exception e = optionalE.get();
+        if (e != null) {
             message = message + ". Exception: " + e.getMessage();
         }
         relayMessage(message, Level.WARNING);
-        if (printStackTraces && optionalE.isPresent()) optionalE.get().printStackTrace();
+        if (printStackTraces && e != null) e.printStackTrace();
+    }
+    /**
+     * Logs a message at level WARNING.
+     * @param c Class reporting warning
+     * @param reason Reason for warning.
+     */
+    public static void logWarning(Class c, String reason) {
+        logWarning(c, reason, null);
     }
 
     /**
