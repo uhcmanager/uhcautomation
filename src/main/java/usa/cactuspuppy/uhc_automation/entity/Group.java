@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class Group extends UniqueEntity {
     @Getter private Set<UUID> players = new HashSet<>();
-    @Getter @Setter private Team team;
+    @Getter private Team team;
     @Getter @Setter private int num;
 
     public Group(GameInstance gameInstance, UUID... initPlayers) {
@@ -60,6 +60,12 @@ public class Group extends UniqueEntity {
 
     public void removePlayers(UUID... players) {
         this.players.removeAll(Arrays.asList(players));
+    }
+
+    public void setTeam(Team t) {
+        team.removeGroups(this);
+        team = t;
+        team.addGroups(this);
     }
 
     public void delete() {
