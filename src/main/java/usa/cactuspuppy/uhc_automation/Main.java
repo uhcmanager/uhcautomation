@@ -36,6 +36,8 @@ public class Main extends JavaPlugin {
 
     boolean initBase() {
         //TODO: Initiate base plugin
+        //TODO: Set logger in Logger
+        //TODO: Pass enable
         return true;
     }
 }

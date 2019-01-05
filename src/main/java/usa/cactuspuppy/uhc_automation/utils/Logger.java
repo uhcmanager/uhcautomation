@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 
 /**
- * Provides feedback to server terminal. Logs at levels SEVERE, WARNING, INFO, FINE, and FINER
+ * Provides feedback to server terminal. Logs at levels SEVERE, WARNING, INFO, FINE, and FINER<br>
  * No other class should report directly to terminal; instead, report messages to this class first to ensure template consistency.
  */
 public final class Logger {
@@ -57,7 +57,7 @@ public final class Logger {
      */
     public static void logError(Class c, String reason, Optional<Exception> optionalE) {
         if (Level.insufficientLevel(Level.SEVERE, level)) return;
-        String message = "[UHC] " + c.getSimpleName() + " error: " + reason;
+        String message = (debug ? c.getName() : c.getSimpleName()) + " error: " + reason;
         if (optionalE.isPresent()) {
             Exception e = optionalE.get();
             message = message + ". Exception: " + e.getMessage();
@@ -74,7 +74,7 @@ public final class Logger {
      */
     public static void logWarning(Class c, String reason, Optional<Exception> optionalE) {
         if (Level.insufficientLevel(Level.WARNING, level)) return;
-        String message = "[UHC] " + c.getSimpleName() + " warning: " + reason;
+        String message = (debug ? c.getName() : c.getSimpleName()) + " warning: " + reason;
         if (optionalE.isPresent()) {
             Exception e = optionalE.get();
             message = message + ". Exception: " + e.getMessage();
@@ -92,9 +92,9 @@ public final class Logger {
         if (Level.insufficientLevel(Level.INFO, level)) return;
         String message;
         if (debug) {
-            message = "[UHC] " + c.getSimpleName() + ": " + reason;
+            message = c.getName() + ": " + reason;
         } else {
-            message = "[UHC] " + reason;
+            message = reason;
         }
         relayMessage(message, Level.INFO);
     }
@@ -121,9 +121,9 @@ public final class Logger {
         if (Level.insufficientLevel(level, Logger.level)) return;
         String message;
         if (debug) {
-            message = "[UHC] <" + level.name() + " | " + c.getCanonicalName() + "> " + info;
+            message = "<" + level.name() + " | " + c.getCanonicalName() + "> " + info;
         } else {
-            message = "[UHC] " + info;
+            message = info;
         }
         relayMessage(message, level);
     }

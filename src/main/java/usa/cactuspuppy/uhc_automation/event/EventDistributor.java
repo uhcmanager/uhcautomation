@@ -1,9 +1,13 @@
 package usa.cactuspuppy.uhc_automation.event;
 
 import usa.cactuspuppy.uhc_automation.event.game.GameEvent;
+import usa.cactuspuppy.uhc_automation.utils.Logger;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,13 +23,21 @@ public class EventDistributor {
         Class c = e.getClass();
         Matcher m = Pattern.compile("^(\\w+)Event").matcher(c.getName());
         if (m.find()) {
-
-        }
-    }
-
-    public static void onEnable() {
-        for (EventListener l : listeners) {
-            l.onEnable();
+            String methodName = "on" + m.group(1);
+            try {
+                Method method = EventListener.class.getMethod(methodName, c);
+                for (EventListener l : listeners) {
+                    try {
+                        method.invoke(l, e);
+                    } catch (IllegalAccessException | InvocationTargetException e1) {
+                        Logger.logWarning(EventDistributor.class, "Could not pass " + e.getClass().getSimpleName() + " to " + l.getClass().getName(), Optional.of(e1));
+                    }
+                }
+            } catch (NoSuchMethodException e1) {
+                Logger.logWarning(EventDistributor.class, "Could not find corresponding EventListener method: " + methodName, Optional.empty());
+            }
+        } else {
+            Logger.logWarning(EventDistributor.class, "Could not distribute GameEvent " + e.toString(), Optional.empty());
         }
     }
 }
