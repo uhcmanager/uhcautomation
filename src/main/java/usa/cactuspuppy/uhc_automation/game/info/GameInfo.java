@@ -2,6 +2,7 @@ package usa.cactuspuppy.uhc_automation.game.info;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.WorldBorder;
 
 import java.io.Serializable;
 import java.util.*;
@@ -16,7 +17,7 @@ public class GameInfo implements Serializable {
     /** Display-friendly game name */
     @Setter private String displayName;
     /** Whether the game should include server downtime in time elapsed calculations */
-    @Setter private boolean realTime;
+    @Setter private boolean realTime = false;
     /** Long representing start time via System.currentTimeMillis */
     @Setter private long startTime;
 
@@ -31,7 +32,7 @@ public class GameInfo implements Serializable {
     //PLAY AREA INFO
     /** Delay before border shrinking is initiated, in seconds. */
     @Setter private long shrinkDelay;
-
+    /** Initial radius of play area, in blocks */
     @Setter private int initialSize;
 
     @Setter private int finalSize;

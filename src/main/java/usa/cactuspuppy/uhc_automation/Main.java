@@ -1,6 +1,7 @@
 package usa.cactuspuppy.uhc_automation;
 
 import lombok.Getter;
+import org.bukkit.WorldBorder;
 import org.bukkit.plugin.java.JavaPlugin;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
