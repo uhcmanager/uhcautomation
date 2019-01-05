@@ -55,7 +55,7 @@ public class CommandUnregister extends UHCCommand {
 
                         int responseCode = connection.getResponseCode();
                         if (responseCode != 200) {
-                            sender.sendMessage(ChatColor.DARK_RED + "An error occurred while accessing the Mojang Database! Error code: " + ChatColor.RED + responseCode);
+                            sender.sendMessage(ChatColor.DARK_RED + "An error occurred while accessing the Mojang database! Error code: " + ChatColor.RED + responseCode);
                             Main.getInstance().getLogger().warning("Error while accessing Mojang database. Queried Name: " + name + " - Response Code: " + responseCode);
                         }
                         try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
