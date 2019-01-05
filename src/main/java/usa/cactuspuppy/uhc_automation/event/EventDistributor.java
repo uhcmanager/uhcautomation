@@ -16,12 +16,22 @@ public class EventDistributor {
     private static List<EventListener> listeners = new ArrayList<>();
 
     public static void addListener(EventListener e) {
-        listeners.add(e);
+        if (!listeners.contains(e)) {
+            listeners.add(e);
+        }
+    }
+
+    public static void removeListener(EventListener e) {
+        listeners.remove(e);
+    }
+
+    public static void removeAllListeners() {
+        listeners.clear();
     }
 
     public static void distributeEvent(GameEvent e) {
         Class c = e.getClass();
-        Matcher m = Pattern.compile("^(\\w+)Event").matcher(c.getName());
+        Matcher m = Pattern.compile("^(\\w+)Event").matcher(c.getSimpleName());
         if (m.find()) {
             String methodName = "on" + m.group(1);
             try {
