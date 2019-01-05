@@ -2,25 +2,59 @@ package usa.cactuspuppy.uhc_automation.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sun.rmi.runtime.Log;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 @NoArgsConstructor
 public class EntityIDManager {
     private static final int MAX_GEN_ATTEMPTS = 10000;
-    private Random rng = new Random();
-    @Getter private Map<Long, UniqueEntity> uniqueEntityMap = new HashMap<>();
+    private static Map<Long, UniqueEntity> uniqueEntityMap = new HashMap<>();
 
-    public EntityIDManager(Random random) {
-        rng = random;
-    }
+   public static UniqueEntity getEntity(long id) {
+       if (id == -1) return null;
+       return uniqueEntityMap.get(id);
+   }
 
-    public long getNewId() {
-        for (int i = 0; i < MAX_GEN_ATTEMPTS; i++) {
+   public static void trackEntity(long id, UniqueEntity e) {
+       if (id == -1) return;
+       uniqueEntityMap.put(id, e);
+   }
 
-        }
-        Logger.logWarning(this.getClass(), "Could not generate new unique ID");
-        return -1;
-    }
+   public static void untrackEntity(long id) {
+       uniqueEntityMap.remove(id);
+   }
+
+   public static void untrackAll() {
+       uniqueEntityMap.clear();
+   }
+
+   public static long getNewID() {
+       return new IDGenerator().get();
+   }
+
+   @NoArgsConstructor
+   public static class IDGenerator {
+       private Random rng = new Random();
+
+       public IDGenerator(Random random) {
+           rng = random;
+       }
+
+       /**
+        * Gets a new unique ID
+        * @return Long ID which is not currently being tracked.
+        */
+       public long get() {
+           for (int i = 0; i < MAX_GEN_ATTEMPTS; i++) {
+               long candidate = rng.nextLong();
+               if (!uniqueEntityMap.keySet().contains(candidate)) return candidate;
+           }
+           Logger.logWarning(this.getClass(), "Exceeded max generation attempts while generating new ID");
+           return -1;
+       }
+   }
 }

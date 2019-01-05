@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class Group extends Entity {
+public class Group extends UniqueEntity {
     @Getter private Set<UUID> players = new HashSet<>();
 
     public Group(GameInstance gameInstance, UUID... initPlayers) {

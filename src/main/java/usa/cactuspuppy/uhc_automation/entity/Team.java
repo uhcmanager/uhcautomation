@@ -6,7 +6,7 @@ import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Team extends Entity {
+public class Team extends UniqueEntity {
     @Getter private List<Group> groups;
 
     public Team(GameInstance gameInstance) {
