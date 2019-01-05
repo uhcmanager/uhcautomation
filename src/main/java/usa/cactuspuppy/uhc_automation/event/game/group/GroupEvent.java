@@ -1,7 +1,7 @@
 package usa.cactuspuppy.uhc_automation.event.game.group;
 
 import lombok.Getter;
-import usa.cactuspuppy.uhc_automation.entity.Group;
+import usa.cactuspuppy.uhc_automation.entity.unique.Group;
 import usa.cactuspuppy.uhc_automation.event.game.GameEvent;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 

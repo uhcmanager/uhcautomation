@@ -2,9 +2,7 @@ package usa.cactuspuppy.uhc_automation.event;
 
 import usa.cactuspuppy.uhc_automation.event.game.border.BorderBeginShrinkEvent;
 import usa.cactuspuppy.uhc_automation.event.game.border.BorderSpeedUpEvent;
-import usa.cactuspuppy.uhc_automation.event.game.group.GroupCreateEvent;
-import usa.cactuspuppy.uhc_automation.event.game.group.GroupDeleteEvent;
-import usa.cactuspuppy.uhc_automation.event.game.group.GroupMergeEvent;
+import usa.cactuspuppy.uhc_automation.event.game.group.*;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamCreateEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamDeleteEvent;
 import usa.cactuspuppy.uhc_automation.event.game.update.EpisodeMarkEvent;
@@ -36,7 +34,9 @@ public abstract class EventListener {
 
     public void onGroupCreate(GroupCreateEvent e) {}
 
-    public void onGroupMerge(GroupMergeEvent e) {}
+    public void onGroupAddPlayer(GroupAddPlayerEvent e) {}
+
+    public void onGroupRemovePlayer(GroupRemovePlayerEvent e) {}
 
     public void onGroupDelete(GroupDeleteEvent e) {}
 

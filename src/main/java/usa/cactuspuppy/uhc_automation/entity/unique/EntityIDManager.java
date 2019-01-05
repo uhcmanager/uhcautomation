@@ -1,8 +1,6 @@
-package usa.cactuspuppy.uhc_automation.entity;
+package usa.cactuspuppy.uhc_automation.entity.unique;
 
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sun.rmi.runtime.Log;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.util.HashMap;
@@ -34,6 +32,10 @@ public class EntityIDManager {
 
    public static long getNewID() {
        return new IDGenerator().get();
+   }
+
+   public static long getNewID(IDGenerator generator) {
+       return generator.get();
    }
 
    @NoArgsConstructor

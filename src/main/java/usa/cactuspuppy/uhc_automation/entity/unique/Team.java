@@ -1,4 +1,4 @@
-package usa.cactuspuppy.uhc_automation.entity;
+package usa.cactuspuppy.uhc_automation.entity.unique;
 
 import lombok.Getter;
 import usa.cactuspuppy.uhc_automation.event.EventDistributor;
@@ -7,6 +7,7 @@ import usa.cactuspuppy.uhc_automation.event.game.team.TeamDeleteEvent;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 import java.util.*;
+import java.util.function.BinaryOperator;
 
 public class Team extends UniqueEntity {
     private static Map<Integer, Team> teamNumMap = new LinkedHashMap<>();
@@ -33,6 +34,17 @@ public class Team extends UniqueEntity {
         EventDistributor.distributeEvent(new TeamCreateEvent(getGameInstance(), this));
     }
 
+    public Set<UUID> getPlayers() {
+        return groups.stream().map(Group::getPlayers).reduce((uuids, uuids2) -> {
+            uuids.addAll(uuids2);
+            return uuids;
+        }).orElse(new HashSet<>());
+    }
+
+    public int size() {
+        return getPlayers().size();
+    }
+
     public void addGroups(Group... groups) {
         int index = this.groups.size() + 1;
         for (Group g : groups) {
@@ -53,7 +65,7 @@ public class Team extends UniqueEntity {
 
     public void delete() {
         UniqueEntity.removeEntity(this);
-        teamNumMap.remove(this.teamNumber);
+        teamNumMap.remove(this.teamNumber, this);
         nextTeamNum = this.teamNumber;
         groups.forEach(Group::delete);
         EventDistributor.distributeEvent(new TeamDeleteEvent(getGameInstance(), this));

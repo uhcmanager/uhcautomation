@@ -1,6 +1,7 @@
-package usa.cactuspuppy.uhc_automation.entity;
+package usa.cactuspuppy.uhc_automation.entity.unique;
 
 import lombok.Getter;
+import usa.cactuspuppy.uhc_automation.entity.Entity;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 public abstract class UniqueEntity extends Entity {
