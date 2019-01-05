@@ -21,6 +21,12 @@ public class GameInfo implements Serializable {
     /** Long representing start time via System.currentTimeMillis */
     @Setter private long startTime;
 
+    //TEAM INFO
+    /** Whether the game should consider teams */
+    @Setter private boolean teamMode;
+    /** Whether teams should be split up and slowly group up */
+    @Setter private boolean groupMode;
+
     //WORLD INFO
     /** Name of the main world */
     @Setter private String worldName;
@@ -28,6 +34,10 @@ public class GameInfo implements Serializable {
     private Set<String> otherWorldNames = new HashSet<>();
 
     //EPISODE INFO
+    /** Index of current episode */
+    @Setter private int currEp;
+    /** Episode duration, in seconds */
+    @Setter private int episodeDuration;
 
     //PLAY AREA INFO
     /** Delay before border shrinking is initiated, in seconds. */

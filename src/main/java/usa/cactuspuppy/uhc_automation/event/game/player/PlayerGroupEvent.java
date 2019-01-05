@@ -3,6 +3,7 @@ package usa.cactuspuppy.uhc_automation.event.game.player;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import usa.cactuspuppy.uhc_automation.event.game.player.PlayerEvent;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 import java.util.UUID;

@@ -1,6 +1,6 @@
 package usa.cactuspuppy.uhc_automation.event;
 
-import usa.cactuspuppy.uhc_automation.event.game.GameStartEvent;
+import usa.cactuspuppy.uhc_automation.event.game.update.GameStartEvent;
 import usa.cactuspuppy.uhc_automation.event.game.player.PlayerDeathEvent;
 import usa.cactuspuppy.uhc_automation.event.game.player.PlayerGroupEvent;
 import usa.cactuspuppy.uhc_automation.event.game.player.PlayerJoinEvent;

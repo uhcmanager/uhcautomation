@@ -1,6 +1,7 @@
-package usa.cactuspuppy.uhc_automation.event.game;
+package usa.cactuspuppy.uhc_automation.event.game.update;
 
 import lombok.Getter;
+import usa.cactuspuppy.uhc_automation.event.game.GameEvent;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 public class GameEndEvent extends GameEvent {

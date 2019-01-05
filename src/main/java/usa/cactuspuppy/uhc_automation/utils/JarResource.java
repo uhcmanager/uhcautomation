@@ -15,7 +15,7 @@ public final class JarResource {
      * @param inputStream inputStream to copy
      * @param relativeOutput file path to extract to
      * @param overwrite whether to overwrite the output file if it exists
-     * @return status code for success or failure
+     * @return update code for success or failure
      * -1 - Illegal args
      * 0 - OK/Success
      * 1 - I/O Problem
