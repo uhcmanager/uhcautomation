@@ -1,7 +1,7 @@
 package usa.cactuspuppy.uhc_automation.event.game;
 
 import lombok.Getter;
-import usa.cactuspuppy.uhc_automation.GameInstance;
+import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 public class GameEndEvent extends GameEvent {
     /** Whether the game was prematurely terminated */

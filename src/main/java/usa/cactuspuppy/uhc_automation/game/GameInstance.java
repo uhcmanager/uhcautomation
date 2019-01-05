@@ -1,11 +1,10 @@
-package usa.cactuspuppy.uhc_automation;
+package usa.cactuspuppy.uhc_automation.game;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import usa.cactuspuppy.uhc_automation.info.GameInfo;
+import usa.cactuspuppy.uhc_automation.game.info.GameInfo;
 
 @AllArgsConstructor
 public abstract class GameInstance {
     @Getter private GameInfo gameInfo;
-    @Getter private long gameID;
 }

@@ -2,6 +2,7 @@ package usa.cactuspuppy.uhc_automation.event;
 
 import usa.cactuspuppy.uhc_automation.event.game.GameStartEvent;
 import usa.cactuspuppy.uhc_automation.event.game.player.PlayerDeathEvent;
+import usa.cactuspuppy.uhc_automation.event.game.player.PlayerGroupEvent;
 import usa.cactuspuppy.uhc_automation.event.game.player.PlayerJoinEvent;
 import usa.cactuspuppy.uhc_automation.event.game.player.PlayerLeaveEvent;
 
@@ -26,5 +27,5 @@ public abstract class EventListener {
 
     public void onPlayerDeath(PlayerDeathEvent e) {}
 
-    public void onPlayerGroup() {}
+    public void onPlayerGroup(PlayerGroupEvent e) {}
 }

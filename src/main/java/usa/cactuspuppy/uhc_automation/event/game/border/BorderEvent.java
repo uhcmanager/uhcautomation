@@ -1,7 +1,7 @@
 package usa.cactuspuppy.uhc_automation.event.game.border;
 
 import lombok.Getter;
-import usa.cactuspuppy.uhc_automation.GameInstance;
+import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.event.game.GameEvent;
 
 public abstract class BorderEvent extends GameEvent {
