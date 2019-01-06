@@ -4,8 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Player;
 import usa.cactuspuppy.uhc_automation.event.EventDistributor;
-import usa.cactuspuppy.uhc_automation.event.game.group.GroupCreateEvent;
-import usa.cactuspuppy.uhc_automation.event.game.group.GroupDeleteEvent;
+import usa.cactuspuppy.uhc_automation.event.game.group.*;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 import java.util.Arrays;
@@ -50,18 +49,21 @@ public class Group extends UniqueEntity {
 
     void addPlayers(UUID... players) {
         this.players.addAll(Arrays.asList(players));
+        EventDistributor.distributeEvent(new GroupAddPlayersEvent(getGameInstance(), this, players));
     }
 
     void removePlayers(UUID... players) {
         this.players.removeAll(Arrays.asList(players));
+        EventDistributor.distributeEvent(new GroupRemovePlayersEvent(getGameInstance(), this, players));
     }
 
-    public void removeAllPlayers() { players.clear(); }
+    public void removeAllPlayers() { removePlayers(players.toArray(new UUID[0])); }
 
     public void setTeam(Team t) {
         team.removeGroups(this);
         team = t;
         team.addGroups(this);
+        EventDistributor.distributeEvent(new GroupSetTeamEvent(getGameInstance(), this, team));
     }
 
     public void delete() {

@@ -3,6 +3,7 @@ package usa.cactuspuppy.uhc_automation.event;
 import usa.cactuspuppy.uhc_automation.event.game.border.BorderBeginShrinkEvent;
 import usa.cactuspuppy.uhc_automation.event.game.border.BorderSpeedUpEvent;
 import usa.cactuspuppy.uhc_automation.event.game.group.*;
+import usa.cactuspuppy.uhc_automation.event.game.team.TeamAddGroupsEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamCreateEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamDeleteEvent;
 import usa.cactuspuppy.uhc_automation.event.game.update.EpisodeMarkEvent;
@@ -19,31 +20,39 @@ public abstract class EventListener {
         EventDistributor.addListener(this);
     }
 
-    /** Called when the plugin is enabled */
-    public void onEnable() {}
-
+    //PLAYER
     public void onPlayerJoin(PlayerJoinEvent e) {}
 
     public void onPlayerLeave(PlayerLeaveEvent e) {}
 
     public void onPlayerDeath(PlayerDeathEvent e) {}
 
+    //BORDER
     public void onBorderBeginShrink(BorderBeginShrinkEvent e) {}
 
     public void onBorderSpeedUp(BorderSpeedUpEvent e) {}
 
+    //GROUP
     public void onGroupCreate(GroupCreateEvent e) {}
 
-    public void onGroupAddPlayer(GroupAddPlayerEvent e) {}
+    public void onGroupAddPlayers(GroupAddPlayersEvent e) {}
 
-    public void onGroupRemovePlayer(GroupRemovePlayerEvent e) {}
+    public void onGroupRemovePlayers(GroupRemovePlayersEvent e) {}
+
+    public void onGroupSetTeam(GroupSetTeamEvent e) {}
 
     public void onGroupDelete(GroupDeleteEvent e) {}
 
+    //TEAM
     public void onTeamCreate(TeamCreateEvent e) {}
 
     public void onTeamDelete(TeamDeleteEvent e) {}
 
+    public void onTeamAddGroups(TeamAddGroupsEvent e) {}
+
+    public void
+
+    //UPDATE
     public void onEpisodeMark(EpisodeMarkEvent e) {}
 
     public void onGameStart(GameStartEvent e) {}
