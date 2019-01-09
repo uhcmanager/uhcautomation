@@ -47,12 +47,12 @@ public class Group extends UniqueEntity {
         return new HashSet<>(players);
     }
 
-    void addPlayers(UUID... players) {
+    public void addPlayers(UUID... players) {
         this.players.addAll(Arrays.asList(players));
         EventDistributor.distributeEvent(new GroupAddPlayersEvent(getGameInstance(), this, players));
     }
 
-    void removePlayers(UUID... players) {
+    public void removePlayers(UUID... players) {
         this.players.removeAll(Arrays.asList(players));
         EventDistributor.distributeEvent(new GroupRemovePlayersEvent(getGameInstance(), this, players));
     }

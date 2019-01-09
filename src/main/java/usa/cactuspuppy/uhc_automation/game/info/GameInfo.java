@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.game.info;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.WorldBorder;
@@ -11,7 +12,7 @@ import java.util.*;
 public class GameInfo implements Serializable {
     //BASIC INFO
     /** Unique identifier for this game */
-    private long gameID;
+    @Setter(AccessLevel.MODULE) private long gameID;
     /** Game name */
     @Setter private String name;
     /** Display-friendly game name */

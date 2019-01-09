@@ -6,6 +6,7 @@ import usa.cactuspuppy.uhc_automation.event.game.group.*;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamAddGroupsEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamCreateEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamDeleteEvent;
+import usa.cactuspuppy.uhc_automation.event.game.team.TeamRemoveGroupsEvent;
 import usa.cactuspuppy.uhc_automation.event.game.update.EpisodeMarkEvent;
 import usa.cactuspuppy.uhc_automation.event.game.update.GameEndEvent;
 import usa.cactuspuppy.uhc_automation.event.game.update.GamePauseEvent;
@@ -50,7 +51,7 @@ public abstract class EventListener {
 
     public void onTeamAddGroups(TeamAddGroupsEvent e) {}
 
-    public void
+    public void onTeamRemoveGroups(TeamRemoveGroupsEvent e) {}
 
     //UPDATE
     public void onEpisodeMark(EpisodeMarkEvent e) {}

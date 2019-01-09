@@ -2,12 +2,13 @@ package usa.cactuspuppy.uhc_automation.entity.unique;
 
 import lombok.Getter;
 import usa.cactuspuppy.uhc_automation.event.EventDistributor;
+import usa.cactuspuppy.uhc_automation.event.game.team.TeamAddGroupsEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamCreateEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamDeleteEvent;
+import usa.cactuspuppy.uhc_automation.event.game.team.TeamRemoveGroupsEvent;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 import java.util.*;
-import java.util.function.BinaryOperator;
 
 public class Team extends UniqueEntity {
     private static Map<Integer, Team> teamNumMap = new LinkedHashMap<>();
@@ -52,6 +53,7 @@ public class Team extends UniqueEntity {
             g.setTeam(this);
             g.setNum(index++);
         }
+        EventDistributor.distributeEvent(new TeamAddGroupsEvent(getGameInstance(), this, groups));
     }
 
     public void removeGroups(Group... groups) {
@@ -61,6 +63,7 @@ public class Team extends UniqueEntity {
             if (g.getNum() != index) g.setNum(index);
             index++;
         }
+        EventDistributor.distributeEvent(new TeamRemoveGroupsEvent(getGameInstance(), this, groups));
     }
 
     public void delete() {
