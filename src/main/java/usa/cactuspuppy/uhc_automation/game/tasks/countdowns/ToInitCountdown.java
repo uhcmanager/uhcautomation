@@ -37,12 +37,17 @@ public class ToInitCountdown implements Runnable {
         assignedID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), this, 0, 2L);
     }
 
+    public static boolean isActive(long gameID) {
+        return countdownMap.containsKey(gameID);
+    }
+
     @Override
     public void run() {
         long timeTo = (System.currentTimeMillis() - initGameTime) / 1000;
 
         if (timeTo < 0) {
             instance.init();
+            countdownMap.remove(instance.getGameID());
             Bukkit.getScheduler().cancelTask(assignedID);
             return;
         }
