@@ -10,10 +10,15 @@ import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.LogPrefix;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
+import usa.cactuspuppy.uhc_automation.game.GameInstance;
+import usa.cactuspuppy.uhc_automation.game.GameManager;
+import usa.cactuspuppy.uhc_automation.game.info.GameInfo;
+import usa.cactuspuppy.uhc_automation.game.types.GameType;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 import java.util.Scanner;
 
 @Plugin(name = "UHCAutomation", version = "2.0")
@@ -62,12 +67,35 @@ public class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         //TODO: Save disable time
+        //TODO: Save all active game info
     }
 
     boolean initBase() {
         //TODO: Initiate base plugin
+        //Set logger
         Logger.setOutput(getLogger());
-        //TODO: Set logger in Logger
+        //Re-initiate all saved games
+        File gamesDir = new File(getDataFolder() + Constants.getGamesDir());
+
+        if (!gamesDir.isDirectory() && !gamesDir.mkdirs()) {
+            Logger.logWarning(this.getClass(), "Could not find or create game info saving directory, game loading/saving impossible!");
+        } else  {
+            File[] files = gamesDir.listFiles();
+            if (files == null) return true;
+            for (File f : files) {
+                try {
+                    GameInfo info = (GameInfo) new ObjectInputStream(new FileInputStream(f)).readObject();
+                    Class<?> gameType = Class.forName("usa.cactuspuppy.uhc_automation.game.types" + info.getGameType());
+                    if (gameType.isEnum()) continue;
+                    GameInstance gameInstance = gameType.asSubclass(GameInstance.class).getConstructor(GameInfo.class).newInstance(info);
+                    GameManager.registerGame(gameInstance);
+
+                } catch (IOException | ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                    Logger.logWarning(this.getClass(), "Problem restoring game information from file " + f.getName() + ", deleting it...", e);
+                    if (!f.delete()) Logger.logWarning(this.getClass(), "Unable to remove " + f.getName());
+                }
+            }
+        }
         return true;
     }
 }

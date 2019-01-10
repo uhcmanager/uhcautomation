@@ -1,4 +1,4 @@
-package usa.cactuspuppy.uhc_automation.game;
+package usa.cactuspuppy.uhc_automation.game.types;
 
 import usa.cactuspuppy.uhc_automation.game.info.GameInfo;
 

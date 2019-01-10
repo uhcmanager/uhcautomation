@@ -13,6 +13,8 @@ public class GameInfo implements Serializable {
     //BASIC INFO
     /** Unique identifier for this game */
     @Setter(AccessLevel.MODULE) private long gameID;
+    /** What type of game this is */
+    @Setter(AccessLevel.MODULE) private String gameType;
     /** Game name */
     @Setter private String name;
     /** Display-friendly game name */
