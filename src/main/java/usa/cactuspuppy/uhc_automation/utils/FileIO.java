@@ -1,7 +1,17 @@
 package usa.cactuspuppy.uhc_automation.utils;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.io.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public final class FileIO {
     /**
@@ -41,5 +51,35 @@ public final class FileIO {
         } catch (IOException e) {
             Logger.logWarning(FileIO.class, "Issue saving to " + file.getPath(), e);
         }
+    }
+
+    public static CountdownList getList(String csl) {
+        List<Long> titles = new ArrayList<>();
+        List<Long> others = new ArrayList<>();
+        csl = csl.trim();
+        String[] items = csl.split("\\s*,\\s*");
+        Pattern valid = Pattern.compile("(\\+?)(\\d+)");
+        for (String s : items) {
+            Matcher m = valid.matcher(s);
+            if (!m.matches()) continue;
+            Long value;
+            try {
+                value = Long.valueOf(m.group(2));
+            } catch (NumberFormatException e) {
+                continue;
+            }
+            if (m.group(1).equals("")) others.add(value);
+            else titles.add(value);
+        }
+        titles = titles.stream().sorted().collect(Collectors.toList());
+        others = others.stream().sorted().collect(Collectors.toList());
+        return new CountdownList(titles, others);
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
+    public static class CountdownList {
+        private List<Long> titles;
+        private List<Long> other;
     }
 }
