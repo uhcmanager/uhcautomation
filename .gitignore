@@ -6,3 +6,4 @@ src/test/
 src/temptests/
 dependency-reduced-pom.xml
 *.iml
+bash.exe.stackdump
