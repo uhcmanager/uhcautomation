@@ -10,6 +10,11 @@ import usa.cactuspuppy.uhc_automation.game.info.GameInfo;
 public abstract class GameInstance {
     @Getter private GameInfo gameInfo;
 
+    /** Preps all worlds under the purview of this game for play.
+     * @return whether prep was successful
+      */
+    public boolean prep() { return false; }
+
     /** Returns whether the game was started successfully */
     public boolean start() { return false; }
     /** Returns whether the game was paused successfully */

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import usa.cactuspuppy.uhc_automation.Main;
 
+import java.io.PrintStream;
 import java.util.Optional;
 import java.util.logging.Level;
 
@@ -15,7 +16,7 @@ public final class Logger {
     @Setter private static boolean printStackTraces = false;
     @Setter private static Level level = Level.INFO;
     @Getter @Setter private static boolean debug = false;
-    @Setter private static boolean useStdOut = true;
+    @Setter private static java.util.logging.Logger output = java.util.logging.Logger.getLogger("UHC");
 
 
     public enum Level {
@@ -37,16 +38,12 @@ public final class Logger {
     }
 
     /**
-     * Relay message to appropriate output channel
+     * Relay message to appropriate output logger
      * @param msg message to relay
      * @param lvl to relay at
      */
     private static void relayMessage(String msg, Level lvl) {
-        if (useStdOut || Main.getInstance() == null) {
-            System.out.println(msg);
-        } else {
-            Main.getInstance().getLogger().log(java.util.logging.Level.parse(lvl.name()), msg);
-        }
+        output.log(java.util.logging.Level.parse(lvl.name()), msg);
     }
 
     /**
