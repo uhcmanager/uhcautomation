@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
 import usa.cactuspuppy.uhc_automation.game.games.GameInfo;
+import usa.cactuspuppy.uhc_automation.game.tasks.eventlisteners.PlayerFreezer;
 import usa.cactuspuppy.uhc_automation.utils.FileIO;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
@@ -112,6 +113,8 @@ public class Main extends JavaPlugin {
                 }
             }
         }
+        //Register listeners
+        getServer().getPluginManager().registerEvents(new PlayerFreezer(), this);
         return true;
     }
 }

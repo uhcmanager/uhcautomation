@@ -23,7 +23,7 @@ public class PlayerFreezer implements Listener {
     }
 
     @EventHandler
-    public static void onPlayerMove(PlayerMoveEvent e) {
+    public void onPlayerMove(PlayerMoveEvent e) {
         GameInstance check = GameManager.getPlayerGame(e.getPlayer().getUniqueId());
         if (check == null) return;
         if (!frozenGames.contains(check.getGameID())) return;

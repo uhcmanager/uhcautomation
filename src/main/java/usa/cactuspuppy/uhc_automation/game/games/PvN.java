@@ -1,6 +1,7 @@
 package usa.cactuspuppy.uhc_automation.game.games;
 
 import org.bukkit.Bukkit;
+import usa.cactuspuppy.uhc_automation.game.tasks.eventlisteners.PlayerFreezer;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 public class PvN extends UHC {
@@ -18,6 +19,7 @@ public class PvN extends UHC {
         //TODO: Set player conditions
         //TODO: Spreadplayers
         //TODO: Freeze players
+
         //TODO: Create countdown to start
         return true;
     }
@@ -37,7 +39,7 @@ public class PvN extends UHC {
             announceFailToInit("Play area is too small for required separation distance");
             return false;
         }
-        if (Bukkit.getWorld(getGameInfo().getWorldName()) == null) {
+        if (Bukkit.getWorld(gameInfo.getWorldID()) == null) {
             announceFailToInit("No main world specified");
             return false;
         }
@@ -50,6 +52,7 @@ public class PvN extends UHC {
         long now = System.currentTimeMillis();
         getGameInfo().setStartTime(now);
         //TODO: Unfreeze players
+        PlayerFreezer.unfreezeGame(this);
         //TODO: Broadcast to players to start
         //TODO: Set players to correct gamemode
         //TODO: Set gamerules

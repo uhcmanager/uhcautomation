@@ -34,10 +34,10 @@ public class GameInfo implements Serializable {
     @Setter private boolean respectTeams = true;
 
     //WORLD INFO
-    /** Name of the main world */
-    @Setter private String worldName;
+    /** UUID of the main world */
+    @Setter private UUID worldID;
     /** List of names of other worlds linked to this game */
-    private Set<String> otherWorldNames = new HashSet<>();
+    private Set<UUID> otherWorldIDs = new HashSet<>();
 
     //EPISODE INFO
     /** Index of current episode */
