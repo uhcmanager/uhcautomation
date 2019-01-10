@@ -1,9 +1,8 @@
-package usa.cactuspuppy.uhc_automation.game.info;
+package usa.cactuspuppy.uhc_automation.game.games;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.WorldBorder;
 
 import java.io.Serializable;
 import java.util.*;
@@ -14,7 +13,7 @@ public class GameInfo implements Serializable {
     /** Unique identifier for this game */
     @Setter(AccessLevel.MODULE) private long gameID;
     /** What type of game this is */
-    @Setter(AccessLevel.MODULE) private String gameType;
+    @Setter(AccessLevel.PACKAGE) private String gameType;
     /** Game name */
     @Setter private String name;
     /** Display-friendly game name */

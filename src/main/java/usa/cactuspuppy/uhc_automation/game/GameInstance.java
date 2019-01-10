@@ -1,10 +1,8 @@
 package usa.cactuspuppy.uhc_automation.game;
 
-import jdk.nashorn.internal.objects.annotations.Setter;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import usa.cactuspuppy.uhc_automation.game.info.GameInfo;
+import usa.cactuspuppy.uhc_automation.game.games.GameInfo;
 
 @AllArgsConstructor
 public abstract class GameInstance {
@@ -15,6 +13,10 @@ public abstract class GameInstance {
       */
     public boolean prep() { return false; }
 
+    /** Returns whether the game was successfully initiated.
+     * This method differs from {@code start} as it is called to perform pre-gameplay tasks (i.e. spread players, prepare starting locations, etc.)
+      */
+    public boolean init() { return false; }
     /** Returns whether the game was started successfully */
     public boolean start() { return false; }
     /** Returns whether the game was paused successfully */

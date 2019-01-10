@@ -1,12 +1,7 @@
-package usa.cactuspuppy.uhc_automation.game.types;
+package usa.cactuspuppy.uhc_automation.game.games;
 
 import lombok.Getter;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
-import usa.cactuspuppy.uhc_automation.game.types.UHC;
-import usa.cactuspuppy.uhc_automation.game.types.PvN;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 public enum GameType {

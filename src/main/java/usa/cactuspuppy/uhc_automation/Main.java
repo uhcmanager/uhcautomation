@@ -12,13 +12,12 @@ import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
-import usa.cactuspuppy.uhc_automation.game.info.GameInfo;
-import usa.cactuspuppy.uhc_automation.game.types.GameType;
+import usa.cactuspuppy.uhc_automation.game.games.GameInfo;
+import usa.cactuspuppy.uhc_automation.utils.FileIO;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Objects;
 import java.util.Scanner;
 
 @Plugin(name = "UHCAutomation", version = "2.0")
@@ -67,7 +66,24 @@ public class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         //TODO: Save disable time
+        Long disableTime = System.currentTimeMillis();
+        FileIO.saveToFile(getDataFolder().getPath(), Constants.getLastDisableFile(), new ByteArrayInputStream(String.valueOf(disableTime).getBytes()), false);
         //TODO: Save all active game info
+        if (GameManager.getActiveGames().isEmpty()) return;
+        Logger.logInfo(this.getClass(), "Detected active game(s), saving...");
+        for (long l : GameManager.getActiveGames().keySet()) {
+            try {
+                GameInstance current = GameManager.getGame(l);
+                FileOutputStream fileOS = new FileOutputStream(new File(getDataFolder() + Constants.getGamesDir(), String.format(Constants.getGameInfoFile(), l)));
+                ObjectOutputStream out = new ObjectOutputStream(fileOS);
+                out.writeObject(current);
+                out.close();
+                fileOS.close();
+                Logger.logInfo(this.getClass(), "Game " + l + " saved");
+            } catch (IOException e) {
+                Logger.logWarning(this.getClass(), "Problem saving game (ID: " + l + ")");
+            }
+        }
     }
 
     boolean initBase() {
@@ -85,7 +101,7 @@ public class Main extends JavaPlugin {
             for (File f : files) {
                 try {
                     GameInfo info = (GameInfo) new ObjectInputStream(new FileInputStream(f)).readObject();
-                    Class<?> gameType = Class.forName("usa.cactuspuppy.uhc_automation.game.types" + info.getGameType());
+                    Class<?> gameType = Class.forName("usa.cactuspuppy.uhc_automation.game.games" + info.getGameType());
                     if (gameType.isEnum()) continue;
                     GameInstance gameInstance = gameType.asSubclass(GameInstance.class).getConstructor(GameInfo.class).newInstance(info);
                     GameManager.registerGame(gameInstance);

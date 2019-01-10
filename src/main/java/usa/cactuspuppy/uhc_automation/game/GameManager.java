@@ -10,6 +10,10 @@ public class GameManager {
         activeGames.put(g.getGameInfo().getGameID(), g);
     }
 
+    public static Map<Long, GameInstance> getActiveGames() {
+        return new HashMap<>(activeGames);
+    }
+
     public static void unregisterGame(GameInstance g) {
         activeGames.remove(g.getGameInfo().getGameID(), g);
     }
