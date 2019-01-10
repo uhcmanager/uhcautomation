@@ -2,11 +2,22 @@ package usa.cactuspuppy.uhc_automation.game;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import usa.cactuspuppy.uhc_automation.game.games.GameInfo;
+import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 @AllArgsConstructor
 public abstract class GameInstance {
-    @Getter private GameInfo gameInfo;
+    @Getter protected GameInfo gameInfo;
+
+    public long getGameID() {
+        return gameInfo.getGameID();
+    }
+
+    /** Checks whether current gameInfo is valid to start game.
+     * This method is responsible for reporting */
+    public boolean validate() { return true; }
 
     /** Preps all worlds under the purview of this game for play.
      * @return whether prep was successful
@@ -27,4 +38,17 @@ public abstract class GameInstance {
 
     /** Called when a victory condition is met */
     public void win() {}
+
+    public void broadcastAndLog(String msg, Logger.Level level) {
+        Logger.log(level, this.getClass(), "[" + getGameInfo().getName() + "(" + getGameInfo().getGameID() + ")]" + msg);
+        getGameInfo().getAllPlayers().stream().map(Bukkit::getPlayer).forEach(p -> p.sendMessage(ChatColor.RED + msg));
+    }
+
+    public void broadcastAndLog(String msg) {
+        broadcastAndLog(msg, Logger.Level.INFO);
+    }
+
+    public void announceFailToInit(String msg) {
+        broadcastAndLog("Failed to start game. Reason: " + msg);
+    }
 }

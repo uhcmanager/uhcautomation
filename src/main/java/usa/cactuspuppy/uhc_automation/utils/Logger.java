@@ -46,6 +46,13 @@ public final class Logger {
         output.log(java.util.logging.Level.parse(lvl.name()), msg);
     }
 
+    public static void log(Logger.Level level, Class c, String msg) {
+        if (level.tier < 3) logFineMsg(c, msg, level.tier);
+        else if (level.tier == 3) logInfo(c, msg);
+        else if (level.tier == 4) logWarning(c, msg);
+        else if (level.tier == 5) logError(c, msg);
+    }
+
     /**
      * Logs a message at level SEVERE.
      * @param c Class reporting error
