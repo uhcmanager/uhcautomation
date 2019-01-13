@@ -1,10 +1,13 @@
 package usa.cactuspuppy.uhc_automation.game.games;
 
 import org.bukkit.Bukkit;
-import usa.cactuspuppy.uhc_automation.game.tasks.eventlisteners.PlayerFreezer;
+import org.bukkit.ChatColor;
+import usa.cactuspuppy.uhc_automation.game.tasks.countdowns.LoadChunksCountdown;
+import usa.cactuspuppy.uhc_automation.game.tasks.events.PlayerFreezer;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
+import usa.cactuspuppy.uhc_automation.utils.Messaging;
 
-public class PvN extends UHC {
+public class PvN extends TeamGameInstance {
     public PvN(GameInfo gameInfo) {
         super(gameInfo);
         gameInfo.setName("Pirates-vs-Ninjas-" + gameInfo.getGameID());
@@ -15,12 +18,12 @@ public class PvN extends UHC {
     @Override
     public boolean init() {
         if (!validate()) return false;
-        //TODO: Finalize player statuses
-        //TODO: Set player conditions
         //TODO: Spreadplayers
+        UHCUtils.spreadplayers(this);
         //TODO: Freeze players
-
+        PlayerFreezer.addFrozenGame(this);
         //TODO: Create countdown to start
+        new LoadChunksCountdown(this);
         return true;
     }
 
@@ -54,6 +57,7 @@ public class PvN extends UHC {
         //TODO: Unfreeze players
         PlayerFreezer.unfreezeGame(this);
         //TODO: Broadcast to players to start
+        Messaging.broadcastMessage(this, ChatColor.GREEN + "Begin!");
         //TODO: Set players to correct gamemode
         //TODO: Set gamerules
         //TODO: Set weather

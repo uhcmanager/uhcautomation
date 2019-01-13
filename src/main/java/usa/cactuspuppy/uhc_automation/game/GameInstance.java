@@ -4,8 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import usa.cactuspuppy.uhc_automation.entity.unique.Team;
 import usa.cactuspuppy.uhc_automation.game.games.GameInfo;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @AllArgsConstructor
 public abstract class GameInstance {
@@ -20,15 +24,22 @@ public abstract class GameInstance {
     public boolean validate() { return true; }
 
     /** Preps all worlds under the purview of this game for play.
+     * Tasks executed by this method should include things such as
+     * creating the waiting lobby, setting appropriate gamerules
+     * for waiting, and preparing worlds if necessary.
      * @return whether prep was successful
       */
     public boolean prep() { return false; }
 
-    /** Returns whether the game was successfully initiated.
-     * This method differs from {@code start} as it is called to perform pre-gameplay tasks (i.e. spread players, prepare starting locations, etc.)
-      */
+    /** Initiates the game. This method differs from {@code start} as it is called to perform pre-gameplay tasks (i.e. spread players, prepare starting locations, etc.). 
+     * @return Whether the game was successfully initiated
+     */
     public boolean init() { return false; }
-    /** Returns whether the game was started successfully */
+
+    /**
+     *
+     * @return  whether the game was started successfully
+     */
     public boolean start() { return false; }
     /** Returns whether the game was paused successfully */
     public boolean pause() { return false; }

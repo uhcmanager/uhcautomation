@@ -3,6 +3,7 @@ package usa.cactuspuppy.uhc_automation.game.games;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import usa.cactuspuppy.uhc_automation.game.GameManager;
 
 import java.io.Serializable;
 import java.util.*;
@@ -20,24 +21,40 @@ public class GameInfo implements Serializable {
     @Setter private String displayName;
     /** Whether the game should include server downtime in time elapsed calculations */
     @Setter private boolean realTime = false;
+
+    @Setter private boolean initiated = false;
     /** Long representing start time via System.currentTimeMillis */
-    @Setter private long startTime;
+    @Setter private long startTime = -1;
 
     //TEAM INFO
     /** Whether the game should consider teams */
-    @Setter private boolean teamMode = false;
+    @Setter(AccessLevel.PROTECTED) private boolean teamMode = false;
     /** Whether teams should be split up and slowly group up */
-    @Setter private boolean groupMode = false;
-    /** How big each initial group should be */
-    @Setter private int initialGroupSize = 1;
-
+    @Setter(AccessLevel.PROTECTED) private boolean groupMode = false;
+    /** Whether teams should be respected on spreadplayers */
     @Setter private boolean respectTeams = true;
 
     //WORLD INFO
     /** UUID of the main world */
-    @Setter private UUID worldID;
-    /** List of names of other worlds linked to this game */
+    private UUID worldID;
+    /** List of UUIDs of other worlds linked to this game */
     private Set<UUID> otherWorldIDs = new HashSet<>();
+
+    public void setWorldID(UUID u) {
+        GameManager.unregisterWorld(worldID);
+        worldID = u;
+        GameManager.registerWorld(worldID, gameID);
+    }
+
+    public void addAltWorld(UUID u) {
+        GameManager.registerWorld(u, gameID);
+        otherWorldIDs.add(u);
+    }
+
+    public void removeAltWorld(UUID u) {
+        GameManager.unregisterWorld(u);
+        otherWorldIDs.remove(u);
+    }
 
     //EPISODE INFO
     /** Index of current episode */
@@ -70,6 +87,21 @@ public class GameInfo implements Serializable {
     private Set<UUID> alivePlayers = new HashSet<>();
     /** Set of players currently not participating in the game. Includes offline players. */
     private Set<UUID> spectators = new HashSet<>();
+
+    public void addAlivePlayer(UUID u) {
+        alivePlayers.add(u);
+    }
+
+    public void removeAlivePlayer(UUID u) { alivePlayers.remove(u); }
+
+    public void addSpectator(UUID u) { spectators.add(u); }
+
+    public void removeSpectator(UUID u) { spectators.remove(u); }
+
+    public void removePlayer(UUID u) {
+        removeAlivePlayer(u);
+        removeSpectator(u);
+    }
 
     public GameInfo(long id) {
         gameID = id;

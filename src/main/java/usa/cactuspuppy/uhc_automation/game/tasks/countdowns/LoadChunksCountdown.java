@@ -7,7 +7,6 @@ import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.utils.Messaging;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 public class LoadChunksCountdown implements Runnable {

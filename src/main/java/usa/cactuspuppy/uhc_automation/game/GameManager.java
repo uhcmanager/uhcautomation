@@ -7,6 +7,7 @@ import java.util.UUID;
 public class GameManager {
     private static Map<Long, GameInstance> activeGames = new HashMap<>();
     private static Map<UUID, Long> playerGameIDMap = new HashMap<>();
+    private static Map<UUID, Long> worldGameIDMap = new HashMap<>();
 
     public static void registerGame(GameInstance g) {
         activeGames.put(g.getGameInfo().getGameID(), g);
@@ -39,4 +40,10 @@ public class GameManager {
     public static GameInstance getPlayerGame(UUID u) {
         return getGame(playerGameIDMap.get(u));
     }
+
+    public static void registerWorld(UUID worldID, long gameID) { worldGameIDMap.put(worldID, gameID); }
+
+    public static void unregisterWorld(UUID worldID) { worldGameIDMap.remove(worldID); }
+
+    public static GameInstance getWorldGameID(UUID worldID) { return getGame(worldGameIDMap.get(worldID)); }
 }
