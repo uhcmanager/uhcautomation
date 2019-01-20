@@ -24,6 +24,7 @@ public final class Messaging {
                     "How do YOU want to do this?", "Know yourself, know thy enemy, and you shall win.", "For Aiur!",
                     "One Punch is all you need!", "Roll for Initiative!", "You know you have to do it to 'em", "Watch out for boars!", "CHAAAAAAARGE",
                     "Ready for Battle!", "Ready for Combat!", "D.Va, ready for combat!", "Fight!", "Go for Broke!"};
+    //TODO: Replace with imported start msgs
 
     public static String getStartMsg(Random random) {
         int index = random.nextInt(START_MSGS.length);

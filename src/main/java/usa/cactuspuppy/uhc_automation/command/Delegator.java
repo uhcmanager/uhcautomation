@@ -1,9 +1,12 @@
 package usa.cactuspuppy.uhc_automation.command;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import usa.cactuspuppy.uhc_automation.command.commands.Create;
+import usa.cactuspuppy.uhc_automation.command.commands.Start;
 import usa.cactuspuppy.uhc_automation.command.commands.Surface;
 import usa.cactuspuppy.uhc_automation.command.commands.UHCCommand;
 
@@ -16,11 +19,13 @@ public class Delegator implements CommandExecutor, TabCompleter {
     private static Map<String, UHCCommand> commandMap = new HashMap<>();
     static {
         addCmd(new Surface());
+        addCmd(new Start());
+        addCmd(new Create());
         //TODO: Add aliases
     }
 
     private static void addCmd(UHCCommand c) {
-        commandMap.put(c.getClass().getSimpleName(), c);
+        commandMap.put(c.getClass().getSimpleName().toLowerCase(), c);
     }
 
 
@@ -39,7 +44,10 @@ public class Delegator implements CommandExecutor, TabCompleter {
             //TODO: Deny
             return true;
         }
-        return handler.onCommand(commandSender, subCmd, newArgs);
+        if (!handler.onCommand(commandSender, subCmd, newArgs)) {
+            commandSender.sendMessage(ChatColor.RED + "Usage: " + handler.getUsage());
+        }
+        return true;
     }
 
     @Override

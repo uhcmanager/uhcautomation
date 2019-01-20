@@ -1,9 +1,9 @@
 package usa.cactuspuppy.uhc_automation.event.game.update;
 
 import lombok.Getter;
+import usa.cactuspuppy.uhc_automation.entity.EpisodeMark;
 import usa.cactuspuppy.uhc_automation.event.game.GameEvent;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
-import usa.cactuspuppy.uhc_automation.entity.EpisodeMark;
 
 /**
  * Marks the completion of an episode

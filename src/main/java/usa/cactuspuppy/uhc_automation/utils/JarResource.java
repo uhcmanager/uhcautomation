@@ -1,13 +1,10 @@
 package usa.cactuspuppy.uhc_automation.utils;
 
 import org.apache.commons.io.FileUtils;
-import usa.cactuspuppy.uhc_automation.Main;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
 
 public final class JarResource {
     /**

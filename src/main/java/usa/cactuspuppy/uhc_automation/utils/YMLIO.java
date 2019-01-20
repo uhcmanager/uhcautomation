@@ -3,7 +3,10 @@ package usa.cactuspuppy.uhc_automation.utils;
 import lombok.NoArgsConstructor;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

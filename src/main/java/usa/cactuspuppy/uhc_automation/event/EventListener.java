@@ -3,6 +3,9 @@ package usa.cactuspuppy.uhc_automation.event;
 import usa.cactuspuppy.uhc_automation.event.game.border.BorderBeginShrinkEvent;
 import usa.cactuspuppy.uhc_automation.event.game.border.BorderSpeedUpEvent;
 import usa.cactuspuppy.uhc_automation.event.game.group.*;
+import usa.cactuspuppy.uhc_automation.event.game.player.PlayerDeathEvent;
+import usa.cactuspuppy.uhc_automation.event.game.player.PlayerJoinEvent;
+import usa.cactuspuppy.uhc_automation.event.game.player.PlayerLeaveEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamAddGroupsEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamCreateEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamDeleteEvent;
@@ -11,11 +14,9 @@ import usa.cactuspuppy.uhc_automation.event.game.update.EpisodeMarkEvent;
 import usa.cactuspuppy.uhc_automation.event.game.update.GameEndEvent;
 import usa.cactuspuppy.uhc_automation.event.game.update.GamePauseEvent;
 import usa.cactuspuppy.uhc_automation.event.game.update.GameStartEvent;
-import usa.cactuspuppy.uhc_automation.event.game.player.PlayerDeathEvent;
-import usa.cactuspuppy.uhc_automation.event.game.player.PlayerJoinEvent;
-import usa.cactuspuppy.uhc_automation.event.game.player.PlayerLeaveEvent;
 
 public abstract class EventListener {
+    //TODO: Convert to interface with annotations
 
     public EventListener() {
         EventDistributor.addListener(this);

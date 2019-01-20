@@ -2,11 +2,6 @@ package usa.cactuspuppy.uhc_automation.utils;
 
 import lombok.Getter;
 import lombok.Setter;
-import usa.cactuspuppy.uhc_automation.Main;
-
-import java.io.PrintStream;
-import java.util.Optional;
-import java.util.logging.Level;
 
 /**
  * Provides feedback to server terminal. Logs at levels SEVERE, WARNING, INFO, FINE, and FINER<br>

@@ -26,7 +26,7 @@ public class Start extends UHCCommand implements TabCompleter {
         }
         GameInstance instance = GameManager.getPlayerGame(((Player) commandSender).getUniqueId());
         if (instance == null) {
-            //TODO: Yell at player
+            commandSender.sendMessage(ChatColor.RED + "You are currently not in a game world, join one to start a game.");
             return true;
         }
         if (args.length > 0) {
@@ -35,7 +35,7 @@ public class Start extends UHCCommand implements TabCompleter {
                 new ToInitCountdown(delay, instance);
                 return true;
             } catch (NumberFormatException e) {
-                //TODO: Inform of issue
+                commandSender.sendMessage(ChatColor.RED + "Unknown integer: " + args[0]);
                 return true;
             }
         }
