@@ -12,13 +12,11 @@ import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
-import usa.cactuspuppy.uhc_automation.game.games.GameInfo;
-import usa.cactuspuppy.uhc_automation.game.tasks.events.MainListener;
+import usa.cactuspuppy.uhc_automation.tasks.MainListener;
 import usa.cactuspuppy.uhc_automation.utils.FileIO;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Scanner;
 
 @Plugin(name = "UHCAutomation", version = "2.0")
@@ -102,9 +100,9 @@ public class Main extends JavaPlugin {
             for (File f : files) {
                 try {
                     GameInstance instance = (GameInstance) new ObjectInputStream(new FileInputStream(f)).readObject();
-
-
-                } catch (IOException | ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                    GameManager.registerGame(instance);
+                    //TODO: Resume game
+                } catch (IOException | ClassNotFoundException e) {
                     Logger.logWarning(this.getClass(), "Problem restoring game information from file " + f.getName() + ", deleting it...", e);
                     if (!f.delete()) Logger.logWarning(this.getClass(), "Unable to remove " + f.getName());
                 }
