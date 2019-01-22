@@ -1,12 +1,16 @@
 package usa.cactuspuppy.uhc_automation.game;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
+import org.bukkit.World;
 
 import java.io.Serializable;
 import java.util.Set;
 import java.util.UUID;
 
 @Getter
+@Setter(AccessLevel.PACKAGE)
 public abstract class GameInstance implements Serializable {
 
     // [=== MAIN INFO ===]
@@ -45,4 +49,11 @@ public abstract class GameInstance implements Serializable {
     private Set<UUID> spectators;
 
     private long epLength;
+
+    public GameInstance(String name, World world) {
+        this.name = name;
+        gameID = 0;
+        gameID = GameManager.registerGame(this);
+        mainWorld = world.getUID();
+    }
 }

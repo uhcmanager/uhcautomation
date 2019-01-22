@@ -101,11 +101,8 @@ public class Main extends JavaPlugin {
             if (files == null) return true;
             for (File f : files) {
                 try {
-                    GameInfo info = (GameInfo) new ObjectInputStream(new FileInputStream(f)).readObject();
-                    Class<?> gameType = Class.forName("usa.cactuspuppy.uhc_automation.game.games" + info.getGameType());
-                    if (gameType.isEnum()) continue;
-                    GameInstance gameInstance = gameType.asSubclass(GameInstance.class).getConstructor(GameInfo.class).newInstance(info);
-                    GameManager.registerGame(gameInstance);
+                    GameInstance instance = (GameInstance) new ObjectInputStream(new FileInputStream(f)).readObject();
+
 
                 } catch (IOException | ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                     Logger.logWarning(this.getClass(), "Problem restoring game information from file " + f.getName() + ", deleting it...", e);
