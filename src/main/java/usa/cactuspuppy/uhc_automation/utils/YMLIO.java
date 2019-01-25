@@ -52,10 +52,15 @@ public final class YMLIO {
             String key = m.group(2);
             String value = m.group(3);
             key = key.trim();
+            //Check key does not have a period
+            if (key.contains(".")) {
+                Logger.logWarning(this.getClass(), "Found a key with a period at line " + lineIndex + ". Offending key: " + key);
+                continue;
+            }
             value = value.trim();
             int currentIndent = indent.length();
-            if (currentIndent <= currIndents.getLast()) {
-                while (currentIndent >= currIndents.peekLast()) { //Pop prefixes off the end until reach appropriate indent level
+            if (currentIndent < prevIndent) {
+                while (currentIndent <= currIndents.peekLast()) { //Pop prefixes off the end until reach appropriate indent level
                     currIndents.removeLast();
                     if (!currPrefixes.isEmpty()) currPrefixes.removeLast();
                     if (currIndents.isEmpty()) {
@@ -63,7 +68,7 @@ public final class YMLIO {
                         break;
                     }
                 }
-            } else if (currentIndent > currIndents.getLast()) {
+            } else if (currentIndent > prevIndent) {
                 currPrefixes.addLast(previousKey); //Add new indent
                 currIndents.addLast(prevIndent);
             }
