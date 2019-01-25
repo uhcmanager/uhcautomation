@@ -6,7 +6,6 @@ import org.bukkit.command.TabCompleter;
 
 import java.util.List;
 
-@org.bukkit.plugin.java.annotation.command.Command(name = "surface")
 public class Surface extends UHCCommand implements TabCompleter {
 
     @Override

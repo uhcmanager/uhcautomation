@@ -36,18 +36,18 @@ public final class Messaging {
     }
 
     public static void broadcastMessage(GameInstance instance, String msg) {
-        instance.getGameInfo().getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.sendMessage(msg));
+        instance.getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.sendMessage(msg));
     }
 
     public static void broadcastTitle(GameInstance instance, String title, String subtitle, int in, int stay, int out) {
-        instance.getGameInfo().getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.sendTitle(title, subtitle, in, stay, out));
+        instance.getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.sendTitle(title, subtitle, in, stay, out));
     }
 
     public static void broadcastSound(GameInstance instance, String sound, float volume, float pitch) {
-        instance.getGameInfo().getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.playSound(p.getLocation(), sound, volume, pitch));
+        instance.getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.playSound(p.getLocation(), sound, volume, pitch));
     }
 
     public static void broadcastSound(GameInstance instance, Sound sound, float volume, float pitch) {
-        instance.getGameInfo().getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.playSound(p.getLocation(), sound, volume, pitch));
+        instance.getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.playSound(p.getLocation(), sound, volume, pitch));
     }
 }

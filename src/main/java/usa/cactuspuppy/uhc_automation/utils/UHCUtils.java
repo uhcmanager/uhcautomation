@@ -18,9 +18,9 @@ public final class UHCUtils {
     public static boolean spreadplayers(GameInstance instance) {
         //TODO: Spreadplayers
         int locations;
-        if (instance.getGameInfo().isTeamMode() && !instance.getGameInfo().isTeamMode()) {
+        //if (instance.getGameInfo().isTeamMode() && !instance.getGameInfo().isTeamMode()) {
 
-        }
+        //}
         return false;
     }
 }

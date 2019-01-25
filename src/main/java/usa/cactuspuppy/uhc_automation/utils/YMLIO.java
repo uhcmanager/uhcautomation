@@ -27,6 +27,7 @@ public final class YMLIO {
     public void readValues(InputStream inputStream) {
         //Initialize variables
         LinkedList<Integer> currIndents = new LinkedList<>();
+        currIndents.addLast(0);
         int lineIndex = 0;
         Scanner scan = new Scanner(inputStream);
         LinkedList<String> currPrefixes = new LinkedList<>();
@@ -53,10 +54,14 @@ public final class YMLIO {
             key = key.trim();
             value = value.trim();
             int currentIndent = indent.length();
-            if (currentIndent < currIndents.getLast()) {
-                while (currentIndent > currIndents.peekLast()) { //Pop prefixes off the end until reach appropriate indent level
+            if (currentIndent <= currIndents.getLast()) {
+                while (currentIndent >= currIndents.peekLast()) { //Pop prefixes off the end until reach appropriate indent level
                     currIndents.removeLast();
-                    currPrefixes.removeLast();
+                    if (!currPrefixes.isEmpty()) currPrefixes.removeLast();
+                    if (currIndents.isEmpty()) {
+                        currIndents.addLast(0);
+                        break;
+                    }
                 }
             } else if (currentIndent > currIndents.getLast()) {
                 currPrefixes.addLast(previousKey); //Add new indent
@@ -66,7 +71,8 @@ public final class YMLIO {
             for (String prefix : currPrefixes) {
                 if (prefix != null && !prefix.equals("")) prefixJoiner.add(prefix);
             }
-            values.put(prefixJoiner.toString() + key, value);
+            prefixJoiner.add(key);
+            values.put(prefixJoiner.toString(), value);
             previousKey = key;
             prevIndent = currentIndent;
         }
@@ -77,8 +83,25 @@ public final class YMLIO {
         return values.get(key);
     }
 
+    /**
+     * @return A copy of values currently stored in the cache
+     */
+    public Map<String, String> getValues() {
+        return new HashMap<>(values);
+    }
+
     public void update(String key, String value) {
         values.put(key, value);
         fileUpToDate = false;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder rv = new StringBuilder();
+        Map<String, String> values = getValues();
+        for (String s : values.keySet()) {
+            rv.append(s).append(" -> ").append(values.get(s)).append("\n");
+        }
+        return rv.toString();
     }
 }

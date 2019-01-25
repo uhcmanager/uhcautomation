@@ -6,6 +6,8 @@ import lombok.Setter;
 import org.bukkit.World;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -55,5 +57,11 @@ public abstract class GameInstance implements Serializable {
         gameID = 0;
         gameID = GameManager.registerGame(this);
         mainWorld = world.getUID();
+    }
+
+    public Set<UUID> getAllPlayers() {
+        Set<UUID> rv = new HashSet<>(alivePlayers);
+        rv.addAll(spectators);
+        return rv;
     }
 }
