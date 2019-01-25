@@ -24,7 +24,7 @@ public final class YMLIO {
 
     private boolean fileUpToDate = false;
 
-    private void readValues(InputStream inputStream) {
+    public void readValues(InputStream inputStream) {
         //Initialize variables
         LinkedList<Integer> currIndents = new LinkedList<>();
         int lineIndex = 0;

@@ -2,7 +2,6 @@
 out/
 target/
 */META-INF/
-src/test/
 src/temptests/
 dependency-reduced-pom.xml
 *.iml
