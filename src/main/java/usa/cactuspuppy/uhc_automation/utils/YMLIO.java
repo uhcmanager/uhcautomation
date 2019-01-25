@@ -29,7 +29,7 @@ public final class YMLIO {
         LinkedList<Integer> currIndents = new LinkedList<>();
         int lineIndex = 0;
         Scanner scan = new Scanner(inputStream);
-        LinkedList<String> currentPrefixes = new LinkedList<>();
+        LinkedList<String> currPrefixes = new LinkedList<>();
         //Trackers
         String previousKey = "";
         int prevIndent = 0;
@@ -54,13 +54,16 @@ public final class YMLIO {
             value = value.trim();
             int currentIndent = indent.length();
             if (currentIndent < currIndents.getLast()) {
-                //TODO: Backtrack up indents
+                while (currentIndent > currIndents.peekLast()) { //Pop prefixes off the end until reach appropriate indent level
+                    currIndents.removeLast();
+                    currPrefixes.removeLast();
+                }
             } else if (currentIndent > currIndents.getLast()) {
-                currentPrefixes.addLast(previousKey);
+                currPrefixes.addLast(previousKey); //Add new indent
                 currIndents.addLast(prevIndent);
             }
             StringJoiner prefixJoiner = new StringJoiner(".");
-            for (String prefix : currentPrefixes) {
+            for (String prefix : currPrefixes) {
                 if (prefix != null && !prefix.equals("")) prefixJoiner.add(prefix);
             }
             values.put(prefixJoiner.toString() + key, value);
