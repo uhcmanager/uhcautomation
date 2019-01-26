@@ -22,34 +22,29 @@ public class Start extends UHCCommand implements TabCompleter {
         return null;
     }
 
-//    @Override
-//    public boolean onCommand(CommandSender commandSender, String alias, String[] args) {
-//        if (!(commandSender instanceof Player)) {
-//            commandSender.sendMessage(ChatColor.RED + Constants.getDenyPermission());
-//            return true;
-//        }
-//        GameInstance instance = GameManager.getPlayerGame(((Player) commandSender).getUniqueId());
-//        if (instance == null) {
-//            commandSender.sendMessage(ChatColor.RED + "You are currently not in a game world, join one to start a game.");
-//            return true;
-//        }
-//        if (args.length > 0) {
-//            try {
-//                int delay = Integer.valueOf(args[0]);
-//                new ToInitCountdown(delay, instance);
-//                return true;
-//            } catch (NumberFormatException e) {
-//                commandSender.sendMessage(ChatColor.RED + "Unknown integer: " + args[0]);
-//                return true;
-//            }
-//        }
-//        instance.init();
-//        return true;
-//    }
-
     @Override
     public boolean onCommand(CommandSender commandSender, String alias, String[] args) {
-        return false;
+        if (!(commandSender instanceof Player)) {
+            commandSender.sendMessage(ChatColor.RED + Constants.getDenyPermission());
+            return true;
+        }
+        GameInstance instance = GameManager.getPlayerGame(((Player) commandSender).getUniqueId());
+        if (instance == null) {
+            commandSender.sendMessage(ChatColor.RED + "You are currently not in a game world, join one to start a game.");
+            return true;
+        }
+        if (args.length > 0) {
+            try {
+                int delay = Integer.valueOf(args[0]);
+                new ToInitCountdown(delay, instance);
+                return true;
+            } catch (NumberFormatException e) {
+                commandSender.sendMessage(ChatColor.RED + "Unknown integer: " + args[0]);
+                return true;
+            }
+        }
+        instance.init();
+        return true;
     }
 
     @Override

@@ -122,14 +122,6 @@ public class ConfigTest {
                 "tier1:\n" +
                 "  tier2:\n" +
                 "    tier3: qwerty";
-//        File testConfig = new File("test", "config.yml");
-//        if (!testConfig.isFile()) {
-//            try {
-//                assertTrue(testConfig.createNewFile());
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
         Config testReader = new Config(testConfig);
         testReader.readValues(new ByteArrayInputStream(input.getBytes()));
         assertTrue(testReader.saveConfig());

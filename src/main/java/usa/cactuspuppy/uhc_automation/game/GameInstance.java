@@ -6,13 +6,12 @@ import lombok.Setter;
 import org.bukkit.World;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 @Getter
-@Setter(AccessLevel.PACKAGE)
+@Setter
 public abstract class GameInstance implements Serializable {
 
     // [=== MAIN INFO ===]
@@ -20,11 +19,19 @@ public abstract class GameInstance implements Serializable {
     /**
      * Unique identifier for this game instance. This should be set once upon game creation and never changed until the game ends and/or is deleted.
      */
+    @Setter(AccessLevel.PACKAGE)
     private long gameID;
+
+    /**
+     * Marker of when the game is initiated (i.e. when players are spread) as given by {@code System.currentTimeMillis()}
+     */
+    @Setter(AccessLevel.PACKAGE)
+    private long initTime;
 
     /**
      * Marker of when the game begins (i.e. when players are released) as given by {@code System.currentTimeMillis()}
      */
+    @Setter(AccessLevel.PACKAGE)
     private long startTime;
 
     /**
@@ -43,13 +50,28 @@ public abstract class GameInstance implements Serializable {
     private Set<UUID> otherWorlds;
 
     // [=== PLAYER INFO ===]
+    /**
+     * Set of UUIDs for players that have not yet been eliminated
+     */
+    @Setter(AccessLevel.NONE)
+    private Set<UUID> players;
 
-    private Set<UUID> alivePlayers;
-
+    /**
+     * Number of players at the start of the game
+     */
+    @Setter(AccessLevel.PACKAGE)
     private int initNumPlayers;
 
+    /**
+     * Set of UUIDs for players that are spectating
+     */
+    @Setter(AccessLevel.NONE)
     private Set<UUID> spectators;
 
+    // [=== EPISODE INFO ===]
+    /**
+     * Length of episodes, in seconds
+     */
     private long epLength;
 
     public GameInstance(String name, World world) {
@@ -60,7 +82,7 @@ public abstract class GameInstance implements Serializable {
     }
 
     public Set<UUID> getAllPlayers() {
-        Set<UUID> rv = new HashSet<>(alivePlayers);
+        Set<UUID> rv = new HashSet<>(players);
         rv.addAll(spectators);
         return rv;
     }
