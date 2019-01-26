@@ -86,6 +86,11 @@ public class Main extends JavaPlugin {
         }
     }
 
+    @Override
+    public void saveDefaultConfig() {
+        //Do nothing, this breaks custom config setup
+    }
+
     boolean initBase() {
         //TODO: Initiate base plugin
         //Register command
