@@ -6,9 +6,12 @@ import usa.cactuspuppy.uhc_automation.utils.Logger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 public class GameManager {
     private static Map<Long, GameInstance> activeGames = new HashMap<>();
+    private static Map<UUID, Long> playerMap = new HashMap<>();
+    private static Map<UUID, Long> worldMap = new HashMap<>();
     private static final int MAX_ID_ATTEMPTS = 10000;
 
     public static HashMap<Long, GameInstance> getActiveGames() {
@@ -19,12 +22,24 @@ public class GameManager {
         return activeGames.get(id);
     }
 
+    public static GameInstance getPlayerGame(UUID u) {
+        if (!playerMap.containsKey(u)) return null;
+        long gameID = playerMap.get(u);
+        if (!activeGames.containsKey(gameID)) {
+            playerMap.remove(u);
+            return null;
+        }
+        return activeGames.get(gameID);
+    }
+
     public static long registerGame(GameInstance instance) {
         if (instance.getGameID() != 0) return instance.getGameID();
         long id = new IDGenerator(new Random()).nextID();
         if (id != -1) activeGames.put(id, instance);
         return id;
     }
+
+
 
     @AllArgsConstructor
     public static class IDGenerator {

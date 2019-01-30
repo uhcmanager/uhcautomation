@@ -36,7 +36,7 @@ public class Start extends UHCCommand implements TabCompleter {
         if (args.length > 0) {
             try {
                 int delay = Integer.valueOf(args[0]);
-                new ToInitCountdown(delay, instance);
+                //TODO: Create delay timer
                 return true;
             } catch (NumberFormatException e) {
                 commandSender.sendMessage(ChatColor.RED + "Unknown integer: " + args[0]);

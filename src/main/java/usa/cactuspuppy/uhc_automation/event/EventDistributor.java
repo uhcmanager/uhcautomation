@@ -12,15 +12,15 @@ import java.util.regex.Pattern;
 
 public class EventDistributor {
 
-    private static List<EventListener> listeners = new ArrayList<>();
+    private static List<EventHandler> listeners = new ArrayList<>();
 
-    public static void addListener(EventListener e) {
+    public static void addListener(EventHandler e) {
         if (!listeners.contains(e)) {
             listeners.add(e);
         }
     }
 
-    public static void removeListener(EventListener e) {
+    public static void removeListener(EventHandler e) {
         listeners.remove(e);
     }
 
@@ -34,8 +34,8 @@ public class EventDistributor {
         if (m.find()) {
             String methodName = "on" + m.group(1);
             try {
-                Method method = EventListener.class.getMethod(methodName, c);
-                for (EventListener l : listeners) {
+                Method method = EventHandler.class.getMethod(methodName, c);
+                for (EventHandler l : listeners) {
                     try {
                         method.invoke(l, e);
                     } catch (IllegalAccessException | InvocationTargetException e1) {
@@ -43,7 +43,7 @@ public class EventDistributor {
                     }
                 }
             } catch (NoSuchMethodException e1) {
-                Logger.logWarning(EventDistributor.class, "Could not find corresponding EventListener method: " + methodName);
+                Logger.logWarning(EventDistributor.class, "Could not find corresponding EventHandler method: " + methodName);
             }
         } else {
             Logger.logWarning(EventDistributor.class, "Could not distribute GameEvent " + e.toString());

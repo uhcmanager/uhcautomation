@@ -86,4 +86,14 @@ public abstract class GameInstance implements Serializable {
         rv.addAll(spectators);
         return rv;
     }
+
+    public abstract boolean init();
+
+    public abstract boolean start();
+
+    public abstract boolean pause();
+
+    public abstract boolean win();
+
+    public abstract boolean stop();
 }

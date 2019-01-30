@@ -20,7 +20,7 @@ public class Team extends UniqueEntity {
 
     public Team(GameInstance gameInstance) {
         super(gameInstance);
-        gameInstance.addTeam(this);
+        //TODO: Add team to team game instance
         groups = new ArrayList<>();
         teamNumber = nextTeamNum;
         nextTeamNum = genNextTeamNum(nextTeamNum);
