@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.event.game.group;
 
+import org.bukkit.event.HandlerList;
 import usa.cactuspuppy.uhc_automation.entity.unique.Group;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
@@ -19,5 +20,15 @@ public class GroupAddPlayersEvent extends GroupEvent {
 
     public Set<UUID> getUuids() {
         return new HashSet<>(uuids);
+    }
+
+    private static final HandlerList handlers = new HandlerList();
+
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 }

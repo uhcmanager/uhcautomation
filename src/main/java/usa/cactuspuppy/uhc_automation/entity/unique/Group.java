@@ -2,8 +2,8 @@ package usa.cactuspuppy.uhc_automation.entity.unique;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import usa.cactuspuppy.uhc_automation.event.EventDistributor;
 import usa.cactuspuppy.uhc_automation.event.game.group.*;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
@@ -21,13 +21,13 @@ public class Group extends UniqueEntity {
     public Group(GameInstance gameInstance, UUID... initPlayers) {
         super(gameInstance);
         players.addAll(Arrays.asList(initPlayers));
-        EventDistributor.distributeEvent(new GroupCreateEvent(gameInstance, this));
+        Bukkit.getServer().getPluginManager().callEvent(new GroupCreateEvent(gameInstance, this));
     }
 
     public Group(GameInstance gameInstance, Player... initPlayers) {
         super(gameInstance);
         players.addAll(Arrays.stream(initPlayers).map(Player::getUniqueId).collect(Collectors.toList()));
-        EventDistributor.distributeEvent(new GroupCreateEvent(gameInstance, this));
+        Bukkit.getServer().getPluginManager().callEvent(new GroupCreateEvent(gameInstance, this));
     }
 
     public int size() {
@@ -49,12 +49,12 @@ public class Group extends UniqueEntity {
 
     public void addPlayers(UUID... players) {
         this.players.addAll(Arrays.asList(players));
-        EventDistributor.distributeEvent(new GroupAddPlayersEvent(getGameInstance(), this, players));
+        Bukkit.getServer().getPluginManager().callEvent(new GroupAddPlayersEvent(getGameInstance(), this, players));
     }
 
     public void removePlayers(UUID... players) {
         this.players.removeAll(Arrays.asList(players));
-        EventDistributor.distributeEvent(new GroupRemovePlayersEvent(getGameInstance(), this, players));
+        Bukkit.getServer().getPluginManager().callEvent(new GroupRemovePlayersEvent(getGameInstance(), this, players));
     }
 
     public void removeAllPlayers() { removePlayers(players.toArray(new UUID[0])); }
@@ -63,13 +63,13 @@ public class Group extends UniqueEntity {
         team.removeGroups(this);
         team = t;
         team.addGroups(this);
-        EventDistributor.distributeEvent(new GroupSetTeamEvent(getGameInstance(), this, team));
+        Bukkit.getServer().getPluginManager().callEvent(new GroupSetTeamEvent(getGameInstance(), this, team));
     }
 
     public void delete() {
         UniqueEntity.removeEntity(this);
         team.removeGroups(this);
         for (UUID u : players) new Group(getGameInstance(), u);
-        EventDistributor.distributeEvent(new GroupDeleteEvent(getGameInstance(), this));
+        Bukkit.getServer().getPluginManager().callEvent(new GroupDeleteEvent(getGameInstance(), this));
     }
 }

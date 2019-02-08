@@ -1,7 +1,7 @@
 package usa.cactuspuppy.uhc_automation.entity.unique;
 
 import lombok.Getter;
-import usa.cactuspuppy.uhc_automation.event.EventDistributor;
+import org.bukkit.Bukkit;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamAddGroupsEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamCreateEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamDeleteEvent;
@@ -24,7 +24,7 @@ public class Team extends UniqueEntity {
         groups = new ArrayList<>();
         teamNumber = nextTeamNum;
         nextTeamNum = genNextTeamNum(nextTeamNum);
-        EventDistributor.distributeEvent(new TeamCreateEvent(getGameInstance(), this));
+        Bukkit.getServer().getPluginManager().callEvent(new TeamCreateEvent(getGameInstance(), this));
     }
 
     public Team(GameInstance gameInstance, String name) {
@@ -33,7 +33,7 @@ public class Team extends UniqueEntity {
         this.name = name;
         teamNumber = nextTeamNum;
         nextTeamNum = genNextTeamNum(nextTeamNum);
-        EventDistributor.distributeEvent(new TeamCreateEvent(getGameInstance(), this));
+        Bukkit.getServer().getPluginManager().callEvent(new TeamCreateEvent(getGameInstance(), this));
     }
 
     public Set<UUID> getPlayers() {
@@ -54,7 +54,7 @@ public class Team extends UniqueEntity {
             g.setTeam(this);
             g.setNum(index++);
         }
-        EventDistributor.distributeEvent(new TeamAddGroupsEvent(getGameInstance(), this, groups));
+        Bukkit.getServer().getPluginManager().callEvent(new TeamAddGroupsEvent(getGameInstance(), this, groups));
     }
 
     public void removeGroups(Group... groups) {
@@ -64,7 +64,7 @@ public class Team extends UniqueEntity {
             if (g.getNum() != index) g.setNum(index);
             index++;
         }
-        EventDistributor.distributeEvent(new TeamRemoveGroupsEvent(getGameInstance(), this, groups));
+        Bukkit.getServer().getPluginManager().callEvent(new TeamRemoveGroupsEvent(getGameInstance(), this, groups));
     }
 
     public void delete() {
@@ -72,7 +72,7 @@ public class Team extends UniqueEntity {
         teamNumMap.remove(this.teamNumber, this);
         nextTeamNum = this.teamNumber;
         groups.forEach(Group::delete);
-        EventDistributor.distributeEvent(new TeamDeleteEvent(getGameInstance(), this));
+        Bukkit.getServer().getPluginManager().callEvent(new TeamDeleteEvent(getGameInstance(), this));
     }
 
     private int genNextTeamNum(int currTeamNum) {
