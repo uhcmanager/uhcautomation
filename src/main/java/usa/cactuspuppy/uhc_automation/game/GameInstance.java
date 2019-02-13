@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.World;
+import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -20,41 +21,55 @@ public abstract class GameInstance implements Serializable {
      * Unique identifier for this game instance. This should be set once upon game creation and never changed until the game ends and/or is deleted.
      */
     @Setter(AccessLevel.PACKAGE)
-    private long gameID;
+    protected long gameID;
 
     /**
      * Marker of when the game is initiated (i.e. when players are spread) as given by {@code System.currentTimeMillis()}
      */
     @Setter(AccessLevel.PACKAGE)
-    private long initTime;
+    protected long initTime;
 
     /**
      * Marker of when the game begins (i.e. when players are released) as given by {@code System.currentTimeMillis()}
      */
     @Setter(AccessLevel.PACKAGE)
-    private long startTime;
+    protected long startTime;
 
     /**
      * Name for this game. May or may not be unique; should not be used to identify this game.
      */
-    private String name;
+    protected String name;
 
     /**
      * Unique ID of main game world as given by {@code World::getUID}.
      */
-    private UUID mainWorld;
+    protected UUID mainWorld;
 
     /**
      * Other worlds that players may travel to during the course of the game without being considered as leaving the game. Examples include the main world's Nether and End dimension.
      */
-    private Set<UUID> otherWorlds;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    protected Set<UUID> otherWorlds;
+
+    public Set<UUID> getOtherWorlds() {
+        return new HashSet<>(otherWorlds);
+    }
+
+    @Setter(AccessLevel.NONE)
+    protected GameState gameState;
 
     // [=== PLAYER INFO ===]
     /**
      * Set of UUIDs for players that have not yet been eliminated
      */
+    @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private Set<UUID> players;
+
+    public Set<UUID> getPlayers() {
+        return new HashSet<>(players);
+    }
 
     /**
      * Number of players at the start of the game
@@ -65,8 +80,19 @@ public abstract class GameInstance implements Serializable {
     /**
      * Set of UUIDs for players that are spectating
      */
+    @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private Set<UUID> spectators;
+
+    public Set<UUID> getSpectators() {
+        return new HashSet<>(spectators);
+    }
+
+    public Set<UUID> getAllPlayers() {
+        Set<UUID> rv = new HashSet<>(players);
+        rv.addAll(spectators);
+        return rv;
+    }
 
     // [=== EPISODE INFO ===]
     /**
@@ -81,19 +107,61 @@ public abstract class GameInstance implements Serializable {
         mainWorld = world.getUID();
     }
 
-    public Set<UUID> getAllPlayers() {
-        Set<UUID> rv = new HashSet<>(players);
-        rv.addAll(spectators);
-        return rv;
+    /**
+     * Updates the state of the game, calling the appropriate handlers
+     * @param e The game state event being requested
+     * @return Whether any update to the game state occurred
+     */
+    public boolean updateState(GameStateEvent e) {
+        switch (e) {
+            case RESET:
+                reset();
+                return true;
+            case INIT:
+                if (gameState == GameState.LOBBY) {
+                    init();
+                    return true;
+                }
+                return false;
+            case START:
+                if (gameState == GameState.INITIATING) {
+                    start();
+                    return true;
+                }
+                return false;
+            case PAUSE:
+                if (gameState == GameState.ACTIVE) {
+                    pause();
+                    return true;
+                }
+                return false;
+            case RESUME:
+                if (gameState == GameState.PAUSED) {
+                    resume();
+                    return true;
+                }
+                return false;
+            case END:
+                if (gameState == GameState.ACTIVE) {
+                    end();
+                    return true;
+                }
+                return false;
+            default:
+                Logger.logWarning(this.getClass(), "Invalid GameStateEvent passed to GameInstance #" + gameID);
+                return false;
+        }
     }
 
-    public abstract boolean init();
+    protected abstract void reset();
 
-    public abstract boolean start();
+    protected abstract void init();
 
-    public abstract boolean pause();
+    protected abstract void start();
 
-    public abstract boolean win();
+    protected abstract void pause();
 
-    public abstract boolean stop();
+    protected abstract void resume();
+
+    protected abstract void end();
 }

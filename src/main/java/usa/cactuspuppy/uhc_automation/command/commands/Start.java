@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import usa.cactuspuppy.uhc_automation.Constants;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
+import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
 
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class Start extends UHCCommand implements TabCompleter {
                 return true;
             }
         }
-        instance.init();
+        instance.updateState(GameStateEvent.INIT);
         return true;
     }
 
