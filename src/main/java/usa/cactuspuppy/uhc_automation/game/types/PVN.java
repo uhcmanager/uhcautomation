@@ -1,14 +1,16 @@
 package usa.cactuspuppy.uhc_automation.game.types;
 
+import lombok.Getter;
 import org.bukkit.World;
+import org.bukkit.scoreboard.Scoreboard;
 import usa.cactuspuppy.uhc_automation.entity.unique.Team;
 
 public class PVN extends TeamGameInstance {
 
     public PVN(String name, World world) {
         super(name, world);
-        teams.add(new Team(this, "Pirates"));
-        teams.add(new Team(this, "Ninjas"));
+        addTeam(new Team(this, "Pirates"));
+        addTeam(new Team(this, "Ninjas"));
     }
 
     @Override

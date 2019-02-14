@@ -18,4 +18,12 @@ public abstract class TeamGameInstance extends GameInstance {
     public Set<Team> getTeams() {
         return new HashSet<>(teams);
     }
+
+    public void addTeam(Team team) {
+        teams.add(team);
+    }
+
+    public void removeTeam(Team team) {
+        teams.remove(team);
+    }
 }
