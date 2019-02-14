@@ -2,6 +2,7 @@ package usa.cactuspuppy.uhc_automation.entity.unique;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.Scoreboard;
+import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +20,9 @@ public class ScoreboardSet {
             return exists;
         }
         Scoreboard newScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        if (newScoreboard == null) {
+            Logger.logError(this.getClass(), "", new RuntimeException("Failed to get new scoreboard from Bukkit"));
+        }
         scoreboards.put(playerUid, newScoreboard);
         return newScoreboard;
     }

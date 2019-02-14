@@ -41,7 +41,7 @@ public class Main extends JavaPlugin {
         if (!success) {
             Logger.logError(this.getClass(), "Failure to initiate base plugin, disabling...");
             Bukkit.getPluginManager().disablePlugin(this);
-            return; // this probably never gets hit but whatever
+            return;
         }
         File lastDisableFile = new File(getDataFolder(), Constants.getLastDisableFile());
         if (lastDisableFile.isFile()) {
