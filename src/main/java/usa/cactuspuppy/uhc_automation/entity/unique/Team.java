@@ -7,6 +7,7 @@ import usa.cactuspuppy.uhc_automation.event.game.team.TeamCreateEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamDeleteEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamRemoveGroupsEvent;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
+import usa.cactuspuppy.uhc_automation.game.types.TeamGameInstance;
 
 import java.util.*;
 
@@ -18,7 +19,7 @@ public class Team extends UniqueEntity {
     @Getter private List<Group> groups;
     @Getter private String name;
 
-    public Team(GameInstance gameInstance) {
+    public Team(TeamGameInstance gameInstance) {
         super(gameInstance);
         //TODO: Add team to team game instance
         groups = new ArrayList<>();
@@ -27,8 +28,9 @@ public class Team extends UniqueEntity {
         Bukkit.getServer().getPluginManager().callEvent(new TeamCreateEvent(getGameInstance(), this));
     }
 
-    public Team(GameInstance gameInstance, String name) {
+    public Team(TeamGameInstance gameInstance, String name) {
         super(gameInstance);
+        //TODO: Add team to team game instance
         groups = new ArrayList<>();
         this.name = name;
         teamNumber = nextTeamNum;

@@ -9,14 +9,13 @@ import java.util.Set;
 
 public abstract class TeamGameInstance extends GameInstance {
 
-    private Set<Team> teams = new HashSet<>();
+    protected Set<Team> teams = new HashSet<>();
 
     public TeamGameInstance(String name, World world) {
         super(name, world);
     }
 
-    @Override
-    protected void reset() {
-        //TODO: Reset team game
+    public Set<Team> getTeams() {
+        return new HashSet<>(teams);
     }
 }
