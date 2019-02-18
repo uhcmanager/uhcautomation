@@ -1,7 +1,9 @@
 package usa.cactuspuppy.uhc_automation.entity.unique;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamAddGroupsEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamCreateEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamDeleteEvent;
@@ -18,6 +20,7 @@ public class Team extends UniqueEntity {
     @Getter private int teamNumber;
     @Getter private List<Group> groups;
     @Getter private String name;
+    @Getter @Setter private Color color;
 
     public Team(TeamGameInstance gameInstance) {
         super(gameInstance);

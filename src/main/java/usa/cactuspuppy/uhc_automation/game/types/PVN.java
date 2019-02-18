@@ -1,16 +1,19 @@
 package usa.cactuspuppy.uhc_automation.game.types;
 
-import lombok.Getter;
+import org.bukkit.Color;
 import org.bukkit.World;
-import org.bukkit.scoreboard.Scoreboard;
 import usa.cactuspuppy.uhc_automation.entity.unique.Team;
 
 public class PVN extends TeamGameInstance {
 
     public PVN(String name, World world) {
         super(name, world);
-        addTeam(new Team(this, "Pirates"));
-        addTeam(new Team(this, "Ninjas"));
+        Team pirates = new Team(this, "Pirates");
+        pirates.setColor(Color.YELLOW);
+        addTeam(pirates, true);
+        Team ninjas = new Team(this, "Ninjas");
+        ninjas.setColor(Color.PURPLE);
+        addTeam(ninjas, true);
     }
 
     @Override

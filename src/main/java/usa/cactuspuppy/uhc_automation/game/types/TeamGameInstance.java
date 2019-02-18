@@ -4,23 +4,34 @@ import org.bukkit.World;
 import usa.cactuspuppy.uhc_automation.entity.unique.Team;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public abstract class TeamGameInstance extends GameInstance {
 
-    protected Set<Team> teams = new HashSet<>();
+    protected Map<String, Team> teams = new HashMap<>();
 
     public TeamGameInstance(String name, World world) {
         super(name, world);
     }
 
-    public Set<Team> getTeams() {
-        return new HashSet<>(teams);
+    public Map<String, Team> getTeams() {
+        return new HashMap<>(teams);
     }
 
-    public void addTeam(Team team) {
-        teams.add(team);
+    /**
+     * Adds a team to this GameInstance
+     * @param team Team to add
+     * @param overwrite Whether the GameInstance should overwrite the team previously under this name, if any.
+     * @return Whether the team was successfully added. Always true if overwrite is true.
+     */
+    public boolean addTeam(Team team, boolean overwrite) {
+        String name = team.getName();
+        if (teams.containsKey(name) && !overwrite) { return false; }
+        teams.put(name, team);
+        return true;
     }
 
     public void removeTeam(Team team) {

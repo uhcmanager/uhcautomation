@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.World;
+import usa.cactuspuppy.uhc_automation.entity.unique.ScoreboardSet;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.io.Serializable;
@@ -58,6 +59,9 @@ public abstract class GameInstance implements Serializable {
 
     @Setter(AccessLevel.NONE)
     protected GameState gameState;
+
+    @Setter(AccessLevel.NONE)
+    protected transient ScoreboardSet scoreboardSet = new ScoreboardSet(this);
 
     // [=== PLAYER INFO ===]
     /**
