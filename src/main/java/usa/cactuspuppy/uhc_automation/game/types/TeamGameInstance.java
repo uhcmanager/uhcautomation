@@ -1,7 +1,9 @@
 package usa.cactuspuppy.uhc_automation.game.types;
 
 import org.bukkit.World;
+import org.bukkit.scoreboard.Scoreboard;
 import usa.cactuspuppy.uhc_automation.entity.unique.Team;
+import usa.cactuspuppy.uhc_automation.entity.util.ScoreboardSet;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 import java.util.HashMap;
@@ -31,6 +33,7 @@ public abstract class TeamGameInstance extends GameInstance {
         String name = team.getName();
         if (teams.containsKey(name) && !overwrite) { return false; }
         teams.put(name, team);
+
         return true;
     }
 

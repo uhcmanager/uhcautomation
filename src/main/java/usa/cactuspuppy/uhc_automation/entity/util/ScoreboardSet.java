@@ -3,19 +3,21 @@ package usa.cactuspuppy.uhc_automation.entity.util;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.Scoreboard;
+import usa.cactuspuppy.uhc_automation.entity.unique.Team;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Represents the set of scoreboards (one per player) for a GameInstance
  */
-public class ScoreboardSet {
+public class ScoreboardSet implements Serializable {
     @Getter private GameInstance parent;
-    private Map<UUID, Scoreboard> scoreboards = new HashMap<>();
+    private transient Map<UUID, Scoreboard> scoreboards = new HashMap<>();
+    private Set<InfoObjective> objectives = new HashSet<>();
+    private Set<Team> teams = new HashSet<>();
 
     public ScoreboardSet(GameInstance parent) {
         this.parent = parent;
@@ -41,5 +43,9 @@ public class ScoreboardSet {
             return addPlayer(playerUid);
         }
         return scoreboards.get(playerUid);
+    }
+
+    public Set<Scoreboard> getAllScoreboards() {
+        return new HashSet<>(scoreboards.values());
     }
 }

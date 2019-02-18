@@ -61,7 +61,7 @@ public abstract class GameInstance implements Serializable {
     protected GameState gameState;
 
     @Setter(AccessLevel.NONE)
-    protected transient ScoreboardSet scoreboardSet = new ScoreboardSet(this);
+    protected ScoreboardSet scoreboardSet = new ScoreboardSet(this);
 
     // [=== PLAYER INFO ===]
     /**

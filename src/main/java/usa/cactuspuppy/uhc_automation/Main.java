@@ -111,6 +111,7 @@ public class Main extends JavaPlugin {
                     GameInstance instance = (GameInstance) new ObjectInputStream(new FileInputStream(f)).readObject();
                     GameManager.registerGame(instance);
                     //TODO: Resume game
+                    instance.
                 } catch (IOException | ClassNotFoundException e) {
                     Logger.logWarning(this.getClass(), "Problem restoring game information from file " + f.getName() + ", deleting it...", e);
                     if (!f.delete()) Logger.logWarning(this.getClass(), "Unable to remove " + f.getName());
