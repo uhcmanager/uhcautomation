@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.World;
-import usa.cactuspuppy.uhc_automation.entity.unique.ScoreboardSet;
+import usa.cactuspuppy.uhc_automation.entity.util.ScoreboardSet;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.io.Serializable;

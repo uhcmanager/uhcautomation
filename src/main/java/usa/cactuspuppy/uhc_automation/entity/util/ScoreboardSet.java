@@ -1,4 +1,4 @@
-package usa.cactuspuppy.uhc_automation.entity.unique;
+package usa.cactuspuppy.uhc_automation.entity.util;
 
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -32,6 +32,7 @@ public class ScoreboardSet {
             return null;
         }
         scoreboards.put(playerUid, newScoreboard);
+        //TODO: Bring scoreboard set up to speed
         return newScoreboard;
     }
 

@@ -6,5 +6,5 @@ import static org.junit.Assert.*;
 
 public class SQLHandlerTest {
     @Test
-    public void poop() {}
+    public void test() {}
 }

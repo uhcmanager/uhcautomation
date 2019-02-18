@@ -42,7 +42,7 @@ public final class Config {
         try {
             readValues(new FileInputStream(configFile));
         } catch (FileNotFoundException e) {
-            Logger.logWarning(this.getClass(), "Could not find config file on initiation", e);
+            Logger.logWarning(this.getClass(), "Could not find config file " + configFile.getName() + " on initiation", e);
         }
     }
 
@@ -51,7 +51,7 @@ public final class Config {
         try {
             readValues(new FileInputStream(configFile));
         } catch (FileNotFoundException e) {
-            Logger.logWarning(this.getClass(), "Could not find config file on initiation", e);
+            Logger.logWarning(this.getClass(), "Could not find config file " + configFile.getName() + " on initiation", e);
         }
     }
 
@@ -132,7 +132,6 @@ public final class Config {
      * @return whether saving was successful
      */
     public boolean saveConfig(boolean overwrite) {
-        //TODO: Translate this to file
         if (configFile.isFile() && !overwrite) {
             return false;
         }

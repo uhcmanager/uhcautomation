@@ -3,6 +3,7 @@ package usa.cactuspuppy.uhc_automation.entity.unique;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamAddGroupsEvent;
 import usa.cactuspuppy.uhc_automation.event.game.team.TeamCreateEvent;
@@ -20,11 +21,10 @@ public class Team extends UniqueEntity {
     @Getter private int teamNumber;
     @Getter private List<Group> groups;
     @Getter private String name;
-    @Getter @Setter private Color color;
+    @Getter @Setter private ChatColor color = ChatColor.WHITE;
 
     public Team(TeamGameInstance gameInstance) {
         super(gameInstance);
-        //TODO: Add team to team game instance
         groups = new ArrayList<>();
         teamNumber = nextTeamNum;
         nextTeamNum = genNextTeamNum(nextTeamNum);
@@ -33,7 +33,6 @@ public class Team extends UniqueEntity {
 
     public Team(TeamGameInstance gameInstance, String name) {
         super(gameInstance);
-        //TODO: Add team to team game instance
         groups = new ArrayList<>();
         this.name = name;
         teamNumber = nextTeamNum;
