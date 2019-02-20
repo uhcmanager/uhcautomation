@@ -16,7 +16,6 @@ import java.util.*;
 public class ScoreboardSet implements Serializable {
     @Getter private GameInstance parent;
     private transient Map<UUID, Scoreboard> scoreboards = new HashMap<>();
-    private Set<InfoObjective> objectives = new HashSet<>();
     private Set<Team> teams = new HashSet<>();
 
     public ScoreboardSet(GameInstance parent) {
