@@ -35,11 +35,18 @@ public class CommandInfo extends UHCCommand {
         if (modeArg.equalsIgnoreCase("toggle")) {
             toggleTDM();
         } else if (modeArg.equalsIgnoreCase("chat")) {
-            if (mode == InfoDisplayMode.CHAT) { return; }
+            if (mode == InfoDisplayMode.CHAT) {
+                commandSender.sendMessage(ChatColor.YELLOW + "Display mode did not change");
+                return;
+            }
             mode = InfoDisplayMode.CHAT;
+            commandSender.sendMessage(ChatColor.GREEN + "Set display mode to chat-only");
         } else if (modeArg.equalsIgnoreCase("scoreboard")) {
-            if (mode == InfoDisplayMode.SCOREBOARD) { return; }
+            if (mode == InfoDisplayMode.SCOREBOARD) {
+                return;
+            }
             mode = InfoDisplayMode.SCOREBOARD;
+            commandSender.sendMessage(ChatColor.GREEN + "Set display mode to scoreboard");
         } else {
             commandSender.sendMessage(ChatColor.RED + "Unknown display mode");
         }
