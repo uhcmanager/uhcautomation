@@ -27,12 +27,21 @@ public class CommandInfo extends UHCCommand {
             UHCUtils.sendPlayerInfo(Main.getInstance(), commandSender);
             return;
         }
-        if (args[0].equals("toggle")) {
-            if (!commandSender.hasPermission("uhc.admin")) { //Deny permission
-                commandSender.sendMessage(ChatColor.RED + "You do not have to toggle the scoreboard! Please contact a server administrator if you believe this is in error.");
-                return;
-            }
+        String modeArg = args[0];
+        if (!commandSender.hasPermission("uhc.admin")) { //Deny permission
+            commandSender.sendMessage(ChatColor.RED + "You do not have to alter the scoreboard! Please contact a server administrator if you believe this is in error.");
+            return;
+        }
+        if (modeArg.equalsIgnoreCase("toggle")) {
             toggleTDM();
+        } else if (modeArg.equalsIgnoreCase("chat")) {
+            if (mode == InfoDisplayMode.CHAT) { return; }
+            mode = InfoDisplayMode.CHAT;
+        } else if (modeArg.equalsIgnoreCase("scoreboard")) {
+            if (mode == InfoDisplayMode.SCOREBOARD) { return; }
+            mode = InfoDisplayMode.SCOREBOARD;
+        } else {
+            commandSender.sendMessage(ChatColor.RED + "Unknown display mode");
         }
     }
 
