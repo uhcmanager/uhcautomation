@@ -59,6 +59,5 @@ public class PlayerConnectionListener implements Listener {
         if (Main.getInstance().getGameInstance().getActivePlayers().contains(e.getPlayer().getUniqueId())) {
             Main.getInstance().getGameInstance().lostConnectPlayer(e.getPlayer());
         }
-        InfoAnnouncer.getInstance().removePlayerFromObjectiveSet(e.getPlayer());
     }
 }

@@ -9,16 +9,10 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import usa.cactuspuppy.uhc_automation.InfoDisplayMode;
-import usa.cactuspuppy.uhc_automation.InfoModeCache;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 public class InfoAnnouncer implements Runnable {
-    private Set<UUID> objectivePlayerSet = new HashSet<>();
     @Getter private Scoreboard timeScoreboard;
     @Getter private Objective obj;
     private Team TimeDisplay;
@@ -36,7 +30,7 @@ public class InfoAnnouncer implements Runnable {
 
     public InfoAnnouncer() {
         instance = this;
-        timeScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        timeScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         if (timeScoreboard.getObjective("Health2") == null) {
             timeScoreboard.registerNewObjective("Health2", "health", "Health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
         } else if (!timeScoreboard.getObjective("Health2").getCriteria().equals("health")) {
@@ -75,33 +69,26 @@ public class InfoAnnouncer implements Runnable {
 
     public void removePlayerFromObjectiveSet(Player p) {
         Main.getInstance().getGameInstance().bindPlayertoScoreboard(p);
-        objectivePlayerSet.remove(p.getUniqueId());
     }
 
     @Override
     public void run() {
         TimeDisplay.setPrefix(ChatColor.WHITE + "  " + UHCUtils.secsToFormatString2(UHCUtils.getSecsElapsed(Main.getInstance())));
-        PlayersDisplay.setPrefix(ChatColor.WHITE + "  " + String.valueOf(Main.getInstance().getGameInstance().isTeamMode() ? Main.getInstance().getGameInstance().getNumTeams() : Main.getInstance().getGameInstance().getLivePlayers().size()));
+        PlayersDisplay.setPrefix(ChatColor.WHITE + "  " + (Main.getInstance().getGameInstance().isTeamMode() ? Main.getInstance().getGameInstance().getNumTeams() : Main.getInstance().getGameInstance().getLivePlayers().size()));
         WBDisplay.setPrefix(ChatColor.WHITE + ((Main.getInstance().getGameInstance().getMinsToShrink() == -1) ? "  ±" + (Main.getInstance().getGameInstance().getInitSize() / 2) : (Main.getInstance().getGameInstance().isBorderShrinking() ?
                 "  Shrinking to ±" + (Main.getInstance().getGameInstance().getFinalSize() / 2) :
                 "  Shrinks in " + UHCUtils.secsToFormatString2((Main.getInstance().getGameInstance().getMinsToShrink() * 60) - UHCUtils.getSecsElapsed(Main.getInstance())))));
         PVPDisplay.setPrefix(ChatColor.WHITE + (Main.getInstance().getGameInstance().getWorld().getPVP() ?
                 "  Enabled" :
                 "  Enabled in " + UHCUtils.secsToFormatString2(((int) Main.getInstance().getGameInstance().getSecsToPVP()) - UHCUtils.getSecsElapsed(Main.getInstance()))));
-        Main.getInstance().getGameInstance().getActivePlayers().stream().map(Bukkit::getPlayer).forEach(this::showInfoToPlayer);
+        Main.getInstance().getGameInstance().getActivePlayers().stream().map(Bukkit::getPlayer).forEach(this::showInfo);
     }
 
-    private void showInfoToPlayer(Player player) {
-        InfoDisplayMode tdm = InfoModeCache.getInstance().getPlayerPref(player.getUniqueId());
-        if (tdm == null) {
-            Bukkit.getLogger().warning(player.getName() + " possess an invalid InfoDisplayMode. Setting to default (SCOREBOARD)...");
-            InfoModeCache.getInstance().storePlayerPref(player.getUniqueId(), InfoDisplayMode.SCOREBOARD);
-        }
-        if (tdm == InfoDisplayMode.SCOREBOARD) {
-            if (!objectivePlayerSet.contains(player.getUniqueId())) {
-                player.setScoreboard(timeScoreboard);
-                objectivePlayerSet.add(player.getUniqueId());
-            }
+    private void showInfo(InfoDisplayMode mode) {
+        if (mode == InfoDisplayMode.SCOREBOARD) {
+            showBoard();
+        } else {
+            clearBoard();
         }
     }
 
@@ -110,16 +97,10 @@ public class InfoAnnouncer implements Runnable {
     }
 
     public void showBoard() {
-        if (timeScoreboard.getObjective("FILL") != null) {
-            timeScoreboard.getObjective("FILL").unregister();
-        }
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
 
     public void clearBoard() {
-        if (timeScoreboard.getObjective("FILL") != null) {
-            timeScoreboard.getObjective("FILL").unregister();
-        }
-        timeScoreboard.registerNewObjective("FILL", "dummy", "FILL").setDisplaySlot(DisplaySlot.SIDEBAR);
+        timeScoreboard.clearSlot(DisplaySlot.SIDEBAR);
     }
 }
