@@ -66,8 +66,6 @@ public class InfoAnnouncer implements Runnable {
         obj.getScore(WORLD_BORDER_ID).setScore(10);
         obj.getScore(ChatColor.RED + "» PVP:").setScore(9);
         obj.getScore(PVP_ID).setScore(8);
-        obj.getScore(BREAK_TOGGLE_INFO).setScore(7);
-        obj.getScore(ChatColor.GRAY + "/uhc info toggle").setScore(6);
     }
 
     @Override
@@ -84,8 +82,9 @@ public class InfoAnnouncer implements Runnable {
     }
 
     private void showInfo(InfoDisplayMode mode) {
+        Main.getInstance().getGameInstance().bindAllPlayersToScoreboard();
         if (mode == InfoDisplayMode.SCOREBOARD) {
-            if (timeScoreboard.getObjective(DisplaySlot.SIDEBAR).equals(obj)) {
+            if (timeScoreboard.getObjective(DisplaySlot.SIDEBAR) != null && timeScoreboard.getObjective(DisplaySlot.SIDEBAR).equals(obj)) {
                 return;
             }
             obj.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -103,14 +102,18 @@ public class InfoAnnouncer implements Runnable {
 
     public void showBoard() {
         Main.getInstance().getLogger().info("Showing board...");
-        new InfoAnnouncer().schedule();
+        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
 
     public void clearBoard() {
         Main.getInstance().getLogger().info("Clearing board...");
+        timeScoreboard.clearSlot(DisplaySlot.SIDEBAR);
+    }
+
+    public void stopBoard() {
         if (id != null) {
             Bukkit.getScheduler().cancelTask(id);
         }
-        timeScoreboard.clearSlot(DisplaySlot.SIDEBAR);
+        clearBoard();
     }
 }

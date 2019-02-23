@@ -42,7 +42,6 @@ public class CommandInfo extends UHCCommand {
                 return;
             }
             mode = InfoDisplayMode.CHAT;
-            InfoAnnouncer.getInstance().clearBoard();
             commandSender.sendMessage(ChatColor.GREEN + "Set display mode to chat-only");
         } else if (modeArg.equalsIgnoreCase("scoreboard")) {
             if (mode == InfoDisplayMode.SCOREBOARD) {

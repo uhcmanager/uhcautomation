@@ -238,7 +238,7 @@ public class GameInstance {
 
     public void stop() {
         (new RestartTasks()).schedule();
-        infoAnnouncer.clearBoard();
+        infoAnnouncer.stopBoard();
         if (SwordHandler.getInstance() != null) {
             SwordHandler.getInstance().removeSpawnedStructure();
         }
@@ -410,6 +410,12 @@ public class GameInstance {
             s.sendMessage(String.format(ChatColor.RED + "Player separation distance %d is not less than spread range %d. UHC aborted.", spreadDistance, initSize));
         }
         return valid;
+    }
+
+    public void bindAllPlayersToScoreboard() {
+        for (Player p : getPlayers()) {
+            p.setScoreboard(scoreboard);
+        }
     }
 
     public void logStatus(CommandSender s) {

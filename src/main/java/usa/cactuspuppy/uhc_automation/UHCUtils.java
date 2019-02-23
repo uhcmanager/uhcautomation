@@ -130,7 +130,7 @@ public class UHCUtils {
                 return new HashMap<>();
             }
         } else {
-            m.getLogger().warning("Could not find auxiliary data. Clearing worlc data...");
+            m.getLogger().warning("Could not find auxiliary data. Clearing world data...");
             clearWorldData(m);
             return new HashMap<>();
         }

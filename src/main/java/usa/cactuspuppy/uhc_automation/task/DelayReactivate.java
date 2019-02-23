@@ -73,7 +73,6 @@ public class DelayReactivate implements Runnable {
         }
         HandlerList.unregisterAll(g.getFreezePlayers());
         g.getInfoAnnouncer().schedule();
-        g.getInfoAnnouncer().showBoard();
         g.setActive(true);
     }
 
