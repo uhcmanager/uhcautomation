@@ -3,7 +3,6 @@ package usa.cactuspuppy.uhc_automation.task;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -11,6 +10,7 @@ import org.bukkit.scoreboard.Team;
 import usa.cactuspuppy.uhc_automation.InfoDisplayMode;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
+import usa.cactuspuppy.uhc_automation.commands.CommandInfo;
 
 public class InfoAnnouncer implements Runnable {
     @Getter private Scoreboard timeScoreboard;
@@ -67,10 +67,6 @@ public class InfoAnnouncer implements Runnable {
         obj.getScore(ChatColor.GRAY + "/uhc info toggle").setScore(6);
     }
 
-    public void removePlayerFromObjectiveSet(Player p) {
-        Main.getInstance().getGameInstance().bindPlayertoScoreboard(p);
-    }
-
     @Override
     public void run() {
         TimeDisplay.setPrefix(ChatColor.WHITE + "  " + UHCUtils.secsToFormatString2(UHCUtils.getSecsElapsed(Main.getInstance())));
@@ -81,7 +77,7 @@ public class InfoAnnouncer implements Runnable {
         PVPDisplay.setPrefix(ChatColor.WHITE + (Main.getInstance().getGameInstance().getWorld().getPVP() ?
                 "  Enabled" :
                 "  Enabled in " + UHCUtils.secsToFormatString2(((int) Main.getInstance().getGameInstance().getSecsToPVP()) - UHCUtils.getSecsElapsed(Main.getInstance()))));
-        Main.getInstance().getGameInstance().getActivePlayers().stream().map(Bukkit::getPlayer).forEach(this::showInfo);
+        showInfo(CommandInfo.getMode());
     }
 
     private void showInfo(InfoDisplayMode mode) {

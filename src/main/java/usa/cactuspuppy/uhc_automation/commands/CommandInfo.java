@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandInfo extends UHCCommand {
-    @Getter private InfoDisplayMode mode = InfoDisplayMode.SCOREBOARD;
+    @Getter private static InfoDisplayMode mode = InfoDisplayMode.SCOREBOARD;
     public CommandInfo() {
         name = "info";
         adminOnly = false;
@@ -27,18 +27,20 @@ public class CommandInfo extends UHCCommand {
             UHCUtils.sendPlayerInfo(Main.getInstance(), commandSender);
             return;
         }
-        if (!commandSender.hasPermission("uhc.admin")) { //Deny permission
-            commandSender.sendMessage(ChatColor.RED + "You do not have to toggle the scoreboard! Please contact a server administrator if you believe this is in error.");
-            return;
+        if (args[0].equals("toggle")) {
+            if (!commandSender.hasPermission("uhc.admin")) { //Deny permission
+                commandSender.sendMessage(ChatColor.RED + "You do not have to toggle the scoreboard! Please contact a server administrator if you believe this is in error.");
+                return;
+            }
+            toggleTDM();
         }
-
     }
 
-    private static InfoDisplayMode toggleTDM(InfoDisplayMode tdm) {
-        if (tdm == InfoDisplayMode.CHAT) {
-            return InfoDisplayMode.SCOREBOARD;
+    private static void toggleTDM() {
+        if (mode == InfoDisplayMode.CHAT) {
+            mode = InfoDisplayMode.SCOREBOARD;
         }
-        return InfoDisplayMode.CHAT;
+        mode = InfoDisplayMode.CHAT;
     }
 
     public static List<String> onTabComplete(String[] args) {
