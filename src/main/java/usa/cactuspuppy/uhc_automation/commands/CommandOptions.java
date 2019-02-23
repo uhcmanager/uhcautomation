@@ -133,7 +133,7 @@ public class CommandOptions extends UHCCommand {
                     Main.getInstance().getGameInstance().setEpLength(Integer.valueOf(args[1]));
                     Main.getInstance().getConfig().set("game.episode-length", Integer.valueOf(args[1]));
                 //secs-to-pvp
-                } else if (args[0].equalsIgnoreCase(OPTIONS[8])) {
+                } else if (args[0].equalsIgnoreCase(OPTIONS[9])) {
                     if (Integer.valueOf(args[1]) < 0) {
                         sender.sendMessage(ChatColor.RED + "ERROR: Requested seconds to pvp " + ChatColor.RESET + Integer.valueOf(args[1])
                                 + ChatColor.RED + " is not greater than or equal to zero.");
@@ -142,7 +142,7 @@ public class CommandOptions extends UHCCommand {
                     Main.getInstance().getGameInstance().setSecsToPVP(Integer.valueOf(args[1]));
                     Main.getInstance().getConfig().set("game.secs-to-pvp", Integer.valueOf(args[1]));
                 //one-shot
-                } else if (args[0].equalsIgnoreCase(OPTIONS[9])) {
+                } else if (args[0].equalsIgnoreCase(OPTIONS[10])) {
                     if (!(args[1].equals("true") || args[1].equals("false"))) {
                         sender.sendMessage(ChatColor.RED + "ERROR: Option " + args[1] + " is not true or false.");
                         return;
