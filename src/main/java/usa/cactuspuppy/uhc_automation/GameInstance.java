@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation;
 
+import com.sun.javafx.sg.prism.NodeEffectInput;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.WordUtils;
@@ -9,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.RenderType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import usa.cactuspuppy.uhc_automation.commands.CommandSurface;
@@ -74,10 +76,10 @@ public class GameInstance {
         (new DelayReactivate(this)).schedule();
         scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         if (scoreboard.getObjective("Health") == null) {
-            scoreboard.registerNewObjective("Health", "health", ChatColor.RED + "Health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
+            scoreboard.registerNewObjective("Health", "health", ChatColor.RED + "Health", RenderType.HEARTS).setDisplaySlot(DisplaySlot.PLAYER_LIST);
         } else if (!scoreboard.getObjective("Health").getCriteria().equals("health")) {
             scoreboard.getObjective("Health").unregister();
-            scoreboard.registerNewObjective("Health", "health", ChatColor.RED + "Health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
+            scoreboard.registerNewObjective("Health", "health", ChatColor.RED + "Health", RenderType.HEARTS).setDisplaySlot(DisplaySlot.PLAYER_LIST);
         }
     }
 
@@ -270,6 +272,10 @@ public class GameInstance {
         world.getWorldBorder().setSize(finalSize, calcBorderShrinkTime());
         main.getLogger().info("Game border shrinking from " + initSize + " to " + finalSize
                 + " over " + calcBorderShrinkTime() + " secs");
+        setWorldShrinking(world);
+    }
+
+    public static void setWorldShrinking(World world) {
         (new BorderAnnouncer()).schedule();
         world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
@@ -523,6 +529,7 @@ public class GameInstance {
     public void registerPlayerSilent(Player p) {
         regPlayers.add(p.getUniqueId());
         activePlayers.add(p.getUniqueId());
+        p.setScoreboard(Main.getInstance().getGameInstance().getScoreboard());
         if (p.getGameMode() == GameMode.SURVIVAL) {
             livePlayers.add(p.getUniqueId());
             if (teamMode && active) {
@@ -568,5 +575,25 @@ public class GameInstance {
     public void setUHCMode(boolean um) {
         uhcMode = um;
         world.setGameRule(GameRule.NATURAL_REGENERATION, !um);
+    }
+
+    public void setScoreboard(Scoreboard sb) {
+        Set<UUID> all = new HashSet<>(activePlayers);
+        all.addAll(blacklistPlayers);
+        for (UUID u : all) {
+            Player p = Bukkit.getPlayer(u);
+            if (p == null) { continue; }
+            p.setScoreboard(sb);
+        }
+    }
+
+    public Set<Player> getPlayers() {
+        Set<Player> all = activePlayers.stream().map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toSet());
+        all.addAll(world.getPlayers());
+        if (Main.getInstance().getConfig().getBoolean("extended-world-detection", true)) {
+            all.addAll(Bukkit.getWorld(world.getName() + "_nether").getPlayers());
+            all.addAll(Bukkit.getWorld(world.getName() + "_the_end").getPlayers());
+        }
+        return all;
     }
 }

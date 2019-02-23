@@ -49,17 +49,17 @@ public class UHCUtils {
     }
 
     public static void broadcastChatMessage(GameInstance gi, String msg) {
-        for (UUID u : gi.getActivePlayers()) {
-            Bukkit.getPlayer(u).sendMessage(msg);
+        for (Player p : gi.getPlayers()) {
+            p.sendMessage(msg);
         }
     }
 
     public static void broadcastSound(GameInstance gi, String sound, float volume, float pitch) {
-        gi.getActivePlayers().stream().map(Bukkit::getPlayer).forEach(p -> p.playSound(p.getLocation(), sound, volume, pitch));
+        gi.getPlayers().forEach(p -> p.playSound(p.getLocation(), sound, volume, pitch));
     }
 
     public static void broadcastTitle(GameInstance gi, String title, String subtitle, int in, int stay, int out) {
-        gi.getActivePlayers().stream().map(Bukkit::getPlayer).forEach(p -> p.sendTitle(title, subtitle, in, stay, out));
+        gi.getPlayers().forEach(p -> p.sendTitle(title, subtitle, in, stay, out));
     }
 
     public static void broadcastChatMessage(String msg) {
@@ -71,24 +71,21 @@ public class UHCUtils {
     }
 
     public static void broadcastMessageWithSound(GameInstance gi, String chat, String sound, float volume, float pitch) {
-        for (UUID u: gi.getActivePlayers()) {
-            Player p = Bukkit.getPlayer(u);
+        for (Player p : gi.getPlayers()) {
             p.sendMessage(chat);
             p.playSound(p.getLocation(), sound, volume, pitch);
         }
     }
 
     public static void broadcastMessageWithSound(String chat, Sound sound, float volume, float pitch) {
-        for (UUID u : Main.getInstance().getGameInstance().getActivePlayers()) {
-            Player p = Bukkit.getPlayer(u);
+        for (Player p : Main.getInstance().getGameInstance().getPlayers()) {
             p.sendMessage(chat);
             p.playSound(p.getLocation(), sound, volume, pitch);
         }
     }
 
     public static void broadcastMessagewithSoundandTitle(GameInstance gi, String chat, String title, String subtitle, int in, int stay, int out, String sound, float volume, float pitch) {
-        for (UUID u: gi.getActivePlayers()) {
-            Player p = Bukkit.getPlayer(u);
+        for (Player p : gi.getPlayers()) {
             p.sendMessage(chat);
             p.sendTitle(title, subtitle, in, stay, out);
             p.playSound(p.getLocation(), sound, volume, pitch);
@@ -96,8 +93,7 @@ public class UHCUtils {
     }
 
     public static void broadcastSoundandTitle(GameInstance gi, String sound, float volume, float pitch, String title, String subtitle, int in, int stay, int out) {
-        for (UUID u : gi.getActivePlayers()) {
-            Player p = Bukkit.getPlayer(u);
+        for (Player p : gi.getPlayers()) {
             p.playSound(p.getLocation(), sound, volume, pitch);
             p.sendTitle(title, subtitle, in, stay, out);
         }

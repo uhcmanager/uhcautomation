@@ -61,12 +61,7 @@ public class DelayReactivate implements Runnable {
         if (now >= g.getStartT() + g.getMinsToShrink() * 60000) {
             Main.getInstance().getLogger().info("Border was shrinking before restart, initiating post-border-shrink mechanics now...");
             World world = g.getWorld();
-            (new BorderAnnouncer()).schedule();
-            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-            world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-            world.setTime(6000L);
-            world.setStorm(false);
-            CommandSurface.startHelper();
+            GameInstance.setWorldShrinking(world);
             g.setBorderShrinking(true);
         } else if (g.getMinsToShrink() > 0) {
             g.setBorderCountdown((new BorderCountdown(g.getMinsToShrink() * 60, g.getStartT(), Main.getInstance().getConfig().getBoolean("warnings.border", true))).schedule());

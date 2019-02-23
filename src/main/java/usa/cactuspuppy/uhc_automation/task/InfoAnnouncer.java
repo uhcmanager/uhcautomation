@@ -30,7 +30,8 @@ public class InfoAnnouncer implements Runnable {
 
     public InfoAnnouncer() {
         instance = this;
-        timeScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        timeScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        Main.getInstance().getGameInstance().setScoreboard(timeScoreboard);
         if (timeScoreboard.getObjective("Health2") == null) {
             timeScoreboard.registerNewObjective("Health2", "health", "Health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
         } else if (!timeScoreboard.getObjective("Health2").getCriteria().equals("health")) {
