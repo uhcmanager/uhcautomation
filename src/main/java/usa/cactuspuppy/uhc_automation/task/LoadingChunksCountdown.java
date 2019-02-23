@@ -10,16 +10,24 @@ import java.util.UUID;
 public class LoadingChunksCountdown implements Runnable {
     private int length;
     private int iter;
+    private long lastTick;
 
     public Integer assignedID;
 
     public LoadingChunksCountdown(Main main, int l) {
         iter = l;
         length = l;
+        lastTick = System.currentTimeMillis();
     }
 
     @Override
     public void run() {
+        long currentTick = System.currentTimeMillis();
+        if (Math.abs(currentTick - lastTick - 1000) > 200) {
+            Bukkit.getLogger().info("Current tick: " + currentTick + " | Last tick: " + lastTick + " | Tick difference: " + (currentTick - lastTick) + "ms");
+            lastTick = currentTick;
+            return;
+        }
         if (iter == 0) {
             Main.getInstance().getGameInstance().release();
             if (assignedID != null) { Bukkit.getScheduler().cancelTask(assignedID); }
@@ -36,6 +44,7 @@ public class LoadingChunksCountdown implements Runnable {
             }
         }
         iter--;
+        lastTick = currentTick;
     }
 
     public int schedule() {

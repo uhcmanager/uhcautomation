@@ -3,10 +3,7 @@ package usa.cactuspuppy.uhc_automation.task;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
+import org.bukkit.scoreboard.*;
 import usa.cactuspuppy.uhc_automation.InfoDisplayMode;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
@@ -19,6 +16,7 @@ public class InfoAnnouncer implements Runnable {
     private Team PlayersDisplay;
     private Team WBDisplay;
     private Team PVPDisplay;
+    private Integer id;
 
     @Getter private static InfoAnnouncer instance;
 
@@ -33,10 +31,14 @@ public class InfoAnnouncer implements Runnable {
         timeScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         Main.getInstance().getGameInstance().setScoreboard(timeScoreboard);
         if (timeScoreboard.getObjective("Health2") == null) {
-            timeScoreboard.registerNewObjective("Health2", "health", "Health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
+            timeScoreboard.registerNewObjective("Health2", "health", ChatColor.RED + "Health", RenderType.HEARTS).setDisplaySlot(DisplaySlot.PLAYER_LIST);
         } else if (!timeScoreboard.getObjective("Health2").getCriteria().equals("health")) {
             timeScoreboard.getObjective("Health2").unregister();
-            timeScoreboard.registerNewObjective("Health2", "health", "Health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
+            timeScoreboard.registerNewObjective("Health2", "health", ChatColor.RED + "Health", RenderType.HEARTS).setDisplaySlot(DisplaySlot.PLAYER_LIST);
+        }
+        Objective healthOBJ = timeScoreboard.getObjective("Health2");
+        if (healthOBJ != null) {
+            healthOBJ.setDisplaySlot(DisplaySlot.PLAYER_LIST);
         }
         TimeDisplay = timeScoreboard.registerNewTeam("Time");
         PlayersDisplay = timeScoreboard.registerNewTeam("Players");
@@ -83,21 +85,32 @@ public class InfoAnnouncer implements Runnable {
 
     private void showInfo(InfoDisplayMode mode) {
         if (mode == InfoDisplayMode.SCOREBOARD) {
-            showBoard();
+            if (timeScoreboard.getObjective(DisplaySlot.SIDEBAR).equals(obj)) {
+                return;
+            }
+            obj.setDisplaySlot(DisplaySlot.SIDEBAR);
         } else {
-            clearBoard();
+            if (timeScoreboard.getObjective(DisplaySlot.SIDEBAR) == null) {
+                return;
+            }
+            timeScoreboard.clearSlot(DisplaySlot.SIDEBAR);
         }
     }
 
     public void schedule() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), this, 0L, 2L);
+        id = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), this, 0L, 2L);
     }
 
     public void showBoard() {
-        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        Main.getInstance().getLogger().info("Showing board...");
+        new InfoAnnouncer().schedule();
     }
 
     public void clearBoard() {
+        Main.getInstance().getLogger().info("Clearing board...");
+        if (id != null) {
+            Bukkit.getScheduler().cancelTask(id);
+        }
         timeScoreboard.clearSlot(DisplaySlot.SIDEBAR);
     }
 }

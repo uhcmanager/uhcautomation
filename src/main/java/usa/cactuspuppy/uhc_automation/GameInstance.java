@@ -1,6 +1,5 @@
 package usa.cactuspuppy.uhc_automation;
 
-import com.sun.javafx.sg.prism.NodeEffectInput;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.WordUtils;
@@ -51,7 +50,7 @@ public class GameInstance {
     private int loadChunksCDID;
     private int teamsRemaining;
 
-    @Getter private static final boolean DEBUG = false;
+    @Getter private static final boolean DEBUG = true;
 
     public GameInstance(Main p) {
         main = p;
@@ -240,7 +239,9 @@ public class GameInstance {
     public void stop() {
         (new RestartTasks()).schedule();
         infoAnnouncer.clearBoard();
-        SwordHandler.getInstance().removeSpawnedStructure();
+        if (SwordHandler.getInstance() != null) {
+            SwordHandler.getInstance().removeSpawnedStructure();
+        }
         long stopT = System.currentTimeMillis();
         long timeElapsed;
         if (startT == 0) {
@@ -509,10 +510,6 @@ public class GameInstance {
         return (int) ((initSize - finalSize) * slowFactor);
     }
 
-    public void bindPlayertoScoreboard(Player p) {
-        p.setScoreboard(scoreboard);
-    }
-
     public boolean isStarted() {
         return startT != 0;
     }
@@ -578,6 +575,7 @@ public class GameInstance {
     }
 
     public void setScoreboard(Scoreboard sb) {
+        scoreboard = sb;
         Set<UUID> all = new HashSet<>(activePlayers);
         all.addAll(blacklistPlayers);
         for (UUID u : all) {

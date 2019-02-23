@@ -7,3 +7,5 @@ temptests/
 dependency-reduced-pom.xml
 *.iml
 
+/hs_err_pid20164.log
+hs_err_pid20164.log

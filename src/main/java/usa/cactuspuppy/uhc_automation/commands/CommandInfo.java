@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import usa.cactuspuppy.uhc_automation.InfoDisplayMode;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
+import usa.cactuspuppy.uhc_automation.task.InfoAnnouncer;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +23,7 @@ public class CommandInfo extends UHCCommand {
     @Override
     public void onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
         if (args.length > 1) {
-            commandSender.sendMessage(ChatColor.RED + "Usage: /uhc info [toggle]");
+            commandSender.sendMessage(ChatColor.RED + "Usage: /uhc info [toggle:chat:scoreboard]");
         } else if (args.length == 0) {
             UHCUtils.sendPlayerInfo(Main.getInstance(), commandSender);
             return;
@@ -34,15 +35,18 @@ public class CommandInfo extends UHCCommand {
         }
         if (modeArg.equalsIgnoreCase("toggle")) {
             toggleTDM();
+            commandSender.sendMessage(ChatColor.GREEN + "Toggled display mode to: " + ChatColor.RESET + mode.name().toLowerCase());
         } else if (modeArg.equalsIgnoreCase("chat")) {
             if (mode == InfoDisplayMode.CHAT) {
                 commandSender.sendMessage(ChatColor.YELLOW + "Display mode did not change");
                 return;
             }
             mode = InfoDisplayMode.CHAT;
+            InfoAnnouncer.getInstance().clearBoard();
             commandSender.sendMessage(ChatColor.GREEN + "Set display mode to chat-only");
         } else if (modeArg.equalsIgnoreCase("scoreboard")) {
             if (mode == InfoDisplayMode.SCOREBOARD) {
+                commandSender.sendMessage(ChatColor.YELLOW + "Display mode did not change");
                 return;
             }
             mode = InfoDisplayMode.SCOREBOARD;
@@ -55,6 +59,7 @@ public class CommandInfo extends UHCCommand {
     private static void toggleTDM() {
         if (mode == InfoDisplayMode.CHAT) {
             mode = InfoDisplayMode.SCOREBOARD;
+            return;
         }
         mode = InfoDisplayMode.CHAT;
     }

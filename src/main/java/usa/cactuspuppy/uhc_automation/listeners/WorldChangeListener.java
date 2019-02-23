@@ -20,11 +20,6 @@ public class WorldChangeListener implements Listener {
         }
         if ((UHCUtils.worldEqualsExt(e.getTo().getWorld(), Main.getInstance().getGameInstance().getWorld()) && Main.getInstance().getConfig().getBoolean("extended-world-detection", true)) || e.getTo().getWorld().equals(Main.getInstance().getGameInstance().getWorld())) {
             if (Main.getInstance().getGameInstance().getActivePlayers().contains(e.getPlayer().getUniqueId())) return;
-            if (InfoModeCache.getInstance().getPlayerPref(e.getPlayer().getUniqueId()).equals(InfoDisplayMode.SCOREBOARD)) {
-                e.getPlayer().setScoreboard(InfoAnnouncer.getInstance().getTimeScoreboard());
-            } else {
-                Main.getInstance().getGameInstance().bindPlayertoScoreboard(e.getPlayer());
-            }
             Main.getInstance().getGameInstance().registerPlayer(e.getPlayer());
         } else {
             e.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());

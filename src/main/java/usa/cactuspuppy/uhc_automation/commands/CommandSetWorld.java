@@ -32,6 +32,7 @@ public class CommandSetWorld extends UHCCommand {
             }
             World world = ((Player) sender).getWorld();
             Main.getInstance().getGameInstance().setWorld(world);
+            return;
         }
         String worldName = args[0];
         World world = Bukkit.getWorld(worldName);
