@@ -8,6 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import usa.cactuspuppy.uhc_automation.Main;
 
@@ -23,8 +25,16 @@ public class NameColorFixTask implements Runnable {
     @Override
     @SuppressWarnings("deprecation")
     public void run() {
-        for (Team t : Bukkit.getScoreboardManager().getMainScoreboard().getTeams()) {
-            t.setPrefix(t.getColor().toString());
+        InfoAnnouncer inst = InfoAnnouncer.getInstance();
+        if (inst != null) {
+            Scoreboard timeBoard = inst.getTimeScoreboard();
+            for (Team t : Bukkit.getScoreboardManager().getMainScoreboard().getTeams()) {
+                Team mirror = timeBoard.getTeam(t.getName());
+                if (mirror == null) {
+                    mirror = timeBoard.registerNewTeam(t.getName());
+                    copyTeam(mirror, t);
+                }
+            }
         }
         for (UUID u : Main.getInstance().getGameInstance().getActivePlayers()) {
             Player p = Bukkit.getPlayer(u);
@@ -45,8 +55,23 @@ public class NameColorFixTask implements Runnable {
         }
     }
 
+    private void copyTeam(Team dest, Team source) {
+        dest.setAllowFriendlyFire(source.allowFriendlyFire());
+        dest.setCanSeeFriendlyInvisibles(source.canSeeFriendlyInvisibles());
+        dest.setColor(source.getColor());
+        dest.setDisplayName(source.getName());
+        dest.setPrefix(source.getPrefix());
+        dest.setSuffix(source.getSuffix());
+        for (String s : source.getEntries()) {
+            if (dest.hasEntry(s)) {
+                continue;
+            }
+            dest.addEntry(s);
+        }
+    }
+
     public void schedule() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(m, this, 0L, 2L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(m, this, 0L, 20L);
         Bukkit.getServer().getPluginManager().registerEvents(new FixColoredNamesChatListener(), Main.getInstance());
     }
 
@@ -65,6 +90,12 @@ public class NameColorFixTask implements Runnable {
             String prefix = team.getPrefix();
             String suffix = team.getSuffix();
             e.setFormat("<" + prefix + color + "%1$s" + suffix + ChatColor.RESET + "> %2$s");
+        }
+
+        @EventHandler
+        public void onPlayerCommand(PlayerCommandPreprocessEvent e) {
+            String message = e.getMessage();
+            Bukkit.getLogger().info(e.getPlayer().getName() + " executed command '" + message + "'");
         }
     }
 }
