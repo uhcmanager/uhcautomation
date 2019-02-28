@@ -2,12 +2,16 @@ package usa.cactuspuppy.uhc_automation.task;
 
 import io.papermc.lib.PaperLib;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
-public class GenerateChunksHelper implements Runnable {
+import java.io.Serializable;
+import java.util.UUID;
+
+public class GenerateChunksHelper implements Runnable, Serializable {
     @Getter private static GenerateChunksHelper instance;
     @Getter private static boolean running;
 
@@ -15,7 +19,8 @@ public class GenerateChunksHelper implements Runnable {
     private static long prevElapsed;
     private int minChunkX, maxChunkX, minChunkZ, maxChunkZ;
     private static int chunkX, chunkZ;
-    private World world;
+    private UUID worldUID;
+    private transient World world;
 
     private int sideLength;
 
@@ -27,7 +32,8 @@ public class GenerateChunksHelper implements Runnable {
     public GenerateChunksHelper() {
         startTime = System.currentTimeMillis();
         instance = this;
-        world = Main.getInstance().getGameInstance().getWorld();
+        worldUID = Main.getInstance().getGameInstance().getWorld().getUID();
+        world = Bukkit.getWorld(worldUID);
         int radius = blockCoordtoChunkCoord(Main.getInstance().getGameInstance().getInitSize() / 2) + 1;
         this.minChunkX = -radius;
         this.maxChunkX = radius;

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandPrep extends UHCCommand {
-    private static final String[] OPTIONS = {"pause", "load", "stop"};
+    private static final String[] OPTIONS = {"pause", "load", "reset"};
 
     public CommandPrep() {
         name = "prep";
@@ -42,7 +42,7 @@ public class CommandPrep extends UHCCommand {
                 return;
             }
             (new GenerateChunksHelper()).start();
-        } else if (args[0].equalsIgnoreCase("stop")) {
+        } else if (args[0].equalsIgnoreCase("reset")) {
             if (GenerateChunksHelper.getInstance() == null) {
                 sender.sendMessage(ChatColor.RED + "No chunk generation is currently in progress.");
                 return;
