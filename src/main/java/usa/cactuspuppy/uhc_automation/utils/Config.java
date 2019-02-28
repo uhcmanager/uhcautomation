@@ -56,7 +56,7 @@ public final class Config {
     }
 
     void readValues(InputStream inputStream) {
-        //Initialize variables
+        //Initialize temporary variables
         LinkedList<Integer> currIndents = new LinkedList<>();
         currIndents.addLast(0);
         int lineIndex = 0;
@@ -71,14 +71,13 @@ public final class Config {
             String line = scan.nextLine();
             lineIndex += 1;
             int hashIndex = line.indexOf("#");
-            if (hashIndex != -1) {
+            if (hashIndex != -1) { //Found a comment, store it and trim out
                 String comment = line.substring(hashIndex);
                 line = line.substring(0, hashIndex);
                 nonKeyLocs.put(lineIndex, comment);
             }
             Matcher m = KV.matcher(line);
-            if (!m.matches()) {
-                //Not a key line, need to store
+            if (!m.matches()) { //No key-value pair found, store the rest
                 if (nonKeyLocs.containsKey(lineIndex)) {
                     nonKeyLocs.put(lineIndex, line + nonKeyLocs.get(lineIndex));
                 } else {
@@ -93,7 +92,7 @@ public final class Config {
             key = key.trim();
             //Check key does not have a period
             if (key.contains(".")) {
-                Logger.logWarning(this.getClass(), "Found a key with a period at line " + lineIndex + ", not reading key or sub-keys. Offending key: " + key);
+                Logger.logWarning(this.getClass(), "Found a key with a period at line " + lineIndex + ", not reading key. Offending key: " + key);
                 continue;
             }
             value = value.trim();
@@ -174,6 +173,14 @@ public final class Config {
         return values.get(key);
     }
 
+    public String get(String key, String def) {
+        String value = values.get(key);
+        if (value == null) {
+            return def;
+        }
+        return value;
+    }
+
     /**
      * @return A copy of values currently stored in the cache
      */
@@ -185,7 +192,7 @@ public final class Config {
         return new HashMap<>(nonKeyLocs);
     }
 
-    public void update(String key, String value) {
+    public void set(String key, String value) {
         values.put(key, value);
     }
 
