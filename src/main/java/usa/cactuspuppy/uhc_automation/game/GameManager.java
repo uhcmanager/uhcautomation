@@ -38,7 +38,13 @@ public class GameManager {
         return names.contains(gameName);
     }
 
-    static long registerGame(GameInstance instance) {
+    public static void reset() {
+        activeGames.clear();
+        playerMap.clear();
+        worldMap.clear();
+    }
+
+    public static long registerGame(GameInstance instance) {
         long id = instance.getGameID();
         if (id == 0) { //Not registered, get new ID
             id = new IDGenerator().nextID();

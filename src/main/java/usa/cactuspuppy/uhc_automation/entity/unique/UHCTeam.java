@@ -106,6 +106,9 @@ public class UHCTeam extends UniqueEntity {
     }
 
     private int genNextTeamNum(int currTeamNum) {
+        if (teamNumMap.isEmpty()) {
+            return 0;
+        }
         for (int i = currTeamNum; i < Collections.max(teamNumMap.keySet()); i++) {
             if (!teamNumMap.keySet().contains(i)) return i;
         }

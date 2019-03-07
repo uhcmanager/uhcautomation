@@ -12,7 +12,8 @@ public abstract class TeamGameInstance extends GameInstance {
     protected Map<String, UHCTeam> teams = new HashMap<>();
 
     public TeamGameInstance(String name, World world) {
-        super(name, world);
+        super(world);
+        setName(name);
     }
 
     public Map<String, UHCTeam> getTeams() {

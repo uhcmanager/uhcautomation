@@ -6,8 +6,8 @@ import usa.cactuspuppy.uhc_automation.entity.unique.UHCTeam;
 
 public class PVN extends TeamGameInstance {
 
-    public PVN(String name, World world) {
-        super(name, world);
+    public PVN(World world) {
+        super("Pirates vs. Ninjas UHC", world);
         UHCTeam pirates = new UHCTeam(this, "Pirates");
         pirates.setColor(ChatColor.YELLOW);
         addTeam(pirates, true);
