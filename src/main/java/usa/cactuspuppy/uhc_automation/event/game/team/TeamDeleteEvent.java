@@ -1,11 +1,11 @@
 package usa.cactuspuppy.uhc_automation.event.game.team;
 
 import org.bukkit.event.HandlerList;
-import usa.cactuspuppy.uhc_automation.entity.unique.Team;
+import usa.cactuspuppy.uhc_automation.entity.unique.UHCTeam;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 public class TeamDeleteEvent extends TeamEvent {
-    public TeamDeleteEvent(GameInstance gameInstance, Team team) {
+    public TeamDeleteEvent(GameInstance gameInstance, UHCTeam team) {
         super(gameInstance, team);
     }
 

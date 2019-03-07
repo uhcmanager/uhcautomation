@@ -3,7 +3,7 @@ package usa.cactuspuppy.uhc_automation.entity.util;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.Scoreboard;
-import usa.cactuspuppy.uhc_automation.entity.unique.Team;
+import usa.cactuspuppy.uhc_automation.entity.unique.UHCTeam;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
@@ -16,7 +16,8 @@ import java.util.*;
 public class ScoreboardSet implements Serializable {
     @Getter private GameInstance parent;
     private transient Map<UUID, Scoreboard> scoreboards = new HashMap<>();
-    private Set<Team> teams = new HashSet<>();
+    private Set<UHCTeam> teams = new HashSet<>();
+    private InfoObjective infoObjective;
 
     public ScoreboardSet(GameInstance parent) {
         this.parent = parent;

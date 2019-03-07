@@ -66,15 +66,20 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        //TODO: Save disable time
+        //Save disable time
         Long disableTime = System.currentTimeMillis();
         FileIO.saveToFile(getDataFolder().getPath(), Constants.getLastDisableFile(), new ByteArrayInputStream(String.valueOf(disableTime).getBytes()), false);
-        //TODO: Save all active game info
+        //Save games
+        saveGames();
+    }
+
+    private void saveGames() {
         if (GameManager.getActiveGames().isEmpty()) return;
         Logger.logInfo(this.getClass(), "Detected active game(s), saving...");
         for (long l : GameManager.getActiveGames().keySet()) {
             try {
                 GameInstance current = GameManager.getGame(l);
+                current.updateState(GameStateEvent.PAUSE); //Inform game of pause
                 FileOutputStream fileOS = new FileOutputStream(new File(getDataFolder() + Constants.getGamesDir(), String.format(Constants.getGameInfoFile(), l)));
                 ObjectOutputStream out = new ObjectOutputStream(fileOS);
                 out.writeObject(current);

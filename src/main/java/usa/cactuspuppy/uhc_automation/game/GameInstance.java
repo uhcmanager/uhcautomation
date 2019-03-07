@@ -37,13 +37,14 @@ public abstract class GameInstance implements Serializable {
     protected long startTime;
 
     /**
-     * Name for this game. May or may not be unique; should not be used to identify this game.
+     * Name for this game. Effort should be put into making this unique, but it is not enforced.
      */
     protected String name;
 
     /**
      * Unique ID of main game world as given by {@code World::getUID}.
      */
+    @Setter(AccessLevel.NONE)
     protected UUID mainWorld;
 
     /**
@@ -104,11 +105,33 @@ public abstract class GameInstance implements Serializable {
      */
     private long epLength;
 
-    public GameInstance(String name, World world) {
-        this.name = name;
+    public GameInstance(World world) {
         gameID = 0;
         gameID = GameManager.registerGame(this);
+        name = "Game " + gameID;
         mainWorld = world.getUID();
+        GameManager.registerWorldGame(world.getUID(), this);
+    }
+
+    /**
+     * Sets the given world to be the new main world. Game must be in lobby mode for success.
+     * @param world World to set as the new main world
+     * @param keepOldWorld Whether to set the old main world as a linked world or drop it all together
+     * @return False if game is not in LOBBY mode, and thus world was not set, otherwise true to indicate success.
+     */
+    public boolean setMainWorld(World world, boolean keepOldWorld) {
+        if (gameState != GameState.LOBBY) {
+            Logger.logInfo(this.getClass(), "Call to set main world for game " + name + " (ID " + gameID + ") while not in lobby mode, rejecting");
+            return false;
+        }
+        if (keepOldWorld) {
+            otherWorlds.add(mainWorld);
+        } else {
+            GameManager.unregisterWorldGame(mainWorld);
+        }
+        mainWorld = world.getUID();
+        reset();
+        return true;
     }
 
     /**
@@ -152,20 +175,40 @@ public abstract class GameInstance implements Serializable {
                 }
                 return false;
             default:
-                Logger.logWarning(this.getClass(), "Invalid GameStateEvent passed to GameInstance #" + gameID);
+                Logger.logWarning(this.getClass(), "Invalid GameStateEvent passed to GameInstance #" + gameID
+                        + "\nThis is probably a bug! Please report it to https://github.com/uhcmanager/uhcautomation");
                 return false;
         }
     }
 
+    /**
+     * Reset the game worlds back to lobby, whether that be a clean generated world set or from any point within the game
+     */
     protected abstract void reset();
 
+    /**
+     * Initiate the game, bringing the game out of lobby mode and doing pre-game tasks such as spreading players around the map and beginning the pregame countdown.
+     * If desired, this method can directly call start if all game-start methods can be called in the same tick.
+     */
     protected abstract void init();
 
+    /**
+     * Start the game. This is the point at which players have full control.
+     */
     protected abstract void start();
 
+    /**
+     * Called if the game is interrupted by a server or plugin restart. Most games should not need to worry about this.
+     */
     protected abstract void pause();
 
+    /**
+     * Called once the game is reactivated after a server or plugin restart. Most games should not need to worry about this.
+     */
     protected abstract void resume();
 
+    /**
+     * Called when the game reaches a victory or game-end condition. Resets to lobby SHOULD NOT call this method.
+     */
     protected abstract void end();
 }
