@@ -37,7 +37,7 @@ public abstract class GameInstance implements Serializable {
     protected long startTime;
 
     /**
-     * Name for this game. May or may not be unique; should not be used to identify this game.
+     * Name for this game. Effort should be put into making this unique, but it is not enforced.
      */
     protected String name;
 
@@ -104,11 +104,12 @@ public abstract class GameInstance implements Serializable {
      */
     private long epLength;
 
-    public GameInstance(String name, World world) {
-        this.name = name;
+    public GameInstance(World world) {
         gameID = 0;
         gameID = GameManager.registerGame(this);
+        name = "Game " + gameID;
         mainWorld = world.getUID();
+        GameManager.registerWorldGame(world.getUID(), this);
     }
 
     /**

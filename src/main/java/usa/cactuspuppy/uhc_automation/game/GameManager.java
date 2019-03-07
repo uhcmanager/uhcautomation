@@ -4,10 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GameManager {
     private static Map<Long, GameInstance> activeGames = new HashMap<>();
@@ -34,7 +32,13 @@ public class GameManager {
         return getGameInstance(u, worldMap);
     }
 
-    public static long registerGame(GameInstance instance) {
+    public static boolean isNameActive(String gameName) {
+        Set<GameInstance> activeInstances = new HashSet<>(activeGames.values());
+        Set<String> names = activeInstances.stream().map(GameInstance::getName).collect(Collectors.toSet());
+        return names.contains(gameName);
+    }
+
+    static long registerGame(GameInstance instance) {
         long id = instance.getGameID();
         if (id == 0) { //Not registered, get new ID
             id = new IDGenerator().nextID();
@@ -54,7 +58,7 @@ public class GameManager {
      * @param instance Instance to register player to
      * @return Whether the player was registered to the game instance
      */
-    public static boolean registerPlayerGame(UUID u, GameInstance instance) {
+    static boolean registerPlayerGame(UUID u, GameInstance instance) {
         if (instance.getGameID() == 0) return false; //Game not registered
         playerMap.put(u, instance.getGameID());
         return true;
@@ -66,7 +70,7 @@ public class GameManager {
      * @param instance Instance to register world to
      * @return Whether the world was registered to the game instance
      */
-    public static boolean registerWorldGame(UUID u, GameInstance instance) {
+    static boolean registerWorldGame(UUID u, GameInstance instance) {
         if (instance.getGameID() == 0) return false; //Game not registered
         worldMap.put(u, instance.getGameID());
         return true;
@@ -78,7 +82,7 @@ public class GameManager {
      * @param instance GameInstance to unregister from
      * @return Whether the player was unregistered successfully
      */
-    public static boolean unregisterPlayerGame(UUID u, GameInstance instance) {
+    static boolean unregisterPlayerGame(UUID u, GameInstance instance) {
         return playerMap.remove(u, instance.getGameID());
     }
 
@@ -88,7 +92,7 @@ public class GameManager {
      * @param instance GameInstance to unregister from
      * @return Whether the world was unregistered successfully
      */
-    public static boolean unregisterWorldGame(UUID u, GameInstance instance) {
+    static boolean unregisterWorldGame(UUID u, GameInstance instance) {
         if (instance.getMainWorld().equals(u)) {
             return false;
         }
