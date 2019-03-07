@@ -105,15 +105,17 @@ public class GameManager {
         return true;
     }
 
-    public static boolean unregisterGame(GameInstance instance) {
+    /**
+     * Unregister the game listed, optionally
+     * @param instance
+     * @param shed
+     * @return
+     */
+    public static boolean unregisterGame(GameInstance instance, boolean shed) {
         if (!activeGames.values().contains(instance)) return false;
         long gameID = instance.getGameID();
         activeGames.remove(gameID);
-        for (UUID u : playerMap.keySet()) {
-            if (playerMap.get(u).equals(gameID)) {
-
-            }
-        }
+        return true;
     }
 
     /**

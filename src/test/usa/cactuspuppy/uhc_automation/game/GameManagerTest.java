@@ -28,7 +28,7 @@ public class GameManagerTest {
     }
 
     @Test
-    public void basicTest() {
+    public void registerTest() {
         GameManager.registerGame(test);
         long id = test.getGameID();
         assertNotEquals(0, id);
@@ -37,11 +37,8 @@ public class GameManagerTest {
 
     @Test
     public void isNameActive() {
+        UHC test1 = new UHC(world);
 
-    }
-
-    @Test
-    public void registerGame() {
     }
 
     @Test
