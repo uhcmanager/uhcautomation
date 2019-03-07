@@ -7,3 +7,4 @@ dependency-reduced-pom.xml
 *.iml
 bash.exe.stackdump
 gource.mp4
+/hs_err_*.log
