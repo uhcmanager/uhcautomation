@@ -85,24 +85,35 @@ public class GameManager {
     /**
      * Unregisters a player from the specified game instance
      * @param u UUID of player
-     * @param instance GameInstance to unregister from
      * @return Whether the player was unregistered successfully
      */
-    static boolean unregisterPlayerGame(UUID u, GameInstance instance) {
-        return playerMap.remove(u, instance.getGameID());
+    static void unregisterPlayerGame(UUID u) {
+        playerMap.remove(u);
     }
 
     /**
      * Unregisters a world from the specified game instance
      * @param u UUID of world
-     * @param instance GameInstance to unregister from
      * @return Whether the world was unregistered successfully
      */
-    static boolean unregisterWorldGame(UUID u, GameInstance instance) {
-        if (instance.getMainWorld().equals(u)) {
+    static boolean unregisterWorldGame(UUID u) {
+        GameInstance instance = activeGames.get(worldMap.get(u));
+        if (instance != null && instance.getMainWorld().equals(u)) {
             return false;
         }
-        return worldMap.remove(u, instance.getGameID());
+        worldMap.remove(u);
+        return true;
+    }
+
+    public static boolean unregisterGame(GameInstance instance) {
+        if (!activeGames.values().contains(instance)) return false;
+        long gameID = instance.getGameID();
+        activeGames.remove(gameID);
+        for (UUID u : playerMap.keySet()) {
+            if (playerMap.get(u).equals(gameID)) {
+
+            }
+        }
     }
 
     /**
