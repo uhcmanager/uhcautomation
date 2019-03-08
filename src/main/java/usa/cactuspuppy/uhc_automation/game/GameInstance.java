@@ -72,7 +72,11 @@ public abstract class GameInstance implements Serializable {
     @Setter(AccessLevel.NONE)
     private Set<UUID> players;
 
-    public Set<UUID> getPlayers() {
+    /**
+     * Gets the set of players in the game who are not spectating
+     * @return A copy of the set of active players
+     */
+    public Set<UUID> getAlivePlayers() {
         return new HashSet<>(players);
     }
 
