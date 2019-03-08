@@ -8,9 +8,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class GameManager {
-    private static Map<Long, GameInstance> activeGames = new HashMap<>();
-    private static Map<UUID, Long> playerMap = new HashMap<>();
-    private static Map<UUID, Long> worldMap = new HashMap<>();
+    private static HashMap<Long, GameInstance> activeGames = new HashMap<>();
+    private static HashMap<UUID, Long> playerMap = new HashMap<>();
+    private static HashMap<UUID, Long> worldMap = new HashMap<>();
     private static final int MAX_ID_ATTEMPTS = 10000;
 
     /**
@@ -106,15 +106,18 @@ public class GameManager {
     }
 
     /**
-     * Unregister the game listed, optionally
-     * @param instance
-     * @param shed
+     * Unregister the game listed, optionally removing all players from the game
+     * @param instance Instance to unregsiter
+     * @param shed Whether to shed all players
      * @return
      */
     public static boolean unregisterGame(GameInstance instance, boolean shed) {
         if (!activeGames.values().contains(instance)) return false;
         long gameID = instance.getGameID();
         activeGames.remove(gameID);
+        if (shed) {
+            playerMap.keySet().removeAll(instance.getAllPlayers())
+        }
         return true;
     }
 
