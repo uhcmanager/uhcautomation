@@ -41,7 +41,7 @@ public class GameManagerTest {
         test1.setName(name);
         GameManager.registerGame(test1);
         assertTrue(GameManager.isNameActive(name));
-        GameManager.unregisterGame(test1)
+        GameManager.unregisterGame(test1, true);
     }
 
     @Test

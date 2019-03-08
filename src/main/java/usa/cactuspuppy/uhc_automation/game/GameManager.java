@@ -116,7 +116,7 @@ public class GameManager {
         long gameID = instance.getGameID();
         activeGames.remove(gameID);
         if (shed) {
-            playerMap.keySet().removeAll(instance.getAllPlayers())
+            playerMap.keySet().removeAll(instance.getAllPlayers());
         }
         return true;
     }
