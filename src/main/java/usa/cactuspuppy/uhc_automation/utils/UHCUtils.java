@@ -2,6 +2,9 @@ package usa.cactuspuppy.uhc_automation.utils;
 
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
+import java.util.Set;
+import java.util.UUID;
+
 public final class UHCUtils {
     /**
      * Increases the border shrink speed of the given game instance
@@ -13,11 +16,11 @@ public final class UHCUtils {
 
     /**
      *
-     * @param instance
      */
     public static boolean spreadplayers(GameInstance instance) {
-        //TODO: Spreadplayers
-        int locations;
+        Set<Set<UUID>> spreadGroups = instance.getSpreadGroups();
+        int locations = spreadGroups.size();
+        int maxRadius = instance.getInitRadius();
 
         return false;
     }

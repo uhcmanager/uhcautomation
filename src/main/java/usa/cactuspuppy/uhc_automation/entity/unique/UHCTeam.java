@@ -27,10 +27,6 @@ public class UHCTeam extends UniqueEntity {
     @Getter @Setter private boolean allowFriendlyFire = true;
     @Getter @Setter private boolean canSeeFriendlyInvisibles = true;
     private EnumMap<Team.Option, Team.OptionStatus> optionsMap = new EnumMap<>(Team.Option.class);
-    
-    public enum Option {
-
-    }
 
     private void initOptionsMap() {
         optionsMap.put(Team.Option.COLLISION_RULE, Team.OptionStatus.ALWAYS);

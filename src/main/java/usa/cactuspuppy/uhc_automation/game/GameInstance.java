@@ -8,16 +8,13 @@ import usa.cactuspuppy.uhc_automation.entity.util.ScoreboardSet;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
 public abstract class GameInstance implements Serializable {
 
     // [=== MAIN INFO ===]
-
     /**
      * Unique identifier for this game instance. This should be set once upon game creation and never changed until the game ends and/or is deleted.
      */
@@ -63,6 +60,20 @@ public abstract class GameInstance implements Serializable {
 
     @Setter(AccessLevel.NONE)
     protected ScoreboardSet scoreboardSet = new ScoreboardSet(this);
+
+    //[=== PLAY AREA INFO ===]
+    /**
+     * Time to delay border shrinking, in seconds.
+     * -1 disables border shrinking entirely
+     */
+    @Setter(AccessLevel.PUBLIC)
+    protected int timeToShrink;
+
+    /**
+     * Radius of the initial play space, in blocks from 0, 0 (0.5, 0.5)
+     */
+    @Setter(AccessLevel.PUBLIC)
+    protected int initRadius;
 
     // [=== PLAYER INFO ===]
     /**
@@ -115,6 +126,7 @@ public abstract class GameInstance implements Serializable {
         name = "Game " + gameID;
         mainWorld = world.getUID();
         GameManager.registerWorldGame(world.getUID(), this);
+        //TODO: Set defaults
     }
 
     /**
@@ -215,4 +227,18 @@ public abstract class GameInstance implements Serializable {
      * Called when the game reaches a victory or game-end condition. Resets to lobby SHOULD NOT call this method.
      */
     protected abstract void end();
+
+    /**
+     * Get the spread groups that UHCUtils.spreadplayers should use
+     * @return A list of spread groups. O
+     */
+    public List<Set<UUID>> getSpreadGroups() {
+        List<Set<UUID>> ret = new ArrayList<>();
+        for (UUID u : players) {
+            Set<UUID> val = new HashSet<>();
+            val.add(u);
+            ret.add(val);
+        }
+        return ret;
+    }
 }

@@ -1,11 +1,11 @@
 package usa.cactuspuppy.uhc_automation.game.types;
 
 import org.bukkit.World;
+import org.bukkit.scoreboard.Team;
 import usa.cactuspuppy.uhc_automation.entity.unique.UHCTeam;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public abstract class TeamGameInstance extends GameInstance {
 
@@ -35,6 +35,15 @@ public abstract class TeamGameInstance extends GameInstance {
     }
 
     public void removeTeam(UHCTeam team) {
-        teams.remove(team);
+        teams.remove(team.getName());
+    }
+
+    @Override
+    public Set<Set<UUID>> getSpreadGroups() {
+        Set<Set<UUID>> ret = new HashSet<>();
+        for (UHCTeam t : teams.values()) {
+            ret.add(t.getPlayers());
+        }
+        return ret;
     }
 }
