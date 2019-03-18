@@ -56,24 +56,10 @@ public abstract class GameInstance implements Serializable {
     }
 
     @Setter(AccessLevel.NONE)
-    protected GameState gameState;
+    protected GameState gameState = GameState.LOBBY;
 
     @Setter(AccessLevel.NONE)
     protected ScoreboardSet scoreboardSet = new ScoreboardSet(this);
-
-    //[=== PLAY AREA INFO ===]
-    /**
-     * Time to delay border shrinking, in seconds.
-     * -1 disables border shrinking entirely
-     */
-    @Setter(AccessLevel.PUBLIC)
-    protected int timeToShrink;
-
-    /**
-     * Radius of the initial play space, in blocks from 0, 0 (0.5, 0.5)
-     */
-    @Setter(AccessLevel.PUBLIC)
-    protected int initRadius;
 
     // [=== PLAYER INFO ===]
     /**
@@ -81,7 +67,7 @@ public abstract class GameInstance implements Serializable {
      */
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
-    private Set<UUID> players;
+    private Set<UUID> players = new HashSet<>();
 
     /**
      * Gets the set of players in the game who are not spectating
@@ -102,7 +88,7 @@ public abstract class GameInstance implements Serializable {
      */
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
-    private Set<UUID> spectators;
+    private Set<UUID> spectators = new HashSet<>();
 
     public Set<UUID> getSpectators() {
         return new HashSet<>(spectators);
@@ -113,12 +99,6 @@ public abstract class GameInstance implements Serializable {
         rv.addAll(spectators);
         return rv;
     }
-
-    // [=== EPISODE INFO ===]
-    /**
-     * Length of episodes, in seconds
-     */
-    private long epLength;
 
     public GameInstance(World world) {
         gameID = 0;
@@ -227,18 +207,4 @@ public abstract class GameInstance implements Serializable {
      * Called when the game reaches a victory or game-end condition. Resets to lobby SHOULD NOT call this method.
      */
     protected abstract void end();
-
-    /**
-     * Get the spread groups that UHCUtils.spreadplayers should use
-     * @return A list of spread groups. O
-     */
-    public List<Set<UUID>> getSpreadGroups() {
-        List<Set<UUID>> ret = new ArrayList<>();
-        for (UUID u : players) {
-            Set<UUID> val = new HashSet<>();
-            val.add(u);
-            ret.add(val);
-        }
-        return ret;
-    }
 }

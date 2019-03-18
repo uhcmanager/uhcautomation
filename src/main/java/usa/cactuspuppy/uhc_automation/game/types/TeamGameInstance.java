@@ -37,13 +37,4 @@ public abstract class TeamGameInstance extends GameInstance {
     public void removeTeam(UHCTeam team) {
         teams.remove(team.getName());
     }
-
-    @Override
-    public Set<Set<UUID>> getSpreadGroups() {
-        Set<Set<UUID>> ret = new HashSet<>();
-        for (UHCTeam t : teams.values()) {
-            ret.add(t.getPlayers());
-        }
-        return ret;
-    }
 }
