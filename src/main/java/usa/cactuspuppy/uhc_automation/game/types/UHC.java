@@ -93,7 +93,7 @@ public class UHC extends GameInstance implements Serializable {
         double avgDistance = setLocations(locations);
         //TODO: Spread players to this location
 
-        Logger.logInfo(this.getClass(), String.format("%s (Game ID: %s) successfully spread %d players around %s,%s" +
+        Logger.logInfo(this.getClass(), String.format("%s (Game ID: %s) successfully spread %d players around %s,%s | " +
                         "(Average distance between players is %s blocks)",
                 getName(), getGameID(), locations.size(), getCenterX(), getCenterZ(), avgDistance));
     }
