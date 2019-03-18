@@ -9,8 +9,7 @@ import usa.cactuspuppy.uhc_automation.game.types.UHC;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class GameManagerTest {
     private static World world = Mockito.mock(World.class);
@@ -38,11 +37,16 @@ public class GameManagerTest {
     @Test
     public void isNameActive() {
         UHC test1 = new UHC(world);
-
+        String name = "Lookiecookie.43%";
+        test1.setName(name);
+        GameManager.registerGame(test1);
+        assertTrue(GameManager.isNameActive(name));
+        GameManager.unregisterGame(test1, true);
     }
 
     @Test
     public void registerPlayerGame() {
+
     }
 
     @Test

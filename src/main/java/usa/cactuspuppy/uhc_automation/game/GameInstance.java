@@ -8,16 +8,13 @@ import usa.cactuspuppy.uhc_automation.entity.util.ScoreboardSet;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
 public abstract class GameInstance implements Serializable {
 
     // [=== MAIN INFO ===]
-
     /**
      * Unique identifier for this game instance. This should be set once upon game creation and never changed until the game ends and/or is deleted.
      */
@@ -59,7 +56,7 @@ public abstract class GameInstance implements Serializable {
     }
 
     @Setter(AccessLevel.NONE)
-    protected GameState gameState;
+    protected GameState gameState = GameState.LOBBY;
 
     @Setter(AccessLevel.NONE)
     protected ScoreboardSet scoreboardSet = new ScoreboardSet(this);
@@ -70,9 +67,13 @@ public abstract class GameInstance implements Serializable {
      */
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
-    private Set<UUID> players;
+    private Set<UUID> players = new HashSet<>();
 
-    public Set<UUID> getPlayers() {
+    /**
+     * Gets the set of players in the game who are not spectating
+     * @return A copy of the set of active players
+     */
+    public Set<UUID> getAlivePlayers() {
         return new HashSet<>(players);
     }
 
@@ -87,7 +88,7 @@ public abstract class GameInstance implements Serializable {
      */
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
-    private Set<UUID> spectators;
+    private Set<UUID> spectators = new HashSet<>();
 
     public Set<UUID> getSpectators() {
         return new HashSet<>(spectators);
@@ -99,18 +100,13 @@ public abstract class GameInstance implements Serializable {
         return rv;
     }
 
-    // [=== EPISODE INFO ===]
-    /**
-     * Length of episodes, in seconds
-     */
-    private long epLength;
-
     public GameInstance(World world) {
         gameID = 0;
         gameID = GameManager.registerGame(this);
         name = "Game " + gameID;
         mainWorld = world.getUID();
         GameManager.registerWorldGame(world.getUID(), this);
+        //TODO: Set defaults
     }
 
     /**
