@@ -111,7 +111,6 @@ public class UHC extends GameInstance implements Serializable {
 
         Random rng = new Random();
         int maxRegenAttempts = 10000;
-        double sumMinDist = 0.0; //Sum minimum distances
 
         for (int i = 0; i < numLocations; i++) {
             boolean success = false;
@@ -137,16 +136,6 @@ public class UHC extends GameInstance implements Serializable {
                     continue;
                 }
 
-                //Calculate distance to closest other location
-                double minDist = Double.MAX_VALUE;
-                for (Location l : locations) {
-                    minDist = Math.min(
-                            distance(x, z, l.getBlockX(), l.getBlockZ()),
-                            minDist
-                    );
-                }
-                sumMinDist += minDist;
-
                 //Add this location to the list
                 World mainWorld = Bukkit.getWorld(getMainWorld());
                 loc = new Location(mainWorld, x, 255, z);
@@ -158,6 +147,20 @@ public class UHC extends GameInstance implements Serializable {
             if (!success) {
                 throw new SpreadPlayersException("Took too long to find a random location");
             }
+        }
+
+        //Calculate average distances to closest other location
+        double sumMinDist = 0.0; //Sum minimum distances
+        for (Location l : locations) {
+            double minDist = Double.MAX_VALUE;
+            for (Location l1 : locations) {
+                if (l.equals(l1)) continue;
+                minDist = Math.min(
+                        distance(l1.getBlockX(), l1.getBlockZ(), l.getBlockX(), l.getBlockZ()),
+                        minDist
+                );
+            }
+            sumMinDist += minDist;
         }
 
         return sumMinDist / locations.size();

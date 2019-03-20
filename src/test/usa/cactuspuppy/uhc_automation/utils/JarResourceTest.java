@@ -59,6 +59,7 @@ public class JarResourceTest {
         if (!testDir.mkdirs()) throw new RuntimeException("Could not make test directory");
         assertTrue(testDir.isDirectory());
         inputStream = IOUtils.toInputStream("#Spotify Extreme Cool\nasdf: true", Charset.defaultCharset());
+        //TODO: Finish test
     }
 
     @After
