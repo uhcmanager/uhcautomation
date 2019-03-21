@@ -105,15 +105,17 @@ public class UHC extends GameInstance implements Serializable {
                 locations.size(), getCenterX(), getCenterZ(), avgDistance));
 
         //TODO: Create new Runnable and schedule for countdown
-        new UHC_SpreadPlayers(this).init();
+        new UHC_SpreadPlayers(this, locations).init();
     }
 
     /**
-     * Generate spread locations with the following parameters
-     * @param locations List of locations to add to
+     * Generate spread locations with the following parameters. The input list will be emptied to ensure that all locations meet the parameters.
+     * @param locations List of locations to put locations in
      * @return Average distance between locations
      */
     protected double setLocations(LinkedList<Location> locations) {
+        locations.clear();
+
         int numLocations = getAlivePlayers().size();
         int maxDistance = getInitRadius();
         int minDistance = getMinDistance();
@@ -148,7 +150,7 @@ public class UHC extends GameInstance implements Serializable {
 
                 //Add this location to the list
                 World mainWorld = Bukkit.getWorld(getMainWorld());
-                loc = new Location(mainWorld, x, 255, z);
+                loc = new Location(mainWorld, x, mainWorld.getHighestBlockYAt(x, z), z);
                 locations.addLast(loc);
                 success = true;
             }
