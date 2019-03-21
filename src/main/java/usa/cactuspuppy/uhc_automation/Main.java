@@ -14,7 +14,7 @@ import usa.cactuspuppy.uhc_automation.command.Delegator;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
-import usa.cactuspuppy.uhc_automation.tasks.MainListener;
+import usa.cactuspuppy.uhc_automation.entity.tasks.MainListener;
 import usa.cactuspuppy.uhc_automation.utils.FileIO;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 

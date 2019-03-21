@@ -32,4 +32,12 @@ public final class UHCUtils {
                 p -> p.sendTitle(title, subtitle, in, stay, out)
         );
     }
+
+    public void log(Logger.Level level, Class c, String msg, Exception e) {
+        Logger.log(level, c, " [" + instance.getName() + "](ID: " + instance.getGameID() + ") " + msg, e);
+    }
+
+    public void log(Logger.Level level, Class c, String msg) {
+        Logger.log(level, c, " [" + instance.getName() + "](ID: " + instance.getGameID() + ") " + msg, null);
+    }
 }

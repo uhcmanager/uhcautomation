@@ -5,14 +5,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
+import usa.cactuspuppy.uhc_automation.entity.tasks.timers.UHC_SpreadPlayers;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 import usa.cactuspuppy.uhc_automation.utils.UHCUtils;
 
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
-import java.util.regex.Pattern;
+import java.util.*;
 
 @Getter
 public class UHC extends GameInstance implements Serializable {
@@ -63,8 +61,11 @@ public class UHC extends GameInstance implements Serializable {
         try {
             spreadPlayers();
         } catch (SpreadPlayersException e) {
-            //Handle spreadplayers exception
+            new UHCUtils(this).log(Logger.Level.INFO, this.getClass(), "Failed to spread players");
         }
+        //TODO: Remove lobby
+        //TODO: Set gamerules
+        //TODO: Begin start countdown
     }
 
     @Override
@@ -87,15 +88,24 @@ public class UHC extends GameInstance implements Serializable {
 
     }
 
+    /**
+     * Calculates random places to spread players and sets initial number of players
+     * @throws SpreadPlayersException if the players could not be spread
+     */
     protected void spreadPlayers() throws SpreadPlayersException {
         LinkedList<Location> locations = new LinkedList<>();
 
         double avgDistance = setLocations(locations);
-        //TODO: Spread players to this location
 
-        Logger.logInfo(this.getClass(), String.format("%s (Game ID: %s) successfully spread %d players around %s,%s | " +
+        setInitNumPlayers(getAlivePlayers().size());
+
+        new UHCUtils(this).log(Logger.Level.INFO, this.getClass(),
+                String.format("Successfully spread %d players around %s,%s | " +
                         "(Average distance between players is %s blocks)",
-                getName(), getGameID(), locations.size(), getCenterX(), getCenterZ(), avgDistance));
+                locations.size(), getCenterX(), getCenterZ(), avgDistance));
+
+        //TODO: Create new Runnable and schedule for countdown
+        new UHC_SpreadPlayers(this).init();
     }
 
     /**
