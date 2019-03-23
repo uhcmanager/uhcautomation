@@ -67,56 +67,61 @@ public class UHC_SpreadPlayers extends TimerTask {
         String randXS = StringUtils.center(Integer.toString(randX), 9);
         String randYS = StringUtils.center(Integer.toString(randY), 5);
         String randZS = StringUtils.center(Integer.toString(randZ), 9);
-        switch (phase) {
-            case TELEPORTED:
-                if (changedState) {
-                    new UHCUtils(gameInstance).broadcastTitle(ChatColor.GOLD + "Loading Chunks", "Please wait...", 0, 40, 20);
+        if (phase == Phase.TELEPORTED) {
+            if (changedState) {
+                new UHCUtils(gameInstance).broadcastTitle(ChatColor.GOLD + "Loading Chunks", "Please wait...", 0, 40, 20);
+            }
+        } else if (phase == Phase.NO_COORDS) {
+            for (UUID u : gameInstance.getAlivePlayers()) {
+                Player p = Bukkit.getPlayer(u);
+                if (p == null) {
+                    continue;
                 }
-                break;
-            case NO_COORDS:
-                for (UUID u : gameInstance.getAlivePlayers()) {
-                    Player p = Bukkit.getPlayer(u);
-                    if (p == null) { continue; }
-                    p.sendTitle(ChatColor.RED + "Final Destination",
-                            ChatColor.GRAY + new StringJoiner(delimiter).add(randXS).add(randYS).add(randZS).toString(),
-                            0, 20, 10);
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 1, 0, true, false, false), true);
+                p.sendTitle(ChatColor.RED + "Final Destination",
+                        ChatColor.GRAY + new StringJoiner(delimiter).add(randXS).add(randYS).add(randZS).toString(),
+                        0, 20, 10);
+                p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 1, 0, true, false, false), true);
+            }
+        } else if (phase == Phase.X_COORD || phase == Phase.XY_COORD) {
+            int index = 0;
+            for (UUID u : gameInstance.getAlivePlayers()) {
+                Player p = Bukkit.getPlayer(u);
+                if (p == null) {
+                    continue;
                 }
-                break;
-            case X_COORD:
-            case XY_COORD:
-                int index = 0;
-                for (UUID u : gameInstance.getAlivePlayers()) {
-                    Player p = Bukkit.getPlayer(u);
-                    if (p == null) { continue; }
-                    Location l = locations.get(index);
+                Location l = locations.get(index);
 
-                    String actX = StringUtils.center(Integer.toString(l.getBlockX()), 9);
-                    String actY = StringUtils.center(Integer.toString(l.getBlockY()), 5);
-                    String actZ = StringUtils.center(Integer.toString(l.getBlockZ()), 9);
-                    String subtitle = "";
+                String actX = StringUtils.center(Integer.toString(l.getBlockX()), 9);
+                String actY = StringUtils.center(Integer.toString(l.getBlockY()), 5);
+                String subtitle = "";
 
-                    if (phase == Phase.X_COORD) {
-                        subtitle = new StringJoiner(delimiter).add(actX).add(randYS).add(randZS).toString();
-                    } else if (phase == Phase.XY_COORD) {
-                        subtitle = new StringJoiner(delimiter).add(actX).add(actY).add(randZS).toString();
-                    }
-
-                    p.sendTitle(ChatColor.RED + "Destination", subtitle, 0, 20, 10);
-                    index++;
-                }
-                break;
-            case XYZ_COORD:
-                if (changedState) {
-                    launchTime = System.currentTimeMillis();
+                if (phase == Phase.X_COORD) {
+                    subtitle = new StringJoiner(delimiter).add(actX).add(randYS).add(randZS).toString();
+                } else if (phase == Phase.XY_COORD) {
+                    subtitle = new StringJoiner(delimiter).add(actX).add(actY).add(randZS).toString();
                 }
 
-                int index1 = 0;
-                for (UUID u : gameInstance.getAlivePlayers()) {
-                    Player p = Bukkit.getPlayer(u);
-                    if (p == null) { continue; }
-                    Location l = locations.get(index1);
+                p.sendTitle(ChatColor.RED + "Final Destination", subtitle, 0, 20, 10);
+                index++;
+            }
+        } else if (phase == Phase.XYZ_COORD) {
+            if (changedState) {
+                launchTime = System.currentTimeMillis();
+            }
+
+            int index1 = 0;
+            for (UUID u : gameInstance.getAlivePlayers()) {
+                Player p = Bukkit.getPlayer(u);
+                if (p == null) {
+                    continue;
                 }
+                Location l = locations.get(index1);
+
+                String actX = StringUtils.center(Integer.toString(l.getBlockX()), 9);
+                String actY = StringUtils.center(Integer.toString(l.getBlockY()), 5);
+                String actZ = StringUtils.center(Integer.toString(l.getBlockZ()), 9);
+                p.sendTitle(ChatColor.GREEN + "Final Destination", new StringJoiner(delimiter).add(actX).add(actY).add(actZ).toString(), 0, 20, 10);
+            }
         }
 
         if (changedState) { changedState = false; }
