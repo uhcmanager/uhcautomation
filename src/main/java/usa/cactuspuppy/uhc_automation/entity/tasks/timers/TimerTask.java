@@ -40,10 +40,10 @@ public abstract class TimerTask extends Task implements Runnable {
     /**
      * Get a copy of the list of timers associated with an instance
      * @param instance GameInstance whose timers are fetched
-     * @return A list of taskIDs assosciated with the GameInstance
+     * @return A list of taskIDs associated with the GameInstance
      */
     public static List<Integer> getInstanceTimers(GameInstance instance) {
-        return new ArrayList<>(timers.get(instance.getGameID()));
+        return new ArrayList<>(timers.computeIfAbsent(instance.getGameID(), k -> new ArrayList<>()));
     }
 
     /**
@@ -51,7 +51,7 @@ public abstract class TimerTask extends Task implements Runnable {
      * @param instance GameInstance whose timers should be cleared
      */
     public static void clearInstanceTimers(GameInstance instance) {
-        List<Integer> instTimers = timers.get(instance.getGameID());
+        List<Integer> instTimers = timers.computeIfAbsent(instance.getGameID(), k -> new ArrayList<>());
         for (int i : instTimers) {
             Bukkit.getScheduler().cancelTask(i);
         }

@@ -4,6 +4,8 @@ import lombok.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import usa.cactuspuppy.uhc_automation.entity.tasks.listeners.ListenerTask;
+import usa.cactuspuppy.uhc_automation.entity.tasks.timers.TimerTask;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.entity.tasks.timers.UHC_SpreadPlayers;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
@@ -53,7 +55,8 @@ public class UHC extends GameInstance implements Serializable {
     //TODO: Implement methods
     @Override
     protected void reset() {
-
+        TimerTask.clearInstanceTimers(this);
+        ListenerTask.clearInstanceListeners(this);
     }
 
     @Override

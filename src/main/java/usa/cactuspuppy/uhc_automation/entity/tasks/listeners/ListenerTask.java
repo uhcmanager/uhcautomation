@@ -31,4 +31,24 @@ public abstract class ListenerTask extends Task implements Listener {
         HandlerList.unregisterAll(this);
         listeners.computeIfAbsent(gameInstance.getGameID(), v -> new ArrayList<>()).remove(this);
     }
+
+    /**
+     * Get a copy of the list of listeners associated with an instance
+     * @param instance GameInstance whose listeners are fetched
+     * @return A list of listeners associated with the GameInstance
+     */
+    public static List<ListenerTask> getInstanceListeners(GameInstance instance) {
+        return new ArrayList<>(listeners.computeIfAbsent(instance.getGameID(), k -> new ArrayList<>()));
+    }
+
+    /**
+     * Unregister and remove all listeners associated with an instance
+     * @param instance GameInstance whose listeners should be removed
+     */
+    public static void clearInstanceListeners(GameInstance instance) {
+        for (ListenerTask l : listeners.computeIfAbsent(instance.getGameID(), k -> new ArrayList<>())) {
+            HandlerList.unregisterAll(l);
+        }
+        listeners.put(instance.getGameID(), new ArrayList<>());
+    }
 }
