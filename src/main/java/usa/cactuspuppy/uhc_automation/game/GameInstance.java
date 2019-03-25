@@ -1,10 +1,13 @@
 package usa.cactuspuppy.uhc_automation.game;
 
+import com.sun.istack.internal.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.bukkit.World;
 import usa.cactuspuppy.uhc_automation.entity.util.ScoreboardSet;
+import usa.cactuspuppy.uhc_automation.utils.GameUtils;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.io.Serializable;
@@ -42,6 +45,7 @@ public abstract class GameInstance implements Serializable {
      * Unique ID of main game world as given by {@code World::getUID}.
      */
     @Setter(AccessLevel.NONE)
+    @NonNull
     protected UUID mainWorld;
 
     /**
@@ -101,6 +105,10 @@ public abstract class GameInstance implements Serializable {
     }
 
     public GameInstance(World world) {
+        if (world == null) {
+            new GameUtils(this).log(Logger.Level.SEVERE, this.getClass(), "CONSTRUCTOR: Main world cannot be null");
+            return;
+        }
         gameID = 0;
         gameID = GameManager.registerGame(this);
         name = "Game " + gameID;
@@ -113,11 +121,15 @@ public abstract class GameInstance implements Serializable {
      * Sets the given world to be the new main world. Game must be in lobby mode for success.
      * @param world World to set as the new main world
      * @param keepOldWorld Whether to set the old main world as a linked world or drop it all together
-     * @return False if game is not in LOBBY mode, and thus world was not set, otherwise true to indicate success.
+     * @return False if main world was not set, otherwise true to indicate success.
      */
     public boolean setMainWorld(World world, boolean keepOldWorld) {
+        if (world == null) {
+            new GameUtils(this).log(Logger.Level.SEVERE, this.getClass(), "CONSTRUCTOR: Main world cannot be null");
+            return false;
+        }
         if (gameState != GameState.LOBBY) {
-            Logger.logInfo(this.getClass(), "Call to set main world for game " + name + " (ID " + gameID + ") while not in lobby mode, rejecting");
+            getUtils().log(Logger.Level.INFO, this.getClass(), "Call to set main world for game " + name + " (ID " + gameID + ") while not in lobby mode, rejecting");
             return false;
         }
         if (keepOldWorld) {
@@ -136,6 +148,9 @@ public abstract class GameInstance implements Serializable {
      * @return Whether any update to the game state occurred
      */
     public boolean updateState(GameStateEvent e) {
+        if (e == null) {
+            getUtils().log(Logger.Level.SEVERE, this.getClass(), "State update function was passed null");
+        }
         switch (e) {
             case RESET:
                 reset();
@@ -171,7 +186,7 @@ public abstract class GameInstance implements Serializable {
                 }
                 return false;
             default:
-                Logger.logWarning(this.getClass(), "Invalid GameStateEvent passed to GameInstance #" + gameID
+                getUtils().log(Logger.Level.WARNING, this.getClass(), "Invalid GameStateEvent passed to GameInstance #" + gameID
                         + "\nThis is probably a bug! Please report it to https://github.com/uhcmanager/uhcautomation");
                 return false;
         }
@@ -207,4 +222,14 @@ public abstract class GameInstance implements Serializable {
      * Called when the game reaches a victory or game-end condition. Resets to lobby SHOULD NOT call this method.
      */
     protected abstract void end();
+
+    //Game utils
+    protected GameUtils utils = new GameUtils(this);
+
+    public GameUtils getUtils() {
+        if (utils == null) {
+            utils = new GameUtils(this);
+        }
+        return utils;
+    }
 }

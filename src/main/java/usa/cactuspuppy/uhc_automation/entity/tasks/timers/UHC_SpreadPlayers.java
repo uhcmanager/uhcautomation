@@ -1,17 +1,13 @@
 package usa.cactuspuppy.uhc_automation.entity.tasks.timers;
 
-import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import usa.cactuspuppy.uhc_automation.Main;
-import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.types.UHC;
-import usa.cactuspuppy.uhc_automation.utils.UHCUtils;
+import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.util.List;
 import java.util.Random;
@@ -29,21 +25,20 @@ public class UHC_SpreadPlayers extends TimerTask {
     private UHC uhcInstance;
 
     /**
-     * List of locations to use for spreading
+     * List of locations to use for spreading. Assumes that the list has already looked for highest block at that location.
      */
     private List<Location> locations;
-    /**
-     * Marks whether the state changed on last run
-     */
-    private boolean changedState = true;
-    /**
-     * Current phase of spreading
-     */
-    private Phase phase = Phase.NO_COORDS;
+
+    //TIMING CONSTANTS
+    private int trans0 = 20; //No coords to one coord
+    private int trans1 = 40; //One coord to two coords
+    private int trans2 = 60; //Two coords to launch
+
+    private int tpDelay = 2000; //milliseconds to wait after launch to tp
 
     private Random rng = new Random();
     private int runs = 0;
-    private long launchTime;
+    private long launchTime = -1;
 
     public UHC_SpreadPlayers(UHC instance, List<Location> locations) {
         super(instance, true, 0L, 1L);
@@ -61,89 +56,84 @@ public class UHC_SpreadPlayers extends TimerTask {
     public void run() {
         String delimiter = ", ";
 
-        int randX = rng.nextInt(2 * uhcInstance.getInitRadius() + 1) - uhcInstance.getInitRadius();
-        int randY = rng.nextInt(256);
-        int randZ = rng.nextInt(2 * uhcInstance.getInitRadius() + 1) - uhcInstance.getInitRadius();
-        String randXS = StringUtils.center(Integer.toString(randX), 9);
-        String randYS = StringUtils.center(Integer.toString(randY), 5);
-        String randZS = StringUtils.center(Integer.toString(randZ), 9);
-        if (phase == Phase.TELEPORTED) {
-            if (changedState) {
-                new UHCUtils(gameInstance).broadcastTitle(ChatColor.GOLD + "Loading Chunks", "Please wait...", 0, 40, 20);
-            }
-        } else if (phase == Phase.NO_COORDS) {
-            for (UUID u : gameInstance.getAlivePlayers()) {
-                Player p = Bukkit.getPlayer(u);
-                if (p == null) {
-                    continue;
-                }
-                p.sendTitle(ChatColor.RED + "Final Destination",
-                        ChatColor.GRAY + new StringJoiner(delimiter).add(randXS).add(randYS).add(randZS).toString(),
-                        0, 20, 10);
-                p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 1, 0, true, false, false), true);
-            }
-        } else if (phase == Phase.X_COORD || phase == Phase.XY_COORD) {
-            int index = 0;
-            for (UUID u : gameInstance.getAlivePlayers()) {
-                Player p = Bukkit.getPlayer(u);
-                if (p == null) {
-                    continue;
-                }
-                Location l = locations.get(index);
+        //Generate random coords once because we don't need separate ones for everyone
+        int randXInt = rng.nextInt(2 * uhcInstance.getInitRadius() + 1) - uhcInstance.getInitRadius();
+        int randYInt = rng.nextInt(256);
+        int randZInt = rng.nextInt(2 * uhcInstance.getInitRadius() + 1) - uhcInstance.getInitRadius();
 
-                String actX = StringUtils.center(Integer.toString(l.getBlockX()), 9);
-                String actY = StringUtils.center(Integer.toString(l.getBlockY()), 5);
-                String subtitle = "";
+        //Check for launch init
+        if (runs == trans2) {
+            launchTime = System.currentTimeMillis();
+        }
 
-                if (phase == Phase.X_COORD) {
-                    subtitle = new StringJoiner(delimiter).add(actX).add(randYS).add(randZS).toString();
-                } else if (phase == Phase.XY_COORD) {
-                    subtitle = new StringJoiner(delimiter).add(actX).add(actY).add(randZS).toString();
-                }
+        int index = 0;
+        for (UUID u : gameInstance.getAlivePlayers()) {
+            Player p = Bukkit.getPlayer(u); //Get player
+            if (p == null) { continue; }
 
-                p.sendTitle(ChatColor.RED + "Final Destination", subtitle, 0, 20, 10);
-                index++;
+            //Get location
+            if (index >= locations.size()) {
+                gameInstance.getUtils().log(Logger.Level.WARNING, this.getClass(), "Exceeded locations size during spreadplayers");
+                cancel();
+                return;
             }
-        } else if (phase == Phase.XYZ_COORD) {
-            if (changedState) {
-                launchTime = System.currentTimeMillis();
+            Location l = locations.get(index);
+            index++;
+            String x = StringUtils.center(Integer.toString((runs < trans0 ? randXInt : l.getBlockX())), 9);
+            String y = StringUtils.center(Integer.toString((runs < trans1 ? randYInt : l.getBlockY())), 5);
+            String z = StringUtils.center(Integer.toString((runs < trans2 ? randZInt : l.getBlockZ())), 9);
+
+            StringJoiner subtitle = new StringJoiner(",");
+            subtitle.add(x).add(y).add(z);
+            String title = (runs < trans2 ? ChatColor.RED : ChatColor.GREEN) + (runs < trans2 ? "Finding Location..." : "Final Location");
+            ChatColor subColor = (runs < trans2 ? ChatColor.GRAY : ChatColor.WHITE);
+
+            if (runs == trans0 || runs == trans1 || runs == trans2) { //Coord lock sounds
+                p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5F, 1.17F);
             }
 
-            int index1 = 0;
-            for (UUID u : gameInstance.getAlivePlayers()) {
-                Player p = Bukkit.getPlayer(u);
-                if (p == null) {
-                    continue;
-                }
-                Location l = locations.get(index1);
+            //Show title
+            p.sendTitle(title, subColor + subtitle.toString(), 0, 20, 10);
+            //Play clicks if coords still locking
+            if (runs < trans2) {
+                p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1F, 0.3F);
+            }
 
-                String actX = StringUtils.center(Integer.toString(l.getBlockX()), 9);
-                String actY = StringUtils.center(Integer.toString(l.getBlockY()), 5);
-                String actZ = StringUtils.center(Integer.toString(l.getBlockZ()), 9);
-                p.sendTitle(ChatColor.GREEN + "Final Destination", new StringJoiner(delimiter).add(actX).add(actY).add(actZ).toString(), 0, 20, 10);
+            //Levitation
+            if (runs < trans2) {
+                p.addPotionEffect(
+                        new PotionEffect(PotionEffectType.LEVITATION, 1, 0, true, false, false), true
+                );
+            } else {
+                p.addPotionEffect(
+                        new PotionEffect(PotionEffectType.LEVITATION, 1, 100, true, false, false), true
+                );
+            }
+
+            //Check for teleport time
+            if (launchTime != -1 && System.currentTimeMillis() >= launchTime + tpDelay) {
+                teleport(p, l);
             }
         }
 
-        if (changedState) { changedState = false; }
-
-        //Tick-based changing
-        if (runs > 20 && phase == Phase.NO_COORDS) {
-            phase = Phase.X_COORD;
-            changedState = true;
-        } else if (runs > 40 && phase == Phase.X_COORD) {
-            phase = Phase.XY_COORD;
-            changedState = true;
-        } else if (runs > 60 && phase == Phase.XY_COORD) {
-            phase = Phase.XYZ_COORD;
-            changedState = true;
-        }
+        runs++;
     }
 
-    public enum Phase {
-        NO_COORDS,
-        X_COORD,
-        XY_COORD,
-        XYZ_COORD,
-        TELEPORTED
+    /**
+     * Helper method to safely teleport player to 74 blocks above spread location (74 for 10 sec drop)
+     * @param p Player to teleport
+     * @param l Location to teleport to
+     */
+    private void teleport(Player p, Location l) {
+        int x = l.getBlockX();
+        int y = l.getBlockY();
+        int z = l.getBlockZ();
+        World world = l.getWorld();
+        if (world == null) {
+            world = Bukkit.getWorld(gameInstance.getMainWorld();
+        }
+
+        Block block = world.getBlockAt(l);
+        //TODO: Implement teleport
     }
 }

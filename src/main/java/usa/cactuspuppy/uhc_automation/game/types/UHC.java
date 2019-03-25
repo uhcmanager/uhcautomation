@@ -9,7 +9,7 @@ import usa.cactuspuppy.uhc_automation.entity.tasks.timers.TimerTask;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.entity.tasks.timers.UHC_SpreadPlayers;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
-import usa.cactuspuppy.uhc_automation.utils.UHCUtils;
+import usa.cactuspuppy.uhc_automation.utils.GameUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -64,7 +64,7 @@ public class UHC extends GameInstance implements Serializable {
         try {
             spreadPlayers();
         } catch (SpreadPlayersException e) {
-            new UHCUtils(this).log(Logger.Level.INFO, this.getClass(), "Failed to spread players");
+            new GameUtils(this).log(Logger.Level.INFO, this.getClass(), "Failed to spread players");
         }
         //TODO: Remove lobby
         //TODO: Set gamerules
@@ -102,7 +102,7 @@ public class UHC extends GameInstance implements Serializable {
 
         setInitNumPlayers(getAlivePlayers().size());
 
-        new UHCUtils(this).log(Logger.Level.INFO, this.getClass(),
+        new GameUtils(this).log(Logger.Level.INFO, this.getClass(),
                 String.format("Successfully spread %d players around %s,%s | " +
                         "(Average distance between players is %s blocks)",
                 locations.size(), getCenterX(), getCenterZ(), avgDistance));

@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor
-public final class UHCUtils {
+public final class GameUtils {
     private GameInstance instance;
 
     //TODO: Broadcast methods
