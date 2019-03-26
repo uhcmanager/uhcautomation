@@ -3,16 +3,19 @@ package usa.cactuspuppy.uhc_automation.entity.tasks.timers;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.type.Slab;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
 import usa.cactuspuppy.uhc_automation.game.types.UHC;
+import usa.cactuspuppy.uhc_automation.utils.GameUtils;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
-import java.util.List;
-import java.util.Random;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Inspired by Reddit user Iron_Zealot's Random TP Plugin:
@@ -28,6 +31,13 @@ public class UHC_SpreadPlayers extends TimerTask {
      * List of locations to use for spreading. Assumes that the list has already looked for highest block at that location.
      */
     private List<Location> locations;
+
+    //BLOCKLISTS
+    public static final List<Material> noStand = new ArrayList<>();
+    static {
+        noStand.add(Material.CACTUS);
+        noStand.add(Material.MAGMA_BLOCK);
+    }
 
     //TIMING CONSTANTS
     private int trans0 = 20; //No coords to one coord
@@ -54,7 +64,7 @@ public class UHC_SpreadPlayers extends TimerTask {
 
     @Override
     public void run() {
-        String delimiter = ", ";
+        boolean shouldTeleport = launchTime != -1 && System.currentTimeMillis() >= launchTime + tpDelay;
 
         //Generate random coords once because we don't need separate ones for everyone
         int randXInt = rng.nextInt(2 * uhcInstance.getInitRadius() + 1) - uhcInstance.getInitRadius();
@@ -110,11 +120,12 @@ public class UHC_SpreadPlayers extends TimerTask {
                 );
             }
 
-            //Check for teleport time
-            if (launchTime != -1 && System.currentTimeMillis() >= launchTime + tpDelay) {
+            if (shouldTeleport) {
                 teleport(p, l);
             }
         }
+
+        if (System.currentTimeMillis() >= launchTime)
 
         runs++;
     }
@@ -130,10 +141,25 @@ public class UHC_SpreadPlayers extends TimerTask {
         int z = l.getBlockZ();
         World world = l.getWorld();
         if (world == null) {
-            world = Bukkit.getWorld(gameInstance.getMainWorld();
+            world = Bukkit.getWorld(gameInstance.getMainWorld());
+            if (world == null) {
+                gameInstance.getUtils().log(Logger.Level.SEVERE, this.getClass(), "Unable to find world to teleport in, reseting game...");
+                gameInstance.updateState(GameStateEvent.RESET);
+                return;
+            }
         }
 
-        Block block = world.getBlockAt(l);
-        //TODO: Implement teleport
+        Block feet = world.getBlockAt(x, y, z);
+        while (!feet.isPassable() || !world.getBlockAt(feet.getLocation().add(0, 1, 0)).isPassable()) { //Get actual highest block
+            y++;
+            feet = world.getBlockAt(x, y, z);
+        }
+        Block belowFeet = world.getBlockAt(feet.getLocation().add(0, -1, 0));
+        if (belowFeet.isPassable() || belowFeet.isLiquid() || noStand.contains(belowFeet.getType())) {
+            belowFeet.setBlockData(Bukkit.createBlockData(Material.STONE_SLAB, "type=top"));
+        }
+        p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 10, true, false, false), true);
+        p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 1000000, 0, true, false, false), true);
+        GameUtils.relativeTeleport(feet.getLocation().add(0, 74, 0), p);
     }
 }

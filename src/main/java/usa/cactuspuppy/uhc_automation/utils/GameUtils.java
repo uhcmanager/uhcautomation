@@ -1,8 +1,11 @@
 package usa.cactuspuppy.uhc_automation.utils;
 
+import com.sun.istack.internal.NotNull;
 import lombok.AllArgsConstructor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 import java.util.List;
@@ -13,6 +16,19 @@ import java.util.UUID;
 @AllArgsConstructor
 public final class GameUtils {
     private GameInstance instance;
+
+    /**
+     * Teleport specified player(s) to the specified location while maintaining the player's orientation
+     * @param players Player(s) to teleport relatively
+     * @param destination Location to teleport to
+     */
+    public static void relativeTeleport(@NotNull Location destination, Player... players) {
+        for (Player p : players) {
+            destination.setYaw(p.getLocation().getYaw());
+            destination.setPitch(p.getLocation().getPitch());
+            p.teleport(destination);
+        }
+    }
 
     //TODO: Broadcast methods
     public void broadcastChatMessage(String chatMessage) {
