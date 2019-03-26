@@ -10,7 +10,7 @@ import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.LogPrefix;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
-import usa.cactuspuppy.uhc_automation.command.Delegator;
+import usa.cactuspuppy.uhc_automation.command.CmdDelegator;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
@@ -100,8 +100,8 @@ public class Main extends JavaPlugin {
     boolean initBase() {
         //TODO: Initiate base plugin
         //Register command
-        getCommand("uhc").setExecutor(new Delegator());
-        getCommand("uhc").setTabCompleter(new Delegator());
+        getCommand("uhc").setExecutor(new CmdDelegator());
+        getCommand("uhc").setTabCompleter(new CmdDelegator());
         //Set logger
         Logger.setOutput(getLogger());
         //Re-initiate all saved games
