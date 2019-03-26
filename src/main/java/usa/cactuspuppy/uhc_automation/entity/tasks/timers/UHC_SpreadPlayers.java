@@ -10,6 +10,7 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.entity.tasks.listeners.UHC_PreStartFreeze;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
 import usa.cactuspuppy.uhc_automation.game.types.UHC;
 import usa.cactuspuppy.uhc_automation.utils.GameUtils;
@@ -77,6 +78,12 @@ public class UHC_SpreadPlayers extends TimerTask {
         }
 
         int index = 0;
+        for (UUID u : gameInstance.getSpectators()) {
+            Player p = Bukkit.getPlayer(u); //Get player
+            if (p == null) { continue; }
+
+            p.sendTitle(ChatColor.GOLD + "Starting game...", ChatColor.WHITE + "Spreading players...", 0, 20, 10);
+        }
         for (UUID u : gameInstance.getAlivePlayers()) {
             Player p = Bukkit.getPlayer(u); //Get player
             if (p == null) { continue; }
@@ -125,7 +132,10 @@ public class UHC_SpreadPlayers extends TimerTask {
             }
         }
 
-        if (System.currentTimeMillis() >= launchTime)
+        if (shouldTeleport) { //Initiate pre-game countdown
+            new UHC_PreStartFreeze(gameInstance).init();
+            new UHC_StartCountdown(gameInstance, 10).init();
+        }
 
         runs++;
     }
@@ -159,7 +169,8 @@ public class UHC_SpreadPlayers extends TimerTask {
             belowFeet.setBlockData(Bukkit.createBlockData(Material.STONE_SLAB, "type=top"));
         }
         p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 10, true, false, false), true);
-        p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 1000000, 0, true, false, false), true);
+        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 1000000, 0, true, false, false), true);
+        p.setGameMode(GameMode.ADVENTURE);
         GameUtils.relativeTeleport(feet.getLocation().add(0, 74, 0), p);
     }
 }
