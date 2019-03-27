@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
+import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.util.Objects;
@@ -100,6 +101,11 @@ public class UHC_StartCountdown extends TimerTask {
             startTime = System.currentTimeMillis() + secsToCountdown * 1000;
         }
         long timeTo = startTime - currTick;
+        if (timeTo <= 0) {
+            cancel();
+            gameInstance.updateState(GameStateEvent.START);
+            return;
+        }
         actionBar = String.format("Game starts in %.2f", timeTo / 1000D);
         title = String.format("Game starts in %d", timeTo / 1000 + (timeTo % 1000 == 0 ? 0 : 1));
         gameInstance.getUtils().broadcastSoundTitle(Sound.BLOCK_NOTE_BLOCK_PLING, 1.17F, title, subtitle, 0, 20, 10);
