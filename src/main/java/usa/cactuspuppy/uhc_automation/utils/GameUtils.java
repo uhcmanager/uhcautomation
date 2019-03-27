@@ -1,17 +1,14 @@
 package usa.cactuspuppy.uhc_automation.utils;
 
-import com.sun.istack.internal.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
 
 @AllArgsConstructor
 public final class GameUtils {
@@ -22,7 +19,7 @@ public final class GameUtils {
      * @param players Player(s) to teleport relatively
      * @param destination Location to teleport to
      */
-    public static void relativeTeleport(@NotNull Location destination, Player... players) {
+    public static void relativeTeleport(@NonNull Location destination, Player... players) {
         for (Player p : players) {
             destination.setYaw(p.getLocation().getYaw());
             destination.setPitch(p.getLocation().getPitch());
@@ -30,7 +27,7 @@ public final class GameUtils {
         }
     }
 
-    //TODO: Broadcast methods
+    //BROADCASTING
     public void broadcastChatMessage(String chatMessage) {
         instance.getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(
                 p -> p.sendMessage(chatMessage)
@@ -49,6 +46,7 @@ public final class GameUtils {
         );
     }
 
+    //LOGGING
     public void log(Logger.Level level, Class c, String msg, Exception e) {
         Logger.log(level, c, " [" + instance.getName() + "](ID: " + instance.getGameID() + ") " + msg, e);
     }

@@ -2,6 +2,7 @@ package usa.cactuspuppy.uhc_automation;
 
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.permission.ChildPermission;
@@ -97,35 +98,47 @@ public class Main extends JavaPlugin {
         //Do nothing, this breaks custom config setup
     }
 
-    boolean initBase() {
+    private boolean initBase() {
         //TODO: Initiate base plugin
         //Register command
-        getCommand("uhc").setExecutor(new CmdDelegator());
-        getCommand("uhc").setTabCompleter(new CmdDelegator());
+        PluginCommand uhc = getCommand("uhc");
+        if (uhc == null) {
+            Logger.logError(this.getClass(), "Could not find /uhc command, operation impossible");
+            return false;
+        }
+        uhc.setExecutor(new CmdDelegator());
+        uhc.setTabCompleter(new CmdDelegator());
         //Set logger
         Logger.setOutput(getLogger());
+
         //Re-initiate all saved games
+        reinitGames();
+
+        //Register listeners
+        getServer().getPluginManager().registerEvents(new MainListener(), this);
+        return true;
+    }
+
+    private void reinitGames() {
         File gamesDir = new File(getDataFolder() + Constants.getGamesDir());
 
         if (!gamesDir.isDirectory() && !gamesDir.mkdirs()) {
             Logger.logWarning(this.getClass(), "Could not find or create game info saving directory, game loading/saving impossible!");
         } else  {
             File[] files = gamesDir.listFiles();
-            if (files == null) return true;
+            if (files == null) return;
             for (File f : files) {
                 try {
                     GameInstance instance = (GameInstance) new ObjectInputStream(new FileInputStream(f)).readObject();
                     GameManager.registerGame(instance);
-                    //TODO: Resume game
+                    //Resume game
                     instance.updateState(GameStateEvent.RESUME);
+                    if (!f.delete()) Logger.logWarning(this.getClass(), "Unable to remove " + f.getName());
                 } catch (IOException | ClassNotFoundException e) {
                     Logger.logWarning(this.getClass(), "Problem restoring game information from file " + f.getName() + ", deleting it...", e);
                     if (!f.delete()) Logger.logWarning(this.getClass(), "Unable to remove " + f.getName());
                 }
             }
         }
-        //Register listeners
-        getServer().getPluginManager().registerEvents(new MainListener(), this);
-        return true;
     }
 }

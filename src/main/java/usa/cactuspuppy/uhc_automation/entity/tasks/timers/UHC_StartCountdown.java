@@ -67,8 +67,8 @@ public class UHC_StartCountdown extends TimerTask {
 
     @Override
     public void run() {
+        long currTick = System.currentTimeMillis();
         if (!countdown) { //Wait for ticks to stabilize + players to land
-            long currTick = System.currentTimeMillis();
             //Check current tick delay
             if (Math.abs(currTick - lastTick - ticksPerCycle * 50) > maxTickDeviance * ticksPerCycle * 50) {
                 gameInstance.getUtils().log(Logger.Level.FINE, this.getClass(),
@@ -89,8 +89,17 @@ public class UHC_StartCountdown extends TimerTask {
         if (!countdown) {
             return;
         }
+
+        //Show countdown
+        String actionBar;
+        String title;
+        String subtitle = "Game starts in...";
         if (startTime == -1) {//Set time to start
             startTime = System.currentTimeMillis() + secsToCountdown * 1000;
         }
+        long timeTo = startTime - currTick;
+        actionBar = String.format("Game starts in %.2f", timeTo / 1000D);
+        title = String.format("Game starts in %d", timeTo / 1000 + (timeTo % 1000 == 0 ? 0 : 1));
+        gameInstance.getUtils().
     }
 }
