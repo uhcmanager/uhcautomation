@@ -18,12 +18,17 @@ import java.util.UUID;
 
 public final class MojangAPIHook {
     private static BiHashMap<String, UUID> nameUUIDCache = new BiHashMap<>();
+    private static boolean cacheValid = true;
 
     public static void updateCache(String username, UUID uuid) {
         nameUUIDCache.put(username, uuid);
     }
 
     public static void invalidateCache() {
+        cacheValid = false;
+    }
+
+    public static void clearCache() {
         nameUUIDCache.clear();
     }
 
@@ -31,9 +36,16 @@ public final class MojangAPIHook {
         if (!validUsername(username)) {
             return null;
         }
-        OfflinePlayer p = Bukkit.getPlayer(username);
+        OfflinePlayer p;
+        try {
+            p = Bukkit.getPlayer(username);
+        } catch (Exception e) {
+            p = null;
+        }
         if (p != null) {
             return p.getUniqueId();
+        } else if (cacheValid && nameUUIDCache.containsKey(username)) {
+            return nameUUIDCache.get(username);
         } else {
             try {
                 URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + username);
@@ -41,7 +53,9 @@ public final class MojangAPIHook {
                 JSONObject responseJSON = (JSONObject) new JSONParser().parse(response);
                 String uuidString = (String) responseJSON.get("id");
                 uuidString = uuidString.replaceAll("(.{8})(.{4})(.{4})(.{4})(.+)", "$1-$2-$3-$4-$5");
-                return UUID.fromString(uuidString);
+                UUID u = UUID.fromString(uuidString);
+                nameUUIDCache.put(username, u);
+                return u;
             } catch (MalformedURLException e) {
                 Logger.logWarning(MojangAPIHook.class, "API URL invalid!", e);
             } catch (IOException e) {
@@ -57,15 +71,29 @@ public final class MojangAPIHook {
         if (u == null) {
             return null;
         }
+        OfflinePlayer p;
         try {
-            URL url = new URL("https://api.mojang.com/users/profiles/" + u + "/names");
+            p = Bukkit.getOfflinePlayer(u);
+        } catch (Exception e) {
+            p = null;
+        }
+        if (p != null) {
+            return p.getName();
+        }
+        if (cacheValid && nameUUIDCache.containsValue(u)) {
+            return nameUUIDCache.getKey(u);
+        }
+        try {
+            URL url = new URL("https://api.mojang.com/user/profiles/" + u.toString().replace("-", "") + "/names");
             String response = queryURL(url);
             JSONArray responseJSON = (JSONArray) new JSONParser().parse(response);
             if (responseJSON.isEmpty()) {
                 Logger.logWarning(MojangAPIHook.class, "Could not find UUID for username");
             }
-            JSONObject obj = (JSONObject) responseJSON.get(0);
-            return (String) obj.get("name");
+            JSONObject obj = (JSONObject) responseJSON.get(responseJSON.size() - 1);
+            String username = (String) obj.get("name");
+            nameUUIDCache.put(username, u);
+            return username;
 
         } catch (MalformedURLException e) {
             Logger.logWarning(MojangAPIHook.class, "API URL invalid!", e);

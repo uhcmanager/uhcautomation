@@ -2,14 +2,16 @@ package usa.cactuspuppy.uhc_automation.entity.tasks.timers;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.util.Objects;
-import java.util.UUID;
 
 public class UHC_StartCountdown extends TimerTask {
     /**
@@ -93,13 +95,16 @@ public class UHC_StartCountdown extends TimerTask {
         //Show countdown
         String actionBar;
         String title;
-        String subtitle = "Game starts in...";
+        String subtitle = ChatColor.GREEN + "Game starts in...";
         if (startTime == -1) {//Set time to start
             startTime = System.currentTimeMillis() + secsToCountdown * 1000;
         }
         long timeTo = startTime - currTick;
         actionBar = String.format("Game starts in %.2f", timeTo / 1000D);
         title = String.format("Game starts in %d", timeTo / 1000 + (timeTo % 1000 == 0 ? 0 : 1));
-        gameInstance.getUtils().
+        gameInstance.getUtils().broadcastSoundTitle(Sound.BLOCK_NOTE_BLOCK_PLING, 1.17F, title, subtitle, 0, 20, 10);
+        gameInstance.getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.spigot().sendMessage(
+                ChatMessageType.ACTION_BAR, new TextComponent(actionBar)
+        ));
     }
 }

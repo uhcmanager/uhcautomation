@@ -135,6 +135,8 @@ public class UHC_SpreadPlayers extends TimerTask {
         if (shouldTeleport) { //Initiate pre-game countdown
             new UHC_PreStartFreeze(gameInstance).init();
             new UHC_StartCountdown(gameInstance, 10).init();
+            cancel();
+            return;
         }
 
         runs++;

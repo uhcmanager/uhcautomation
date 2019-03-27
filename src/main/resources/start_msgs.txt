@@ -1,50 +1,68 @@
-# Special thanks to:
-#
-"Live and let die!"
-"Go for broke!"
-"Ready Player One!"
-"No time like the present!"
-"This ought to be a match to remember!"
-"Eliminate Other Players"
-"Capture Objective A"
-"Triumph or Die!"
-"Hack and Slash!"
-"Lives Remaining: 0"
-"Tear them apart!"
-"May the odds be ever in your favor!"
-"Once more unto the breach"
-"Go Get 'Em, Tiger!"
-"Time to kick the tires and light the fires!"
-"Git 'er Done!"
-"Alea Iacta Est"
-"Cry havoc and let slip the dogs of war"
-"Let Slip the Dogs of War!"
-"Veni, vidi, vici."
-"Oooh hoo hoo hoo... this'll be good!"
-"Fire In The Hole!"
-"Fire at will!"
-"Fight for the Assassins!"
-"Kill or be killed!"
-"THEY SHALL NOT PASS"
-"If anyone is gonna win, it's gonna be you."
-"Who's ready for some fireworks!"
-"LEEEROY JENKINS"
-"Release the hounds!"
-"Good luck, don't die!"
-"Good luck, have fun!"
-"Just Do It!"
-"FOR THE HORDE!"
-"For The Alliance!"
-"Watch out for bears!"
-"How do YOU want to do this?"
-"Know yourself, know thy enemy, and you shall win."
-"For Aiur!"
-"One Punch is all you need!"
-"Roll for Initiative!"
-"You know you have to do it to 'em"
-"Watch out for boars!"
-"CHAAAAAAARGE"
-"Ready for Battle!"
-"Ready for Combat!"
-"D.Va, ready for combat!"
-"Fight!"
+# Additional lines provided by:
+# Aurabeth
+# daniodle
+# Djinnjurr
+# DreDeveraux
+# krohn67
+# Remuko
+# Wyntr
+Live and let die!
+Go for broke!
+Ready Player One!
+No time like the present!
+This ought to be a match to remember!
+Eliminate Other Players
+Capture Objective A
+Triumph or Die!
+Hack and Slash!
+Lives Remaining: 0
+Tear them apart!
+May the odds be ever in your favor!
+Once more unto the breach
+Go Get 'Em, Tiger!
+Time to kick the tires and light the fires!
+Git 'er Done!
+Alea Iacta Est
+Cry havoc and let slip the dogs of war
+Let Slip the Dogs of War!
+Veni, vidi, vici.
+Oooh hoo hoo hoo... this'll be good!
+Fire In The Hole!
+Fire at will!
+Fight for the Assassins!
+Kill or be killed!
+THEY SHALL NOT PASS
+If anyone is gonna win, it's gonna be you.
+Who's ready for some fireworks!
+LEEEROY JENKINS
+Release the hounds!
+Good luck, don't die!
+Good luck, have fun!
+Just Do It!
+FOR THE HORDE!
+For The Alliance!
+Watch out for bears!
+How do YOU want to do this?
+Know yourself, know thy enemy, and you shall win.
+For Aiur!
+One Punch is all you need!
+Roll for Initiative!
+You know you have to do it to 'em
+Watch out for boars!
+CHAAAAAAARGE
+Ready for Battle!
+Ready for Combat!
+D.Va, ready for combat!
+Fight!
+Light them up!
+ROUND 1... FIGHT
+HAMMER DOWN
+Heroes Never Die
+Don't let your memes be dreams!
+NO BOOPS
+CEASE YOUR RESISTANCE
+Oh let's break it DOWN!
+Experience Tranquility
+Rip and Tear
+You ain't never had a game like this!
+Rally to me!
