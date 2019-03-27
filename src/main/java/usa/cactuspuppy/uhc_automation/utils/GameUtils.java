@@ -29,6 +29,12 @@ public final class GameUtils {
         }
     }
 
+    public void msgManagers(String chatMessage) {
+        instance.getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).filter(p -> p.hasPermission("uhc.manager")).forEach(
+                player -> player.sendMessage(chatMessage)
+        );
+    }
+
     //BROADCASTING
     public void broadcastChat(String chatMessage) {
         instance.getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(

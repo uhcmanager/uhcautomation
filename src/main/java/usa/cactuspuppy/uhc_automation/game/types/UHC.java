@@ -1,9 +1,7 @@
 package usa.cactuspuppy.uhc_automation.game.types;
 
 import lombok.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import usa.cactuspuppy.uhc_automation.entity.tasks.listeners.ListenerTask;
 import usa.cactuspuppy.uhc_automation.entity.tasks.timers.TimerTask;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
@@ -61,19 +59,27 @@ public class UHC extends GameInstance implements Serializable {
 
     @Override
     protected void init() {
+        //TODO: Remove lobby
+        World main = Bukkit.getWorld(mainWorld);
+        if (main == null) {
+            getUtils().log(Logger.Level.WARNING, this.getClass(), "No main world set on init, aborting start");
+            getUtils().broadcastChatSound(ChatColor.RED + "Error initiating game", Sound.BLOCK_NOTE_BLOCK_BASS, 0.5F);
+            getUtils().msgManagers(ChatColor.RED + "INIT ERR: No main world set");
+            return;
+        }
         try {
             spreadPlayers();
         } catch (SpreadPlayersException e) {
-            new GameUtils(this).log(Logger.Level.INFO, this.getClass(), "Failed to spread players");
+            new GameUtils(this).log(Logger.Level.INFO, this.getClass(), "Failed to spread players: " + e.getLocalizedMessage());
         }
-        //TODO: Remove lobby
-        //TODO: Set gamerules
-        //TODO: Begin start countdown
+
     }
 
     @Override
     protected void start() {
-
+        //Clear tasks to reset behavior
+        ListenerTask.clearInstanceListeners(this);
+        TimerTask.clearInstanceTimers(this);
     }
 
     @Override
