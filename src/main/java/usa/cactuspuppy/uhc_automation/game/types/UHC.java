@@ -7,6 +7,7 @@ import org.bukkit.*;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import usa.cactuspuppy.uhc_automation.game.tasks.listeners.ListenerTask;
+import usa.cactuspuppy.uhc_automation.game.tasks.listeners.UHC_LobbyListener;
 import usa.cactuspuppy.uhc_automation.game.tasks.timers.TimerTask;
 import usa.cactuspuppy.uhc_automation.game.tasks.timers.UHC_SpreadPlayers;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
@@ -74,6 +75,7 @@ public class UHC extends GameInstance {
         TimerTask.clearInstanceTimers(this);
         ListenerTask.clearInstanceListeners(this);
         //TODO: Create lobby
+        new UHC_LobbyListener(this).init();
         World main = getMainWorld();
         if (main == null) {
             getUtils().log(Logger.Level.WARNING, this.getClass(), "Null main world, cannot resolve.");
@@ -81,23 +83,20 @@ public class UHC extends GameInstance {
             return false;
         }
         createLobby();
-        //TODO: Set all worlds' gamerules
+        // Day/weather cancel
         main.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-        main.setTime(0);
+        main.setTime(1000);
         main.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         main.setStorm(false);
         main.setThundering(false);
+        // Worldborder reset
         main.getWorldBorder().setCenter(centerX + 0.5, centerZ + 0.5);
+        main.getWorldBorder().reset();
+        // Natural regen
+        main.setGameRule(GameRule.NATURAL_REGENERATION, false);
+        otherWorlds.stream().map(Bukkit::getWorld).filter(Objects::nonNull).forEach(w -> w.setGameRule(GameRule.NATURAL_REGENERATION, false));
+        
         return true;
-    }
-
-    private World getMainWorld() {
-        World main = Bukkit.getWorld(mainWorldUID);
-        if (main == null) {
-            getUtils().log(Logger.Level.WARNING, this.getClass(), "Null main world UID, cannot resolve");
-            return null;
-        }
-        return main;
     }
 
     private void createLobby() {
@@ -125,10 +124,18 @@ public class UHC extends GameInstance {
                 }
             }
         }
+        //Set spawnpoint and spawn radius
+        if (!destroy) {
+            main.setSpawnLocation(centerX, y + 1, centerZ);
+            main.setGameRule(GameRule.SPAWN_RADIUS, 0);
+        } else {
+            main.setSpawnLocation(centerX, y - blocksAboveGround, centerZ);
+            main.setGameRule(GameRule.SPAWN_RADIUS, 10);
+        }
     }
 
     @Override
-    protected void init() {
+    protected boolean init() {
         TimerTask.clearInstanceTimers(this);
         ListenerTask.clearInstanceListeners(this);
         World main = Bukkit.getWorld(mainWorldUID);
@@ -136,7 +143,7 @@ public class UHC extends GameInstance {
             getUtils().log(Logger.Level.WARNING, this.getClass(), "No main world set on init, aborting start");
             getUtils().broadcastChatSound(ChatColor.RED + "Error initiating game", Sound.BLOCK_NOTE_BLOCK_BASS, 0.5F);
             getUtils().msgManagers(ChatColor.RED + "INIT ERR: No main world set");
-            return;
+            return false;
         }
         clearLobby();
         getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.addPotionEffect(
@@ -147,7 +154,7 @@ public class UHC extends GameInstance {
         } catch (SpreadPlayersException e) {
             new GameUtils(this).log(Logger.Level.INFO, this.getClass(), "Failed to spread players: " + e.getLocalizedMessage());
         }
-
+        return true;
     }
 
     @Override
