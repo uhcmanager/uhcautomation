@@ -47,7 +47,7 @@ public abstract class GameInstance implements Serializable {
      */
     @Setter(AccessLevel.NONE)
     @NonNull
-    protected UUID mainWorld;
+    protected UUID mainWorldUID;
 
     /**
      * Other worlds that players may travel to during the course of the game without being considered as leaving the game. Examples include the main world's Nether and End dimension.
@@ -105,7 +105,7 @@ public abstract class GameInstance implements Serializable {
         return rv;
     }
 
-    public GameInstance(World world) {
+    public GameInstance(@NonNull World world) {
         if (world == null) {
             new GameUtils(this).log(Logger.Level.SEVERE, this.getClass(), "CONSTRUCTOR: Main world cannot be null");
             return;
@@ -113,7 +113,7 @@ public abstract class GameInstance implements Serializable {
         gameID = 0;
         gameID = GameManager.registerGame(this);
         name = "Game " + gameID;
-        mainWorld = world.getUID();
+        mainWorldUID = world.getUID();
         GameManager.registerWorldGame(world.getUID(), this);
         //TODO: Set defaults
     }
@@ -124,9 +124,9 @@ public abstract class GameInstance implements Serializable {
      * @param keepOldWorld Whether to set the old main world as a linked world or drop it all together
      * @return False if main world was not set, otherwise true to indicate success.
      */
-    public boolean setMainWorld(World world, boolean keepOldWorld) {
+    public boolean setMainWorldUID(@NonNull World world, boolean keepOldWorld) {
         if (world == null) {
-            new GameUtils(this).log(Logger.Level.SEVERE, this.getClass(), "CONSTRUCTOR: Main world cannot be null");
+            new GameUtils(this).log(Logger.Level.WARNING, this.getClass(), "Attempt to set main world to null");
             return false;
         }
         if (gameState != GameState.LOBBY) {
@@ -134,55 +134,64 @@ public abstract class GameInstance implements Serializable {
             return false;
         }
         if (keepOldWorld) {
-            otherWorlds.add(mainWorld);
+            otherWorlds.add(mainWorldUID);
         } else {
-            GameManager.unregisterWorldGame(mainWorld);
+            GameManager.unregisterWorldGame(mainWorldUID);
         }
-        mainWorld = world.getUID();
+        GameManager.registerWorldGame(world.getUID(), this);
+        mainWorldUID = world.getUID();
         reset();
         return true;
     }
 
     /**
-     * Updates the state of the game, calling the appropriate handlers
+     * Updates the state of the game, calling the appropriate handlers.
+     * Note that any RESET call should succeed regardless of GameState
      * @param e The game state event being requested
      * @return Whether any update to the game state occurred
      */
-    public boolean updateState(GameStateEvent e) {
+    public final boolean updateState(GameStateEvent e) {
         if (e == null) {
-            getUtils().log(Logger.Level.SEVERE, this.getClass(), "State update function was passed null");
+            getUtils().log(Logger.Level.WARNING, this.getClass(), "State update function was passed null");
+            return false;
         }
         switch (e) {
             case RESET:
                 reset();
+                gameState = GameState.LOBBY;
                 return true;
             case INIT:
                 if (gameState == GameState.LOBBY) {
                     init();
+                    gameState = GameState.INITIATING;
                     return true;
                 }
                 return false;
             case START:
                 if (gameState == GameState.INITIATING) {
                     start();
+                    gameState = GameState.ACTIVE;
                     return true;
                 }
                 return false;
             case PAUSE:
                 if (gameState == GameState.ACTIVE) {
                     pause();
+                    gameState = GameState.PAUSED;
                     return true;
                 }
                 return false;
             case RESUME:
                 if (gameState == GameState.PAUSED) {
                     resume();
+                    gameState = GameState.ACTIVE;
                     return true;
                 }
                 return false;
             case END:
                 if (gameState == GameState.ACTIVE) {
                     end();
+                    gameState = GameState.ENDED;
                     return true;
                 }
                 return false;
@@ -200,7 +209,7 @@ public abstract class GameInstance implements Serializable {
 
     /**
      * Initiate the game, bringing the game out of lobby mode and doing pre-game tasks such as spreading players around the map and beginning the pregame countdown.
-     * If desired, this method can directly call start if all game-start methods can be called in the same tick.
+     * If desired, this method can directly call start if all game-start tasks can be called in the same tick.
      */
     protected abstract void init();
 
@@ -210,12 +219,12 @@ public abstract class GameInstance implements Serializable {
     protected abstract void start();
 
     /**
-     * Called if the game is interrupted by a server or plugin restart. Most games should not need to worry about this.
+     * Called if the game is interrupted by a server or plugin restart.
      */
     protected abstract void pause();
 
     /**
-     * Called once the game is reactivated after a server or plugin restart. Most games should not need to worry about this.
+     * Called once the game is reactivated after a server or plugin restart.
      */
     protected abstract void resume();
 

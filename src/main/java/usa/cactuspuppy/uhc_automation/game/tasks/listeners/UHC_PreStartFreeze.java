@@ -1,4 +1,4 @@
-package usa.cactuspuppy.uhc_automation.entity.tasks.listeners;
+package usa.cactuspuppy.uhc_automation.game.tasks.listeners;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;

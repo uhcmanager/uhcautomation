@@ -1,4 +1,4 @@
-package usa.cactuspuppy.uhc_automation.entity.tasks;
+package usa.cactuspuppy.uhc_automation.game.tasks;
 
 import org.bukkit.event.Listener;
 

@@ -1,4 +1,4 @@
-package usa.cactuspuppy.uhc_automation.entity.tasks.timers;
+package usa.cactuspuppy.uhc_automation.game.tasks.timers;
 
 import lombok.Getter;
 import lombok.Setter;

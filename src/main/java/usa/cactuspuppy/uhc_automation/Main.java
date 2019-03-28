@@ -12,10 +12,11 @@ import org.bukkit.plugin.java.annotation.plugin.LogPrefix;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import usa.cactuspuppy.uhc_automation.command.CmdDelegator;
+import usa.cactuspuppy.uhc_automation.game.tasks.MainListener;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
+import usa.cactuspuppy.uhc_automation.game.GameState;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
-import usa.cactuspuppy.uhc_automation.entity.tasks.MainListener;
 import usa.cactuspuppy.uhc_automation.utils.FileIO;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
@@ -80,7 +81,10 @@ public class Main extends JavaPlugin {
         for (long l : GameManager.getActiveGames().keySet()) {
             try {
                 GameInstance current = GameManager.getGame(l);
-                current.updateState(GameStateEvent.PAUSE); //Inform game of pause
+                boolean success = current.updateState(GameStateEvent.PAUSE); //Inform game of pause
+                if (!success) {
+                    current.getUtils().log(Logger.Level.INFO, this.getClass(), "Could not pause game, game will be reset on restart.");
+                }
                 FileOutputStream fileOS = new FileOutputStream(new File(getDataFolder() + Constants.getGamesDir(), String.format(Constants.getGameInfoFile(), l)));
                 ObjectOutputStream out = new ObjectOutputStream(fileOS);
                 out.writeObject(current);
@@ -132,7 +136,16 @@ public class Main extends JavaPlugin {
                     GameInstance instance = (GameInstance) new ObjectInputStream(new FileInputStream(f)).readObject();
                     GameManager.registerGame(instance);
                     //Resume game
-                    instance.updateState(GameStateEvent.RESUME);
+                    GameState state = instance.getGameState();
+                    if (state == GameState.LOBBY || state == GameState.ENDED) {
+                        continue;
+                    }
+                    if (state != GameState.PAUSED) {
+                        Logger.logWarning(this.getClass(), "GID: " + instance.getGameID() + " (" + f.getPath() + ") not paused before restart, resetting...");
+                        instance.updateState(GameStateEvent.RESET);
+                    } else {
+                        instance.updateState(GameStateEvent.RESUME);
+                    }
                     if (!f.delete()) Logger.logWarning(this.getClass(), "Unable to remove " + f.getName());
                 } catch (IOException | ClassNotFoundException e) {
                     Logger.logWarning(this.getClass(), "Problem restoring game information from file " + f.getName() + ", deleting it...", e);

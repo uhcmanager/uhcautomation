@@ -1,8 +1,8 @@
-package usa.cactuspuppy.uhc_automation.entity.tasks.timers;
+package usa.cactuspuppy.uhc_automation.game.tasks.timers;
 
 import org.bukkit.Bukkit;
 import usa.cactuspuppy.uhc_automation.Main;
-import usa.cactuspuppy.uhc_automation.entity.tasks.Task;
+import usa.cactuspuppy.uhc_automation.game.tasks.Task;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 import java.util.ArrayList;

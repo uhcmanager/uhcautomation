@@ -1,19 +1,24 @@
 package usa.cactuspuppy.uhc_automation.game.types;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.*;
-import usa.cactuspuppy.uhc_automation.entity.tasks.listeners.ListenerTask;
-import usa.cactuspuppy.uhc_automation.entity.tasks.timers.TimerTask;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import usa.cactuspuppy.uhc_automation.game.tasks.listeners.ListenerTask;
+import usa.cactuspuppy.uhc_automation.game.tasks.timers.TimerTask;
+import usa.cactuspuppy.uhc_automation.game.tasks.timers.UHC_SpreadPlayers;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
-import usa.cactuspuppy.uhc_automation.entity.tasks.timers.UHC_SpreadPlayers;
-import usa.cactuspuppy.uhc_automation.utils.Logger;
 import usa.cactuspuppy.uhc_automation.utils.GameUtils;
+import usa.cactuspuppy.uhc_automation.utils.Logger;
 
-import java.io.Serializable;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.Objects;
+import java.util.Random;
 
 @Getter
-public class UHC extends GameInstance implements Serializable {
+public class UHC extends GameInstance {
     //[=== PLAY AREA INFO ===]
     /**
      * Time to delay border shrinking, in seconds.
@@ -23,22 +28,35 @@ public class UHC extends GameInstance implements Serializable {
     protected int timeToShrink;
 
     @Setter(AccessLevel.PUBLIC)
-    protected int centerX;
+    protected int centerX = 0;
 
     @Setter(AccessLevel.PUBLIC)
-    protected int centerZ;
+    protected int centerZ = 0;
 
     /**
      * Radius of the initial play space, in blocks from 0, 0 (0.5, 0.5)
      */
     @Setter(AccessLevel.PUBLIC)
-    protected int initRadius;
+    protected int initRadius = 2000;
 
+    /**
+     * Minimum distance from center for starting locations
+     */
     @Setter(AccessLevel.PUBLIC)
     protected int minDistance;
 
+    /**
+     * Minimum distance between starting locations
+     */
     @Setter(AccessLevel.PUBLIC)
     protected int minSeparation;
+
+    // [=== LOBBY INFO ===]
+    @Setter(AccessLevel.PUBLIC)
+    protected int lobbyRadius = 11;
+
+    @Setter(AccessLevel.PUBLIC)
+    protected int blocksAboveGround = 50;
 
     // [=== EPISODE INFO ===]
     /**
@@ -55,18 +73,67 @@ public class UHC extends GameInstance implements Serializable {
     protected void reset() {
         TimerTask.clearInstanceTimers(this);
         ListenerTask.clearInstanceListeners(this);
+        //TODO: Create lobby
+        World main = getMainWorld();
+        if (main == null) {
+            getUtils().log(Logger.Level.WARNING, this.getClass(), "Null main world, cannot resolve.");
+            getUtils().msgManagers(ChatColor.RED + "RESET ERROR: No main world set, cannot reset.");
+        }
+        createLobby();
+
+    }
+
+    private World getMainWorld() {
+        World main = Bukkit.getWorld(mainWorldUID);
+        if (main == null) {
+            getUtils().log(Logger.Level.WARNING, this.getClass(), "Null main world UID, cannot resolve");
+            return null;
+        }
+        return main;
+    }
+
+    private void createLobby() {
+        setLobby(false);
+    }
+
+    private void clearLobby() {
+        setLobby(true);
+    }
+
+    private void setLobby(boolean destroy) {
+        World main = getMainWorld();
+        if (main == null) {
+            return;
+        }
+        int y = main.getHighestBlockYAt(getCenterX(), getCenterZ()) + blocksAboveGround;
+        if (y > 253) { y = 253; }
+        Material material = (destroy ? Material.AIR : Material.BARRIER);
+        for (int x = centerX - lobbyRadius; x <= centerX + lobbyRadius; x++) {
+            for (int z = centerZ - lobbyRadius; z <= centerZ + lobbyRadius; z++) {
+                main.getBlockAt(x, y, z).setType(material, true);
+                if (Math.abs(x - centerX) == lobbyRadius || Math.abs(z - centerZ) == lobbyRadius) {
+                    main.getBlockAt(x, y+1, z).setType(material, true);
+                    main.getBlockAt(x, y+2, z).setType(material, true);
+                }
+            }
+        }
     }
 
     @Override
     protected void init() {
-        //TODO: Remove lobby
-        World main = Bukkit.getWorld(mainWorld);
+        TimerTask.clearInstanceTimers(this);
+        ListenerTask.clearInstanceListeners(this);
+        World main = Bukkit.getWorld(mainWorldUID);
         if (main == null) {
             getUtils().log(Logger.Level.WARNING, this.getClass(), "No main world set on init, aborting start");
             getUtils().broadcastChatSound(ChatColor.RED + "Error initiating game", Sound.BLOCK_NOTE_BLOCK_BASS, 0.5F);
             getUtils().msgManagers(ChatColor.RED + "INIT ERR: No main world set");
             return;
         }
+        clearLobby();
+        getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.addPotionEffect(
+                new PotionEffect(PotionEffectType.LEVITATION, 1, 255, true, false, false), true
+        ));
         try {
             spreadPlayers();
         } catch (SpreadPlayersException e) {
@@ -158,7 +225,7 @@ public class UHC extends GameInstance implements Serializable {
                 }
 
                 //Add this location to the list
-                World mainWorld = Bukkit.getWorld(getMainWorld());
+                World mainWorld = Bukkit.getWorld(this.getMainWorldUID());
                 loc = new Location(mainWorld, x, mainWorld.getHighestBlockYAt(x, z), z);
                 locations.addLast(loc);
                 success = true;

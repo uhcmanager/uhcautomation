@@ -1,10 +1,10 @@
-package usa.cactuspuppy.uhc_automation.entity.tasks.listeners;
+package usa.cactuspuppy.uhc_automation.game.tasks.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import usa.cactuspuppy.uhc_automation.Main;
-import usa.cactuspuppy.uhc_automation.entity.tasks.Task;
+import usa.cactuspuppy.uhc_automation.game.tasks.Task;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 import java.util.ArrayList;

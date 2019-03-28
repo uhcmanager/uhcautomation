@@ -1,12 +1,15 @@
-package usa.cactuspuppy.uhc_automation.entity.tasks.timers;
+package usa.cactuspuppy.uhc_automation.game.tasks.timers;
 
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
-
-import java.sql.Time;
+import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
 
 public class UHC_InitCountdown extends TimerTask {
+    private long initTime;
+
     public UHC_InitCountdown(GameInstance gameInstance, int secsDelay) {
         super(gameInstance, true, 0L, 2L);
+        long currTime = System.currentTimeMillis();
+        initTime = currTime + secsDelay * 1000;
     }
 
     /**
@@ -22,6 +25,12 @@ public class UHC_InitCountdown extends TimerTask {
      */
     @Override
     public void run() {
-
+        //TODO: init countdown
+        long currTime = System.currentTimeMillis();
+        if (currTime >= initTime) {
+            gameInstance.updateState(GameStateEvent.INIT);
+            cancel();
+            return;
+        }
     }
 }

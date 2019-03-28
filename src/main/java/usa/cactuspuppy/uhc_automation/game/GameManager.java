@@ -98,7 +98,7 @@ public class GameManager {
      */
     static boolean unregisterWorldGame(UUID u) {
         GameInstance instance = activeGames.get(worldMap.get(u));
-        if (instance != null && instance.getMainWorld().equals(u)) {
+        if (instance != null && instance.getMainWorldUID().equals(u)) {
             return false;
         }
         worldMap.remove(u);

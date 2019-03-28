@@ -1,16 +1,12 @@
-package usa.cactuspuppy.uhc_automation.entity.tasks.timers;
+package usa.cactuspuppy.uhc_automation.game.tasks.timers;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.type.Slab;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import usa.cactuspuppy.uhc_automation.Main;
-import usa.cactuspuppy.uhc_automation.entity.tasks.listeners.UHC_PreStartFreeze;
+import usa.cactuspuppy.uhc_automation.game.tasks.listeners.UHC_PreStartFreeze;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
 import usa.cactuspuppy.uhc_automation.game.types.UHC;
 import usa.cactuspuppy.uhc_automation.utils.GameUtils;
@@ -153,7 +149,7 @@ public class UHC_SpreadPlayers extends TimerTask {
         int z = l.getBlockZ();
         World world = l.getWorld();
         if (world == null) {
-            world = Bukkit.getWorld(gameInstance.getMainWorld());
+            world = Bukkit.getWorld(gameInstance.getMainWorldUID());
             if (world == null) {
                 gameInstance.getUtils().log(Logger.Level.SEVERE, this.getClass(), "Unable to find world to teleport in, reseting game...");
                 gameInstance.updateState(GameStateEvent.RESET);
