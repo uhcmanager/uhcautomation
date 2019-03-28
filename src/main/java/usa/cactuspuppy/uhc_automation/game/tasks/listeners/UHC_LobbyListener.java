@@ -4,16 +4,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.game.types.UHC;
 
 public class UHC_LobbyListener extends ListenerTask {
-    UHC uhc;
+    private UHC uhc;
 
-    public UHC_LobbyListener(UHC gameInstance) {
-        super(gameInstance);
-        uhc = gameInstance;
+    public UHC_LobbyListener(UHC uhcInstance) {
+        super(uhcInstance);
+        uhc = uhcInstance;
     }
 
     @EventHandler
@@ -29,5 +30,13 @@ public class UHC_LobbyListener extends ListenerTask {
             e.getEntity().teleport(new Location(uhc.getMainWorld(), x, y, z));
         }, 1L);
         e.setDeathMessage("[" + ChatColor.RED + "DEATH" + ChatColor.RESET + "]" + e.getDeathMessage());
+    }
+
+    @EventHandler
+    public void onPlayerHunger(FoodLevelChangeEvent e) {
+        if (!uhc.getAllPlayers().contains(e.getEntity().getUniqueId())) {
+            return;
+        }
+        e.setCancelled(true);
     }
 }
