@@ -25,7 +25,7 @@ public class UHC extends GameInstance {
      * -1 disables border shrinking entirely
      */
     @Setter(AccessLevel.PUBLIC)
-    protected int timeToShrink;
+    protected int timeToShrink = 7200;
 
     @Setter(AccessLevel.PUBLIC)
     protected int centerX = 0;
@@ -43,13 +43,13 @@ public class UHC extends GameInstance {
      * Minimum distance from center for starting locations
      */
     @Setter(AccessLevel.PUBLIC)
-    protected int minDistance;
+    protected int minDistance = 150;
 
     /**
      * Minimum distance between starting locations
      */
     @Setter(AccessLevel.PUBLIC)
-    protected int minSeparation;
+    protected int minSeparation = 150;
 
     // [=== LOBBY INFO ===]
     @Setter(AccessLevel.PUBLIC)
@@ -70,7 +70,7 @@ public class UHC extends GameInstance {
 
     //TODO: Implement methods
     @Override
-    protected void reset() {
+    protected boolean reset() {
         TimerTask.clearInstanceTimers(this);
         ListenerTask.clearInstanceListeners(this);
         //TODO: Create lobby
@@ -78,9 +78,17 @@ public class UHC extends GameInstance {
         if (main == null) {
             getUtils().log(Logger.Level.WARNING, this.getClass(), "Null main world, cannot resolve.");
             getUtils().msgManagers(ChatColor.RED + "RESET ERROR: No main world set, cannot reset.");
+            return false;
         }
         createLobby();
-
+        //TODO: Set all worlds' gamerules
+        main.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        main.setTime(0);
+        main.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+        main.setStorm(false);
+        main.setThundering(false);
+        main.getWorldBorder().setCenter(centerX + 0.5, centerZ + 0.5);
+        return true;
     }
 
     private World getMainWorld() {
@@ -143,24 +151,28 @@ public class UHC extends GameInstance {
     }
 
     @Override
-    protected void start() {
+    protected boolean start() {
+        initTime = System.currentTimeMillis();
         //Clear tasks to reset behavior
         ListenerTask.clearInstanceListeners(this);
         TimerTask.clearInstanceTimers(this);
-    }
-
-    @Override
-    protected void pause() {
+        //TODO: Set all worlds' gamerules
+        //TODO: Set border shrink timer
 
     }
 
     @Override
-    protected void resume() {
+    protected boolean pause() {
 
     }
 
     @Override
-    protected void end() {
+    protected boolean resume() {
+
+    }
+
+    @Override
+    protected boolean end() {
 
     }
 

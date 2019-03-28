@@ -162,37 +162,42 @@ public abstract class GameInstance implements Serializable {
                 return true;
             case INIT:
                 if (gameState == GameState.LOBBY) {
-                    init();
-                    gameState = GameState.INITIATING;
-                    return true;
+                    if (init()) {
+                        gameState = GameState.INITIATING;
+                        return true;
+                    }
                 }
                 return false;
             case START:
                 if (gameState == GameState.INITIATING) {
-                    start();
-                    gameState = GameState.ACTIVE;
-                    return true;
+                    if (start()) {
+                        gameState = GameState.ACTIVE;
+                        return true;
+                    }
                 }
                 return false;
             case PAUSE:
                 if (gameState == GameState.ACTIVE) {
-                    pause();
-                    gameState = GameState.PAUSED;
-                    return true;
+                    if (pause()) {
+                        gameState = GameState.PAUSED;
+                        return true;
+                    }
                 }
                 return false;
             case RESUME:
                 if (gameState == GameState.PAUSED) {
-                    resume();
-                    gameState = GameState.ACTIVE;
-                    return true;
+                    if (resume()) {
+                        gameState = GameState.ACTIVE;
+                        return true;
+                    }
                 }
                 return false;
             case END:
                 if (gameState == GameState.ACTIVE) {
-                    end();
-                    gameState = GameState.ENDED;
-                    return true;
+                    if (end()) {
+                        gameState = GameState.ENDED;
+                        return true;
+                    }
                 }
                 return false;
             default:
@@ -204,34 +209,40 @@ public abstract class GameInstance implements Serializable {
 
     /**
      * Reset the game worlds back to lobby, whether that be a clean generated world set or from any point within the game
+     * @return Whether the reset was successful
      */
-    protected abstract void reset();
+    protected abstract boolean reset();
 
     /**
      * Initiate the game, bringing the game out of lobby mode and doing pre-game tasks such as spreading players around the map and beginning the pregame countdown.
      * If desired, this method can directly call start if all game-start tasks can be called in the same tick.
+     * @return Whether initiation was successful
      */
-    protected abstract void init();
+    protected abstract boolean init();
 
     /**
      * Start the game. This is the point at which players have full control.
+     * @return Whether the start was successful
      */
-    protected abstract void start();
+    protected abstract boolean start();
 
     /**
      * Called if the game is interrupted by a server or plugin restart.
+     * @return Whether the pause was successful
      */
-    protected abstract void pause();
+    protected abstract boolean pause();
 
     /**
      * Called once the game is reactivated after a server or plugin restart.
+     * @return Whether resuming was successful
      */
-    protected abstract void resume();
+    protected abstract boolean resume();
 
     /**
      * Called when the game reaches a victory or game-end condition. Resets to lobby SHOULD NOT call this method.
+     * @return Whether ending the game was successful
      */
-    protected abstract void end();
+    protected abstract boolean end();
 
     //Game utils
     protected GameUtils utils = new GameUtils(this);
