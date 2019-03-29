@@ -47,10 +47,14 @@ public class GameStartAnnouncer extends Task {
         Random rng = new Random();
         gameInstance.getUtils().broadcastSound(Sound.ENTITY_ENDER_DRAGON_GROWL, 1F);
         gameInstance.getUtils().broadcastSound(Sound.BLOCK_NOTE_BLOCK_PLING, 1.17F);
-        Set<Player> players = gameInstance.getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toSet());
+        Set<Player> players = gameInstance.getAlivePlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toSet());
         for (Player p : players) {
             String randomLine = startMsgs.get(rng.nextInt(startMsgs.size()));
             p.sendTitle(ChatColor.GREEN + "GO!", randomLine, 0, 40, 20);
+        }
+        Set<Player> spectators = gameInstance.getSpectators().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toSet());
+        for (Player p : spectators) {
+            p.sendTitle(ChatColor.GREEN + "START!", ChatColor.ITALIC + "You are now spectating", 0, 40, 10);
         }
         return true;
     }

@@ -7,6 +7,7 @@ import org.bukkit.*;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
+import usa.cactuspuppy.uhc_automation.game.tasks.GameStartAnnouncer;
 import usa.cactuspuppy.uhc_automation.game.tasks.listeners.ListenerTask;
 import usa.cactuspuppy.uhc_automation.game.tasks.listeners.UHC_LobbyListener;
 import usa.cactuspuppy.uhc_automation.game.tasks.timers.TimerTask;
@@ -190,11 +191,12 @@ public class UHC extends GameInstance {
         //Clear tasks to reset behavior
         ListenerTask.clearInstanceListeners(this);
         TimerTask.clearInstanceTimers(this);
-        //TODO: Announce start
+        //TODO:
         // Set border shrink timer
         Set<UUID> worlds = new HashSet<>(getOtherWorlds());
         worlds.add(mainWorldUID);
         worlds.stream().map(Bukkit::getWorld).filter(Objects::nonNull).forEach(this::startWorld);
+        new GameStartAnnouncer(this).init();
         return true;
     }
 
