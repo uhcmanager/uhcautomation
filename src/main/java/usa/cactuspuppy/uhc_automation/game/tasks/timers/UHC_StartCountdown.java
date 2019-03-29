@@ -24,6 +24,10 @@ public class UHC_StartCountdown extends TimerTask {
      */
     private long lastTick;
     /**
+     * At last run, the seconds displayed on the timer
+     */
+    private long lastSecs;
+    /**
      * Seconds to wait from landing and tick stabilization to
      */
     private int secsToCountdown;
@@ -101,16 +105,20 @@ public class UHC_StartCountdown extends TimerTask {
             startTime = System.currentTimeMillis() + secsToCountdown * 1000;
         }
         long timeTo = startTime - currTick;
+        long secs = timeTo / 1000 + (timeTo % 1000 == 0 ? 0 : 1);
         if (timeTo <= 0) {
             cancel();
             gameInstance.updateState(GameStateEvent.START);
             return;
         }
         actionBar = String.format("Game starts in %.2f", timeTo / 1000D);
-        title = String.format("Game starts in %d", timeTo / 1000 + (timeTo % 1000 == 0 ? 0 : 1));
-        gameInstance.getUtils().broadcastSoundTitle(Sound.BLOCK_NOTE_BLOCK_PLING, 1.17F, title, subtitle, 0, 20, 10);
+        title = String.format("Game starts in %d", secs);
+        if (lastSecs != secs) {
+            gameInstance.getUtils().broadcastSoundTitle(Sound.BLOCK_NOTE_BLOCK_PLING, 0.594604F, title, subtitle, 0, 20, 10);
+        }
         gameInstance.getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.spigot().sendMessage(
                 ChatMessageType.ACTION_BAR, new TextComponent(actionBar)
         ));
+        lastSecs = secs;
     }
 }

@@ -1,11 +1,11 @@
 package usa.cactuspuppy.uhc_automation.utils;
 
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 import java.util.Objects;
@@ -21,7 +21,7 @@ public final class GameUtils {
      * @param players Player(s) to teleport relatively
      * @param destination Location to teleport to
      */
-    public static void relativeTeleport(@NonNull Location destination, Player... players) {
+    public static void relativeTeleport(@NotNull Location destination, Player... players) {
         for (Player p : players) {
             destination.setYaw(p.getLocation().getYaw());
             destination.setPitch(p.getLocation().getPitch());

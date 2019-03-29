@@ -6,17 +6,15 @@ import lombok.Setter;
 import org.bukkit.*;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.tasks.listeners.ListenerTask;
 import usa.cactuspuppy.uhc_automation.game.tasks.listeners.UHC_LobbyListener;
 import usa.cactuspuppy.uhc_automation.game.tasks.timers.TimerTask;
 import usa.cactuspuppy.uhc_automation.game.tasks.timers.UHC_SpreadPlayers;
-import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.utils.GameUtils;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
-import java.util.LinkedList;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 @Getter
 public class UHC extends GameInstance {
@@ -117,6 +115,17 @@ public class UHC extends GameInstance {
         world.getWorldBorder().reset();
     }
 
+    private void startWorld(World world) {
+        if (world.getEnvironment().equals(World.Environment.NORMAL)) {
+            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);
+            world.setTime(0);
+            world.setGameRule(GameRule.DO_WEATHER_CYCLE, true);
+            int ticksInDay = 24000;
+            int timeToClear = new Random().nextInt(2 * ticksInDay) + ticksInDay;
+            world.setWeatherDuration(timeToClear);
+        }
+    }
+
     private void createLobby() {
         setLobby(false);
     }
@@ -181,10 +190,15 @@ public class UHC extends GameInstance {
         //Clear tasks to reset behavior
         ListenerTask.clearInstanceListeners(this);
         TimerTask.clearInstanceTimers(this);
-        //TODO: Set all worlds' gamerules
-        //TODO: Set border shrink timer
-
+        //TODO: Announce start
+        // Set border shrink timer
+        Set<UUID> worlds = new HashSet<>(getOtherWorlds());
+        worlds.add(mainWorldUID);
+        worlds.stream().map(Bukkit::getWorld).filter(Objects::nonNull).forEach(this::startWorld);
+        return true;
     }
+
+    private void
 
     @Override
     protected boolean pause() {

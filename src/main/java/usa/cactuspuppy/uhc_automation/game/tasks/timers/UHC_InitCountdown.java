@@ -42,5 +42,6 @@ public class UHC_InitCountdown extends TimerTask {
         } else {
             gameInstance.getUtils().broadcastTitle(Long.toString(secs), ChatColor.GOLD + "Initiating match in...", 0, 20, 10);
         }
+        lastSecs = secs;
     }
 }

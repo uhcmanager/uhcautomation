@@ -4,7 +4,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.jetbrains.annotations.NotNull;
 import usa.cactuspuppy.uhc_automation.entity.util.ScoreboardSet;
 import usa.cactuspuppy.uhc_automation.utils.GameUtils;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
@@ -48,6 +50,15 @@ public abstract class GameInstance implements Serializable {
     @Setter(AccessLevel.NONE)
     @NonNull
     protected UUID mainWorldUID;
+
+    public World getMainWorld() {
+        World main = Bukkit.getWorld(mainWorldUID);
+        if (main == null) {
+            getUtils().log(Logger.Level.WARNING, this.getClass(), "Null main world UID, cannot resolve");
+            return null;
+        }
+        return main;
+    }
 
     /**
      * Other worlds that players may travel to during the course of the game without being considered as leaving the game. Examples include the main world's Nether and End dimension.
@@ -105,11 +116,7 @@ public abstract class GameInstance implements Serializable {
         return rv;
     }
 
-    public GameInstance(@NonNull World world) {
-        if (world == null) {
-            new GameUtils(this).log(Logger.Level.SEVERE, this.getClass(), "CONSTRUCTOR: Main world cannot be null");
-            return;
-        }
+    public GameInstance(@NotNull World world) {
         gameID = 0;
         gameID = GameManager.registerGame(this);
         name = "Game " + gameID;
@@ -124,11 +131,7 @@ public abstract class GameInstance implements Serializable {
      * @param keepOldWorld Whether to set the old main world as a linked world or drop it all together
      * @return False if main world was not set, otherwise true to indicate success.
      */
-    public boolean setMainWorldUID(@NonNull World world, boolean keepOldWorld) {
-        if (world == null) {
-            new GameUtils(this).log(Logger.Level.WARNING, this.getClass(), "Attempt to set main world to null");
-            return false;
-        }
+    public boolean setMainWorldUID(@NotNull World world, boolean keepOldWorld) {
         if (gameState != GameState.LOBBY) {
             getUtils().log(Logger.Level.INFO, this.getClass(), "Call to set main world for game " + name + " (ID " + gameID + ") while not in lobby mode, rejecting");
             return false;
