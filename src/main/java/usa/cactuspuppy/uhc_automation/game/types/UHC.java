@@ -94,9 +94,27 @@ public class UHC extends GameInstance {
         main.getWorldBorder().reset();
         // Natural regen
         main.setGameRule(GameRule.NATURAL_REGENERATION, false);
-        otherWorlds.stream().map(Bukkit::getWorld).filter(Objects::nonNull).forEach(w -> w.setGameRule(GameRule.NATURAL_REGENERATION, false));
-        
+        // Other worlds
+        otherWorlds.stream().map(Bukkit::getWorld).filter(Objects::nonNull).forEach(this::resetWorld);
+
         return true;
+    }
+
+    private void resetWorld(World world) {
+        world.setGameRule(GameRule.NATURAL_REGENERATION, false);
+        if (world.getEnvironment().equals(World.Environment.NETHER)) {
+            world.getWorldBorder().setCenter(centerX/8D + 0.5, centerZ/8D + 0.5);
+        } else {
+            world.getWorldBorder().setCenter(centerX + 0.5, centerZ + 0.5);
+        }
+        if (world.getEnvironment().equals(World.Environment.NORMAL)) {
+            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+            world.setTime(1000);
+            world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+            world.setStorm(false);
+            world.setThundering(false);
+        }
+        world.getWorldBorder().reset();
     }
 
     private void createLobby() {
