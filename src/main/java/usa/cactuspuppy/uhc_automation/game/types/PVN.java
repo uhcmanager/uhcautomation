@@ -17,32 +17,32 @@ public class PVN extends TeamGameInstance {
     }
 
     @Override
-    protected void reset() {
-
+    protected boolean reset() {
+        return true;
     }
 
     @Override
-    protected void init() {
-
+    protected boolean init() {
+        return true;
     }
 
     @Override
-    protected void start() {
-
+    protected boolean start() {
+        return true;
     }
 
     @Override
-    protected void pause() {
-
+    protected boolean pause() {
+        return true;
     }
 
     @Override
-    protected void resume() {
-
+    protected boolean resume() {
+        return true;
     }
 
     @Override
-    protected void end() {
-
+    protected boolean end() {
+        return true;
     }
 }

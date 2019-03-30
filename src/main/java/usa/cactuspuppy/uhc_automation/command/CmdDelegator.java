@@ -5,8 +5,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import usa.cactuspuppy.uhc_automation.Constants;
 import usa.cactuspuppy.uhc_automation.command.commands.*;
-import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +40,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
         String[] newArgs = new String[0];
         System.arraycopy(args, 1, newArgs, 0, args.length - 1);
         if (!handler.hasPermission(commandSender, subCmd, newArgs)) {
-            commandSender.sendMessage(ChatColor.RED + "Sorry, but you are not permitted to use this command.\nContact an administrator if you believe this is in error.");
+            commandSender.sendMessage(ChatColor.RED + Constants.getDenyPermission());
             return true;
         }
         if (!handler.onCommand(commandSender, subCmd, newArgs)) {

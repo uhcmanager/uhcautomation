@@ -101,6 +101,7 @@
                 <configuration>
                     <source>12</source>
                     <target>12</target>
+                    <release>12</release>
                     <encoding>UTF-8</encoding>
                     <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>

@@ -117,7 +117,6 @@ public class UHC_BorderTask extends TimerTask {
      */
     @Override
     public void run() {
-        //TODO: Set timer for shrinking
         long currTime = System.currentTimeMillis();
         //If time to shrink, start shrinking
         if (currTime >= beginShrink) {
