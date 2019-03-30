@@ -68,9 +68,8 @@ public class UHC_ActiveListener extends ListenerTask {
         //Announce death
         gameInstance.getUtils().broadcastSoundTitle(Sound.ENTITY_WITHER_DEATH, 1F, e.getEntity().getDisplayName(), ChatColor.RED + "has been eliminated!", 0, 80, 40);
         //Check for win
-        if (uhc.getAlivePlayers().size() == 1) {
-            uhc.updateState(GameStateEvent.END);
-            //TODO: Add victory screech etc.
+        if (gameInstance.isVictory()) {
+            gameInstance.updateState(GameStateEvent.END);
         }
     }
 }

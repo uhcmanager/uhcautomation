@@ -276,6 +276,15 @@ public abstract class GameInstance implements Serializable {
      */
     protected abstract boolean end();
 
+    /**
+     * Check if a victory condition has been met. <br>
+     * Note that this does NOT trigger the {@link #end()} function
+     * @return Whether a victory condition has been met
+     */
+    public boolean isVictory() {
+        return getAlivePlayers().size() <= 1;
+    }
+
     //Game utils
     protected GameUtils utils = new GameUtils(this);
 

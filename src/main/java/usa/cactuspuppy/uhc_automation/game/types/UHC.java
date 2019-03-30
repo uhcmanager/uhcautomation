@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.*;
+import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
@@ -16,6 +17,7 @@ import usa.cactuspuppy.uhc_automation.game.tasks.timers.UHC_BorderTask;
 import usa.cactuspuppy.uhc_automation.game.tasks.timers.UHC_SpreadPlayers;
 import usa.cactuspuppy.uhc_automation.utils.GameUtils;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
+import usa.cactuspuppy.uhc_automation.utils.MiscUtils;
 
 import java.util.*;
 
@@ -234,7 +236,45 @@ public class UHC extends GameInstance {
     @Override
     protected boolean end() {
         //TODO
+        long endTime = System.currentTimeMillis();
+        if (!isVictory()) {
+            getUtils().broadcastChatSoundTitle(ChatColor.YELLOW + "Game ended!", "uhc.victory", 1F, ChatColor.RED + "GAME OVER", "Game was ended early.", 0, 80, 40);
+            return true;
+        }
+        switch (getAlivePlayers().size()) {
+            case 0 -> getUtils().broadcastChatSoundTitle(ChatColor.AQUA + "GAME OVER: DRAW\n" + ChatColor.RESET + "[Server] Wait... what?", "uhc.victory", 1F, "DRAW", ChatColor.RED + "Game Over!", 0, 80, 40);
+            case 1 -> {
+                Player winner;
+                try {
+                    UUID uuid = getAlivePlayers().stream().findFirst().orElseThrow();
+                    winner = Bukkit.getPlayer(uuid);
+                    if (winner == null) {
+                        throw new NoSuchElementException("Bukkit::getPlayer failed to find the winner");
+                    }
+                } catch (NoSuchElementException e) {
+                    getUtils().log(Logger.Level.SEVERE, this.getClass(), "Could not getting winning UUID.", e);
+                    getUtils().broadcastChatSoundTitle(ChatColor.GREEN.toString() + ChatColor.BOLD + "\nGame over!", "uhc.victory", 1F, "GAME OVER", ChatColor.GREEN + "Server-side error in determining winner :(", 0, 80, 40);
+                    return true;
+                }
+                getUtils().broadcastChatSoundTitle(ChatColor.GREEN.toString() + ChatColor.BOLD + "\nGame over!", "uhc.victory", 1F, winner.getDisplayName(), ChatColor.GREEN + "wins!", 0, 80, 40);
+                long secsElapsed = (endTime - startTime) / 1000;
+                getUtils().broadcastChat("============\n"
+                        + ChatColor.AQUA + "Time Elapsed: " + ChatColor.RESET + MiscUtils.secsToFormatString(secsElapsed)
+                        + ChatColor.GREEN + "Initial Players: " + ChatColor.RESET + initNumPlayers);
+            }
+            default -> {
+                getUtils().log(Logger.Level.WARNING, this.getClass(), "Victory condition check failed, undefined behavior, terminating game early.");
+                getUtils().broadcastChatSoundTitle(ChatColor.YELLOW + "Game ended!", "uhc.victory", 1F, ChatColor.RED + "GAME OVER", "Game was ended early.", 0, 80, 40);
+                return true;
+            }
+
+        }
         return true;
+    }
+
+    @Override
+    public boolean isVictory() {
+        return getAlivePlayers().size() <= 1;
     }
 
     /**
