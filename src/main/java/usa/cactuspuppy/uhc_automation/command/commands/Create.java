@@ -40,13 +40,25 @@ public class Create extends UHCCommand {
         } else if (args1.length < 1) {
             commandSender.sendMessage(ChatColor.RED + "Must be a player to infer game world.");
             return true;
-
+        }
+        //Check world is overworld
+        if (!world.getEnvironment().equals(World.Environment.NORMAL)) {
+            commandSender.sendMessage(ChatColor.RED + "May only set overworld worlds as main world (for now)");
+            return true;
         }
         //Create correct type and register
         GameInstance instance = new GameFactory().getGame(type.toLowerCase(), world);
         GameManager.registerGame(instance);
         instance.updateState(GameStateEvent.RESET);
-        return false;
+        World nether = Bukkit.getWorld(world.getName() + "_nether");
+        World theEnd = Bukkit.getWorld(world.getName() + "_the_end");
+        if (nether != null) {
+            instance.addOtherWorld(nether);
+        }
+        if (theEnd != null) {
+            instance.addOtherWorld(theEnd);
+        }
+        return true;
     }
 
     @Override

@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import usa.cactuspuppy.uhc_automation.entity.util.ScoreboardSet;
 import usa.cactuspuppy.uhc_automation.utils.GameUtils;
@@ -71,6 +73,10 @@ public abstract class GameInstance implements Serializable {
         return new HashSet<>(otherWorlds);
     }
 
+    public void addOtherWorld(@NotNull World world) {
+        otherWorlds.add(world.getUID());
+    }
+
     @Setter(AccessLevel.NONE)
     protected GameState gameState = GameState.LOBBY;
 
@@ -119,17 +125,34 @@ public abstract class GameInstance implements Serializable {
     public void addPlayer(UUID uuid) {
         players.add(uuid);
         GameManager.registerPlayerGame(uuid, this);
+        Player p = Bukkit.getPlayer(uuid);
+        if (p == null) {
+            return;
+        }
+        getUtils().broadcastChat(ChatColor.WHITE.toString() + ChatColor.BOLD + "[" + ChatColor.GOLD + "INFO" + ChatColor.WHITE + "] " + ChatColor.GREEN + p.getDisplayName() + ChatColor.WHITE + " has joined the game");
     }
 
     public void addSpectator(UUID uuid) {
         spectators.add(uuid);
         GameManager.registerPlayerGame(uuid, this);
+        Player p = Bukkit.getPlayer(uuid);
+        if (p == null) {
+            return;
+        }
+        getUtils().broadcastChat(ChatColor.WHITE.toString() + ChatColor.BOLD + "[" + ChatColor.GOLD + "INFO" + ChatColor.WHITE + "] " + ChatColor.GREEN + p.getDisplayName() + ChatColor.WHITE + " is now spectating");
     }
 
     public void removePlayer(UUID uuid) {
         players.remove(uuid);
         spectators.remove(uuid);
         GameManager.unregisterPlayerGame(uuid);
+    }
+
+    public void removeSpectator(UUID uuid, boolean unreg) {
+        spectators.remove(uuid);
+        if (unreg) {
+            GameManager.unregisterPlayerGame(uuid);
+        }
     }
 
     /**

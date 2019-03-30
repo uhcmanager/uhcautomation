@@ -8,8 +8,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
+import usa.cactuspuppy.uhc_automation.game.GameManager;
 import usa.cactuspuppy.uhc_automation.game.tasks.GameStartAnnouncer;
 import usa.cactuspuppy.uhc_automation.game.tasks.listeners.ListenerTask;
+import usa.cactuspuppy.uhc_automation.game.tasks.listeners.PVPCanceller;
 import usa.cactuspuppy.uhc_automation.game.tasks.listeners.UHC_ActiveListener;
 import usa.cactuspuppy.uhc_automation.game.tasks.listeners.UHC_LobbyListener;
 import usa.cactuspuppy.uhc_automation.game.tasks.timers.TimerTask;
@@ -65,12 +67,6 @@ public class UHC extends GameInstance {
     @Setter(AccessLevel.PUBLIC)
     protected int blocksAboveGround = 50;
 
-    // [=== EPISODE INFO ===]
-    /**
-     * Length of episodes, in seconds. -1 to disable.
-     */
-    protected long epLength = 1200;
-
     // [=== BORDER INFO ==]
     /**
      * Whether the border will increase speed linearly as players die
@@ -81,19 +77,33 @@ public class UHC extends GameInstance {
         super(world);
     }
 
+    // [=== MISC INFO ===]
+
+    /**
+     * Length of episodes, in seconds. -1 to disable.
+     */
+    protected long epLength = 1200;
+
+    /**
+     * Length of grace period, in second. 0 to enable PVP immediately
+     */
+    protected long pvpDelay = 1200;
+
     //TODO: Implement methods
     @Override
     protected boolean reset() {
         TimerTask.clearInstanceTimers(this);
         ListenerTask.clearInstanceListeners(this);
-        //TODO: Create lobby
-        new UHC_LobbyListener(this).init();
         World main = getMainWorld();
         if (main == null) {
             getUtils().log(Logger.Level.WARNING, this.getClass(), "Null main world, cannot resolve.");
             getUtils().msgManagers(ChatColor.RED + "RESET ERROR: No main world set, cannot reset.");
             return false;
         }
+        //Set up lobby listener
+        new UHC_LobbyListener(this).init();
+        //Disable lobby PVP
+        new PVPCanceller(this).init();
         createLobby();
         // Day/weather cancel
         main.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
@@ -272,8 +282,9 @@ public class UHC extends GameInstance {
                 getUtils().broadcastChatSoundTitle(ChatColor.YELLOW + "Game ended!", "uhc.victory", 1F, ChatColor.RED + "GAME OVER", "Game was ended early.", 0, 80, 40);
                 return true;
             }
-
         }
+        //Unregister game
+        GameManager.unregisterGame(this, false);
         return true;
     }
 

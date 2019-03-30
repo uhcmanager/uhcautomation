@@ -20,6 +20,9 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
         addCmd(new Start());
         addCmd(new Create());
         addCmd(new Debug());
+        addCmd(new Join());
+        addCmd(new Leave());
+        addCmd(new Option());
         //TODO: Add aliases
     }
 
