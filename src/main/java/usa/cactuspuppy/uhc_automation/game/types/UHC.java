@@ -208,6 +208,7 @@ public class UHC extends GameInstance {
         Set<UUID> worlds = new HashSet<>(getOtherWorlds());
         worlds.add(mainWorldUID);
         worlds.stream().map(Bukkit::getWorld).filter(Objects::nonNull).forEach(this::startWorld);
+        startTasks();
         new GameStartAnnouncer(this).init();
         return true;
     }
@@ -237,6 +238,10 @@ public class UHC extends GameInstance {
     protected boolean end() {
         //TODO
         long endTime = System.currentTimeMillis();
+        //Cancel all instance tasks
+        ListenerTask.clearInstanceListeners(this);
+        TimerTask.clearInstanceTimers(this);
+        //Check for early end
         if (!isVictory()) {
             getUtils().broadcastChatSoundTitle(ChatColor.YELLOW + "Game ended!", "uhc.victory", 1F, ChatColor.RED + "GAME OVER", "Game was ended early.", 0, 80, 40);
             return true;
