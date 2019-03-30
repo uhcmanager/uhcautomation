@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
 
@@ -97,6 +98,7 @@ public final class MiscUtils {
         }
     }
 
+    @Nullable
     public static GetInstanceResult getGameInstance(CommandSender commandSender, String[] args) {
         GameInstance instance = null;
         if (!(commandSender instanceof Player)) {
@@ -143,6 +145,11 @@ public final class MiscUtils {
             }
         } else {
             instance = GameManager.getPlayerGame(((Player) commandSender).getUniqueId());
+        }
+        //Check that we actually found a game instance
+        if (instance == null) {
+            commandSender.sendMessage(ChatColor.RED + "Must be in a game or specify a game name/ID.");
+            return null;
         }
         return new GetInstanceResult().setInstance(instance).setUsageCorrect(true);
     }

@@ -36,15 +36,12 @@ public class Start extends UHCCommand implements TabCompleter {
     public boolean onCommand(CommandSender commandSender, String alias, String[] args) {
         //Get correct game instance
         MiscUtils.GetInstanceResult result = MiscUtils.getGameInstance(commandSender, args);
-        if (!result.isUsageCorrect()) {
+        if (result == null) {
+            return true;
+        } else if (!result.isUsageCorrect()) {
             return false;
         }
         GameInstance instance = result.getInstance();
-        //Check that we actually found a game instance
-        if (instance == null) {
-            commandSender.sendMessage(ChatColor.RED + "Must be in a game or specify a game name/ID.");
-            return true;
-        }
         //Check that we can actually start the game
         if (!instance.getGameState().equals(GameState.LOBBY)) {
             commandSender.sendMessage(ChatColor.RED + "Game is starting or in progress");
