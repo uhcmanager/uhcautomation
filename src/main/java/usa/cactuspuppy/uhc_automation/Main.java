@@ -1,6 +1,7 @@
 package usa.cactuspuppy.uhc_automation;
 
 import lombok.Getter;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.permissions.PermissionDefault;
@@ -17,6 +18,7 @@ import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
 import usa.cactuspuppy.uhc_automation.game.GameState;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
+import usa.cactuspuppy.uhc_automation.utils.Config;
 import usa.cactuspuppy.uhc_automation.utils.FileIO;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
@@ -36,6 +38,12 @@ public class Main extends JavaPlugin {
     /** Time at which this plugin was enabled, used to restart in-progress games */
     @Getter private static long enabled;
 
+    @Getter private static Config mainConfig;
+
+    //TODO: Implement version check
+    /**
+     * Current version hash (to check for outdated configs)
+     */
     public static final String VERSION_HASH = "D84BDB34D4EEEF4034D77E5403F850E35BC4A51B1143E3A83510E1AAAD839748";
 
     @Override
@@ -44,7 +52,7 @@ public class Main extends JavaPlugin {
         instance = this;
         boolean success = initBase();
         if (!success) {
-            Logger.logError(this.getClass(), "Failure to initiate base plugin, disabling...");
+            Logger.logSevere(this.getClass(), "Failure to initiate base plugin, disabling...");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
@@ -106,10 +114,33 @@ public class Main extends JavaPlugin {
 
     private boolean initBase() {
         //TODO: Initiate base plugin
+        //Get/create main config
+        File dataFolder = Main.getInstance().getDataFolder();
+        if (!dataFolder.isDirectory() && !dataFolder.mkdirs()) {
+            Logger.logSevere(this.getClass(), "Could not find or create data folder.");
+            return false;
+        }
+        File config = new File(Main.getInstance().getDataFolder(), "config.yml");
+        //Create config if not exist
+        if (!config.isFile()) {
+            InputStream inputStream = getResource("config.yml");
+            if (inputStream == null) {
+                Logger.logSevere(this.getClass(), "No packaged config.yml?!");
+                return false;
+            }
+            try {
+                FileUtils.copyToFile(inputStream, config);
+            } catch (IOException e) {
+                Logger.logSevere(this.getClass(), "Error while creating new config", e);
+                return false;
+            }
+        }
+        //Set mainConfig
+        mainConfig = new Config();
         //Register command
         PluginCommand uhc = getCommand("uhc");
         if (uhc == null) {
-            Logger.logError(this.getClass(), "Could not find /uhc command, operation impossible");
+            Logger.logSevere(this.getClass(), "Could not find /uhc command, operation impossible");
             return false;
         }
         uhc.setExecutor(new CmdDelegator());

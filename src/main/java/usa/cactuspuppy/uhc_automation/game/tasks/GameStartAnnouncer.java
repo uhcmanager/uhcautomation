@@ -50,11 +50,11 @@ public class GameStartAnnouncer extends Task {
         Set<Player> players = gameInstance.getAlivePlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toSet());
         for (Player p : players) {
             String randomLine = startMsgs.get(rng.nextInt(startMsgs.size()));
-            p.sendTitle(ChatColor.GREEN + "GO!", randomLine, 0, 40, 20);
+            p.sendTitle(ChatColor.GREEN + "GO!", randomLine, 0, 80, 40);
         }
         Set<Player> spectators = gameInstance.getSpectators().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toSet());
         for (Player p : spectators) {
-            p.sendTitle(ChatColor.GREEN + "START!", ChatColor.ITALIC + "You are now spectating", 0, 40, 10);
+            p.sendTitle(ChatColor.GREEN + "START!", ChatColor.ITALIC + "You are now spectating", 0, 60, 10);
         }
         return true;
     }

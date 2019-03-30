@@ -9,8 +9,10 @@ import org.bukkit.potion.PotionEffectType;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.tasks.GameStartAnnouncer;
 import usa.cactuspuppy.uhc_automation.game.tasks.listeners.ListenerTask;
+import usa.cactuspuppy.uhc_automation.game.tasks.listeners.UHC_ActiveListener;
 import usa.cactuspuppy.uhc_automation.game.tasks.listeners.UHC_LobbyListener;
 import usa.cactuspuppy.uhc_automation.game.tasks.timers.TimerTask;
+import usa.cactuspuppy.uhc_automation.game.tasks.timers.UHC_BorderTask;
 import usa.cactuspuppy.uhc_automation.game.tasks.timers.UHC_SpreadPlayers;
 import usa.cactuspuppy.uhc_automation.utils.GameUtils;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
@@ -39,6 +41,9 @@ public class UHC extends GameInstance {
     @Setter(AccessLevel.PUBLIC)
     protected int initRadius = 2000;
 
+    @Setter(AccessLevel.PUBLIC)
+    protected int finalRadius = 25;
+
     /**
      * Minimum distance from center for starting locations
      */
@@ -62,7 +67,13 @@ public class UHC extends GameInstance {
     /**
      * Length of episodes, in seconds. -1 to disable.
      */
-    protected long epLength;
+    protected long epLength = 1200;
+
+    // [=== BORDER INFO ==]
+    /**
+     * Whether the border will increase speed linearly as players die
+     */
+    protected boolean dynamicSpeed = true;
 
     public UHC(World world) {
         super(world);
@@ -164,6 +175,7 @@ public class UHC extends GameInstance {
 
     @Override
     protected boolean init() {
+        initTime = System.currentTimeMillis();
         TimerTask.clearInstanceTimers(this);
         ListenerTask.clearInstanceListeners(this);
         World main = Bukkit.getWorld(mainWorldUID);
@@ -187,12 +199,10 @@ public class UHC extends GameInstance {
 
     @Override
     protected boolean start() {
-        initTime = System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
         //Clear tasks to reset behavior
         ListenerTask.clearInstanceListeners(this);
         TimerTask.clearInstanceTimers(this);
-        //TODO:
-        // Set border shrink timer
         Set<UUID> worlds = new HashSet<>(getOtherWorlds());
         worlds.add(mainWorldUID);
         worlds.stream().map(Bukkit::getWorld).filter(Objects::nonNull).forEach(this::startWorld);
@@ -200,21 +210,31 @@ public class UHC extends GameInstance {
         return true;
     }
 
-    private void
+    private void startTasks() {
+        //TODO:
+        // Set border shrink timer
+        UHC_BorderTask borderTask = new UHC_BorderTask(this, timeToShrink);
+        borderTask.init();
+        new UHC_ActiveListener(this, borderTask).init();
+
+    }
 
     @Override
     protected boolean pause() {
-
+        //TODO
+        return true;
     }
 
     @Override
     protected boolean resume() {
-
+        //TODO
+        return true;
     }
 
     @Override
     protected boolean end() {
-
+        //TODO
+        return true;
     }
 
     /**

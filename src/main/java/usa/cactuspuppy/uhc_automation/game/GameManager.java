@@ -50,7 +50,7 @@ public class GameManager {
             id = new IDGenerator().nextID();
         }
         if (id == -1) { //Couldn't get a new ID
-            Logger.logError(GameManager.class, "Could not obtain an ID for Game: " + instance.getName());
+            Logger.logSevere(GameManager.class, "Could not obtain an ID for Game: " + instance.getName());
             return 0;
         }
         instance.setGameID(id);

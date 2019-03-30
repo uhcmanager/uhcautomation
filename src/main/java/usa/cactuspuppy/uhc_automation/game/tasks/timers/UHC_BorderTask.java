@@ -6,6 +6,7 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.game.types.UHC;
+import usa.cactuspuppy.uhc_automation.utils.GameUtils;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.math.BigInteger;
@@ -17,27 +18,29 @@ public class UHC_BorderTask extends TimerTask {
     /**
      * Timestamp at which to begin shrinking
      */
-    long beginShrink;
+    private long beginShrink;
     /**
      * Whether the border is currently shrinking
      */
-    boolean shrinking;
+    private boolean shrinking;
     /**
      * Speed of one side of the border in blocks per second
      */
-    double currentShrinkSpeed;
+    private double currentShrinkSpeed;
     /**
      * Number of players remaining at shrink
      */
-    int playersAtShrink;
+    private int playersAtShrink;
     /**
      * List of countdown marks that will go to chat
      */
-    LinkedList<Long> chatMarks = new LinkedList<>();
+    private LinkedList<Long> chatMarks = new LinkedList<>();
+    private long nextChatMark;
     /**
      * List of countdown marks that will go to title
      */
-    LinkedList<Long> titleMarks = new LinkedList<>();
+    private LinkedList<Long> titleMarks = new LinkedList<>();
+    private long nextTitleMark;
 
 
     private static double baseSpeed = 0.3;
@@ -49,6 +52,16 @@ public class UHC_BorderTask extends TimerTask {
         currentShrinkSpeed = baseSpeed;
         beginShrink = uhc.getStartTime() + initDelay * 1000;
         parseConfigList();
+        if (!chatMarks.isEmpty()) {
+            nextChatMark = chatMarks.removeLast();
+        } else {
+            nextChatMark = -1;
+        }
+        if (!titleMarks.isEmpty()) {
+            nextTitleMark = titleMarks.removeLast();
+        } else {
+            nextTitleMark = -1;
+        }
     }
 
     private void parseConfigList() {
@@ -86,6 +99,9 @@ public class UHC_BorderTask extends TimerTask {
                 chatMarks.add(value);
             }
         }
+        //Sort resulting lists
+        titleMarks = titleMarks.stream().sorted().collect(Collectors.toCollection(LinkedList::new));
+        chatMarks = chatMarks.stream().sorted().collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**
@@ -107,10 +123,33 @@ public class UHC_BorderTask extends TimerTask {
         if (currTime >= beginShrink) {
             playersAtShrink = uhc.getAlivePlayers().size();
             updateBorderSpeed(baseSpeed);
-            uhc.getUtils().broadcastChatSoundTitle(ChatColor.RED + ChatColor.BOLD + "Border shrinking!", Sound.ENTITY_ENDER_DRAGON_DEATH, 1F, ChatColor.RED + "Border Shrinking!", String.format(
+            uhc.getUtils().broadcastChatSoundTitle(ChatColor.RED.toString() + ChatColor.BOLD + "[ALERT] Border shrinking!", Sound.ENTITY_ENDER_DRAGON_DEATH, 1F, ChatColor.RED + "Border Shrinking!", String.format(
                     "Center: %d, %d | Final Radius: %d blocks", uhc.getCenterX(), uhc.getCenterZ(), uhc.getFinalRadius()
-            ));
+            ), 0, 80, 40);
             shrinking = true;
+            //TODO: Border info display
+            cancel();
+            return;
+        }
+        //Check for chat mark
+        long chatMark = beginShrink - nextChatMark * 1000;
+        if (nextChatMark != -1 && currTime >= chatMark) {
+            uhc.getUtils().broadcastChatSound(ChatColor.YELLOW + "[INFO] Border shrinks in " + ChatColor.WHITE + GameUtils.secsToFormatString(nextChatMark), Sound.ENTITY_PLAYER_LEVELUP, 0.5F);
+            if (!chatMarks.isEmpty()) {
+                nextChatMark = chatMarks.removeLast();
+            } else {
+                nextChatMark = -1;
+            }
+        }
+        //Check for title mark
+        long titleMark = beginShrink - nextTitleMark * 1000;
+        if (nextTitleMark != -1 && currTime >= titleMark) {
+            uhc.getUtils().broadcastSoundTitle(Sound.BLOCK_NOTE_BLOCK_PLING, 1.17F, String.valueOf(nextTitleMark), ChatColor.RED + "Border shrinks in...", 0, 20, 10);
+            if (!titleMarks.isEmpty()) {
+                nextTitleMark = titleMarks.removeLast();
+            } else {
+                nextTitleMark = -1;
+            }
         }
     }
 
@@ -118,7 +157,7 @@ public class UHC_BorderTask extends TimerTask {
         if (!shrinking || !uhc.isDynamicSpeed()) {
             return;
         }
-        int initPlayer = gameInstance.getInitNumPlayers();
+        int initPlayer = playersAtShrink;
         if (initPlayer < 3) {
             initPlayer = 3; //Avoid zero or negative numbers in addSpeed calculation
         }
@@ -139,6 +178,9 @@ public class UHC_BorderTask extends TimerTask {
         int finalRadius = uhc.getFinalRadius();
         double remainingDistance = uhc.getMainWorld().getWorldBorder().getSize() - 2 * finalRadius;
         long overSecs = (long) Math.floor(remainingDistance / shrinkSpeed) + (remainingDistance % shrinkSpeed == 0 ? 0 : 1);
+        if (remainingDistance / overSecs > maxSpeed) {
+            overSecs = (long) (remainingDistance / maxSpeed);
+        }
         for (World w : worldSet) {
             double realRadius = finalRadius;
             if (w.getEnvironment().equals(World.Environment.NETHER)) {

@@ -1,7 +1,6 @@
 package usa.cactuspuppy.uhc_automation.utils;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import usa.cactuspuppy.uhc_automation.Main;
 
@@ -42,7 +41,7 @@ public final class Config {
         try {
             readValues(new FileInputStream(configFile));
         } catch (FileNotFoundException e) {
-            Logger.logWarning(this.getClass(), "Could not find config file " + configFile.getName() + " on initiation", e);
+            Logger.logWarning(this.getClass(), "Could not find config file " + configFile.getName() + " on config construction", e);
         }
     }
 
@@ -51,7 +50,7 @@ public final class Config {
         try {
             readValues(new FileInputStream(configFile));
         } catch (FileNotFoundException e) {
-            Logger.logWarning(this.getClass(), "Could not find config file " + configFile.getName() + " on initiation", e);
+            Logger.logWarning(this.getClass(), "Could not find config file " + configFile.getName() + " on config construction", e);
         }
     }
 

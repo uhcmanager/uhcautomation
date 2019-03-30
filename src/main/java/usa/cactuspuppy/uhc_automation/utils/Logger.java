@@ -45,7 +45,7 @@ public final class Logger {
         if (level.tier < 3) logFineMsg(c, msg, level.tier);
         else if (level == Level.INFO) logInfo(c, msg);
         else if (level == Level.WARNING) logWarning(c, msg, e);
-        else if (level == Level.SEVERE) logError(c, msg, e);
+        else if (level == Level.SEVERE) logSevere(c, msg, e);
     }
 
     /**
@@ -54,7 +54,7 @@ public final class Logger {
      * @param reason Reason for error. If exception thrown, do not repeat info in exception
      * @param e Exception if one was thrown, else {@code null}
      */
-    public static void logError(Class c, String reason, Exception e) {
+    public static void logSevere(Class c, String reason, Exception e) {
         if (Level.insufficientLevel(Level.SEVERE, level)) return;
         String message = (debug ? c.getName() : c.getSimpleName()) + " error: " + reason;
         if (e != null) {
@@ -69,8 +69,8 @@ public final class Logger {
      * @param c Class reporting error
      * @param reason Reason for error.
      */
-    public static void logError(Class c, String reason) {
-        logError(c, reason, null);
+    public static void logSevere(Class c, String reason) {
+        logSevere(c, reason, null);
     }
 
     /**

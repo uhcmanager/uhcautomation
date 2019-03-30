@@ -25,7 +25,7 @@ public final class JarResource {
         try {
             FileUtils.copyInputStreamToFile(inputStream, outFile);
         } catch (IOException e) {
-            Logger.logError(JarResource.class, "Could not write resource to specified outfile", e);
+            Logger.logSevere(JarResource.class, "Could not write resource to specified outfile", e);
             return 1;
         }
         return 0;

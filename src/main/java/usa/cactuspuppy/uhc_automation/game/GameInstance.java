@@ -116,6 +116,35 @@ public abstract class GameInstance implements Serializable {
         return rv;
     }
 
+    public void addPlayer(UUID uuid) {
+        players.add(uuid);
+        GameManager.registerPlayerGame(uuid, this);
+    }
+
+    public void addSpectator(UUID uuid) {
+        spectators.add(uuid);
+        GameManager.registerPlayerGame(uuid, this);
+    }
+
+    public void removePlayer(UUID uuid) {
+        players.remove(uuid);
+        spectators.remove(uuid);
+        GameManager.unregisterPlayerGame(uuid);
+    }
+
+    /**
+     * Moves an alive player to spectators. <br></br>
+     * Will do nothing if the UUID is not an alive player
+     * @param uuid UUID of player to move
+     */
+    public void moveAliveToSpec(UUID uuid) {
+        if (!players.contains(uuid)) {
+            return;
+        }
+        players.remove(uuid);
+        spectators.add(uuid);
+    }
+
     public GameInstance(@NotNull World world) {
         gameID = 0;
         gameID = GameManager.registerGame(this);

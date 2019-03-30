@@ -30,7 +30,7 @@ public class ScoreboardSet implements Serializable {
         }
         Scoreboard newScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         if (newScoreboard == null) {
-            Logger.logError(this.getClass(), "", new RuntimeException("Failed to get new scoreboard from Bukkit"));
+            Logger.logSevere(this.getClass(), "", new RuntimeException("Failed to get new scoreboard from Bukkit"));
             return null;
         }
         scoreboards.put(playerUid, newScoreboard);
