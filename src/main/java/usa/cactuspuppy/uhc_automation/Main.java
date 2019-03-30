@@ -36,6 +36,8 @@ public class Main extends JavaPlugin {
     /** Time at which this plugin was enabled, used to restart in-progress games */
     @Getter private static long enabled;
 
+    public static final String VERSION_HASH = "D84BDB34D4EEEF4034D77E5403F850E35BC4A51B1143E3A83510E1AAAD839748";
+
     @Override
     public void onEnable() {
         long start = System.nanoTime();
