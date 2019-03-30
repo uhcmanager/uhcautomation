@@ -10,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import usa.cactuspuppy.uhc_automation.entity.util.ScoreboardSet;
+import usa.cactuspuppy.uhc_automation.game.tasks.timers.SuggestPack;
 import usa.cactuspuppy.uhc_automation.utils.GameUtils;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
@@ -130,6 +131,9 @@ public abstract class GameInstance implements Serializable {
             return;
         }
         getUtils().broadcastChat(ChatColor.WHITE.toString() + ChatColor.BOLD + "[" + ChatColor.GOLD + "INFO" + ChatColor.WHITE + "] " + ChatColor.GREEN + p.getDisplayName() + ChatColor.WHITE + " has joined the game");
+        if (!getAllPlayers().contains(uuid)) {
+            new SuggestPack(this, uuid).init();
+        }
     }
 
     public void addSpectator(UUID uuid) {
@@ -140,6 +144,9 @@ public abstract class GameInstance implements Serializable {
             return;
         }
         getUtils().broadcastChat(ChatColor.WHITE.toString() + ChatColor.BOLD + "[" + ChatColor.GOLD + "INFO" + ChatColor.WHITE + "] " + ChatColor.GREEN + p.getDisplayName() + ChatColor.WHITE + " is now spectating");
+        if (!getAllPlayers().contains(uuid)) {
+            new SuggestPack(this, uuid).init();
+        }
     }
 
     public void removePlayer(UUID uuid) {

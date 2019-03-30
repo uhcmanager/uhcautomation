@@ -40,7 +40,7 @@ public class UHC_BorderTask extends AlertTimer {
     private static double maxSpeed = 4.0;
 
     public UHC_BorderTask(UHC uhc, long initDelay) {
-        super(uhc, 5L, "countdown.border");
+        super(uhc, 5L, initDelay, "countdown.border");
         this.uhc = uhc;
         currentShrinkSpeed = baseSpeed;
         beginShrink = uhc.getStartTime() + initDelay * 1000;

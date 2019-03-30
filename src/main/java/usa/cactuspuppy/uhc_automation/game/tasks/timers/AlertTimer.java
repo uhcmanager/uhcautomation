@@ -20,18 +20,24 @@ public abstract class AlertTimer extends TimerTask {
     protected LinkedList<Long> titleMarks = new LinkedList<>();
     protected long nextTitleMark;
 
-    public AlertTimer(GameInstance gameInstance, long repeatDelay, String configKey) {
+    public AlertTimer(GameInstance gameInstance, long repeatDelay, long currentTimeTo, String configKey) {
         super(gameInstance, true, 0L, repeatDelay);
         parseConfigList(configKey);
-        if (!chatMarks.isEmpty()) {
-            nextChatMark = chatMarks.removeLast();
-        } else {
-            nextChatMark = -1;
+        nextChatMark = Long.MAX_VALUE;
+        while (nextChatMark >= currentTimeTo) {
+            if (!chatMarks.isEmpty()) {
+                nextChatMark = chatMarks.removeLast();
+            } else {
+                nextChatMark = -1;
+            }
         }
-        if (!titleMarks.isEmpty()) {
-            nextTitleMark = titleMarks.removeLast();
-        } else {
-            nextTitleMark = -1;
+        nextTitleMark = Long.MAX_VALUE;
+        while (nextTitleMark >= currentTimeTo) {
+            if (!titleMarks.isEmpty()) {
+                nextTitleMark = titleMarks.removeLast();
+            } else {
+                nextTitleMark = -1;
+            }
         }
     }
 

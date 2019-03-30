@@ -16,7 +16,7 @@ public class PVPGracePeriod extends AlertTimer {
     private PVPCanceller canceller;
 
     public PVPGracePeriod(UHC uhcInstance, long pvpDelay, PVPCanceller pvpCanceller) {
-        super(uhcInstance, 5L, "countdown.default");
+        super(uhcInstance, 5L, pvpDelay, "countdown.default");
         long currTime = System.currentTimeMillis();
         pvpEnableTime = currTime + pvpDelay * 1000;
         canceller = pvpCanceller;
