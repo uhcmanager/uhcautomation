@@ -6,11 +6,11 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import usa.cactuspuppy.uhc_automation.game.tasks.listeners.UHC_PreStartFreeze;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
+import usa.cactuspuppy.uhc_automation.game.tasks.listeners.UHC_PreStartFreeze;
 import usa.cactuspuppy.uhc_automation.game.types.UHC;
-import usa.cactuspuppy.uhc_automation.utils.GameUtils;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
+import usa.cactuspuppy.uhc_automation.utils.MiscUtils;
 
 import java.util.*;
 
@@ -169,6 +169,6 @@ public class UHC_SpreadPlayers extends TimerTask {
         p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 10, true, false, false), true);
         p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 1000000, 0, true, false, false), true);
         p.setGameMode(GameMode.ADVENTURE);
-        GameUtils.relativeTeleport(feet.getLocation().add(0, 74, 0), p);
+        MiscUtils.relativeTeleport(feet.getLocation().add(0, 74, 0), p);
     }
 }

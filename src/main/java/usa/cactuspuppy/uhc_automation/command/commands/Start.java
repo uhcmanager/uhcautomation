@@ -1,30 +1,30 @@
 package usa.cactuspuppy.uhc_automation.command.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
-import usa.cactuspuppy.uhc_automation.game.GameManager;
+import usa.cactuspuppy.uhc_automation.game.GameState;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
 import usa.cactuspuppy.uhc_automation.game.tasks.timers.UHC_InitCountdown;
+import usa.cactuspuppy.uhc_automation.utils.MiscUtils;
 
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 public class Start extends UHCCommand implements TabCompleter {
-    private static Set<Long> starters = new HashSet<>();
+    private static Map<Long, Integer> starters = new HashMap<>();
 
     public static void startComplete(GameInstance instance) {
-
+        starters.remove(instance.getGameID());
     }
 
     @Override
     public String getUsage() {
-        return "/uhc start [secs] OR /uhc start <secs> <name/ID>";
+        return "/uhc start [secs] [name/ID]";
     }
 
     @Override
@@ -34,64 +34,34 @@ public class Start extends UHCCommand implements TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender commandSender, String alias, String[] args) {
-        GameInstance instance = null;
-        if (!(commandSender instanceof Player)) {
-            if (args.length < 2) {
-                return false;
-            }
-            if (args[1].matches("-?[0-9]+")) { // Find ID
-                try {
-                    instance = GameManager.getGame(Long.valueOf(args[0]));
-                } catch (NumberFormatException ignored) { }
-            }
-            if (instance == null) { // Found no instance with ID check
-                String[] nameArr = new String[args.length - 1];
-                System.arraycopy(args, 1, nameArr, 0, args.length - 1);
-                String gameName = String.join(" ", nameArr);
-                List<GameInstance> instances = new LinkedList<>();
-                for (GameInstance g : GameManager.getActiveGames().values()) {
-                    if (g.getName().equalsIgnoreCase(gameName)) {
-                        instances.add(g);
-                    }
-                }
-                switch (instances.size()) {
-                    case 0 -> {
-                        commandSender.sendMessage(ChatColor.RED + "No game found with that name or ID.");
-                        return true;
-                    }
-                    case 1 -> instance = instances.get(0);
-                    default -> {
-                        commandSender.sendMessage(ChatColor.YELLOW + "Multiple games found with that name! Select one via the associated ID:");
-                        StringBuilder builder = new StringBuilder();
-                        builder.append("\n");
-                        for (GameInstance g : instances) {
-                            builder.append(String.format("GID: %d | Main World: %s | Players: %d | Spectators: %d",
-                                    g.getGameID(), (g.getMainWorld() == null
-                                            ? "NULL"
-                                            : g.getMainWorld().getName()),
-                                    g.getAlivePlayers().size(), g.getSpectators().size()));
-                            builder.append("\n");
-                        }
-                        commandSender.sendMessage(builder.toString());
-                        return true;
-                    }
-                }
-            }
-        } else {
-            instance = GameManager.getPlayerGame(((Player) commandSender).getUniqueId());
+        //Get correct game instance
+        MiscUtils.GetInstanceResult result = MiscUtils.getGameInstance(commandSender, args);
+        if (!result.isUsageCorrect()) {
+            return false;
         }
+        GameInstance instance = result.getInstance();
+        //Check that we actually found a game instance
         if (instance == null) {
             commandSender.sendMessage(ChatColor.RED + "Must be in a game or specify a game name/ID.");
             return true;
         }
+        //Check that we can actually start the game
+        if (!instance.getGameState().equals(GameState.LOBBY)) {
+            commandSender.sendMessage(ChatColor.RED + "Game is starting or in progress");
+            return true;
+        }
         if (args.length > 0) {
+            if (starters.containsKey(instance.getGameID())) {
+                Bukkit.getScheduler().cancelTask(starters.get(instance.getGameID()));
+                starters.remove(instance.getGameID());
+            }
             try {
                 int delay = Integer.valueOf(args[0]);
-                new UHC_InitCountdown(instance, delay);
-                starters.add(instance.getGameID());
+                UHC_InitCountdown task = new UHC_InitCountdown(instance, delay);
+                starters.put(instance.getGameID(), task.getTaskID());
                 return true;
             } catch (NumberFormatException e) {
-                commandSender.sendMessage(ChatColor.RED + "Unknown integer: " + args[0]);
+                commandSender.sendMessage(ChatColor.RED + "Problem parsing for integer here: " + args[0]);
                 return true;
             }
         } else {

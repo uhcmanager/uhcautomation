@@ -2,6 +2,7 @@ package usa.cactuspuppy.uhc_automation.game.tasks.timers;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import usa.cactuspuppy.uhc_automation.command.commands.Start;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
 
@@ -31,6 +32,7 @@ public class UHC_InitCountdown extends TimerTask {
         //TODO: init countdown
         long currTime = System.currentTimeMillis();
         if (currTime >= initTime) {
+            Start.startComplete(gameInstance);
             gameInstance.updateState(GameStateEvent.INIT);
             cancel();
             return;

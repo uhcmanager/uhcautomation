@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.game.tasks.timers;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.game.tasks.Task;
@@ -16,6 +17,7 @@ public abstract class TimerTask extends Task implements Runnable {
     /**
      * The task ID assigned to this task by the Bukkit scheduler
      */
+    @Getter
     protected Integer taskID;
     /**
      * Whether this task should repeat or run once

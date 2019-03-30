@@ -6,11 +6,13 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.game.types.UHC;
-import usa.cactuspuppy.uhc_automation.utils.GameUtils;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
+import usa.cactuspuppy.uhc_automation.utils.MiscUtils;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class UHC_BorderTask extends TimerTask {
@@ -133,7 +135,7 @@ public class UHC_BorderTask extends TimerTask {
         //Check for chat mark
         long chatMark = beginShrink - nextChatMark * 1000;
         if (nextChatMark != -1 && currTime >= chatMark) {
-            uhc.getUtils().broadcastChatSound(ChatColor.YELLOW + "[INFO] Border shrinks in " + ChatColor.WHITE + GameUtils.secsToFormatString(nextChatMark), Sound.ENTITY_PLAYER_LEVELUP, 0.5F);
+            uhc.getUtils().broadcastChatSound(ChatColor.YELLOW + "[INFO] Border shrinks in " + ChatColor.WHITE + MiscUtils.secsToFormatString(nextChatMark), Sound.ENTITY_PLAYER_LEVELUP, 0.5F);
             if (!chatMarks.isEmpty()) {
                 nextChatMark = chatMarks.removeLast();
             } else {

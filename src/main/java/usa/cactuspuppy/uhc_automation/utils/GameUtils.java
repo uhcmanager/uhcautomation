@@ -2,87 +2,17 @@ package usa.cactuspuppy.uhc_automation.utils;
 
 import lombok.AllArgsConstructor;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
-import java.util.*;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public final class GameUtils {
     private GameInstance instance;
-
-    /**
-     * Teleport specified player(s) to the specified location while maintaining the player's orientation
-     * @param players Player(s) to teleport relatively
-     * @param destination Location to teleport to
-     */
-    public static void relativeTeleport(@NotNull Location destination, Player... players) {
-        for (Player p : players) {
-            destination.setYaw(p.getLocation().getYaw());
-            destination.setPitch(p.getLocation().getPitch());
-            p.teleport(destination);
-        }
-    }
-
-    public static Map<String, Integer> secsToHMS(long secs) {
-        Map<String, Integer> hms = new HashMap<>();
-
-        hms.put("hrs", (int) (secs / 3600));
-        hms.put("mins", (int) ((secs / 60) % 60));
-        hms.put("secs", (int) (secs % 60));
-
-        return hms;
-    }
-
-
-    public static String secsToFormatString(long secs) {
-        Map<String, Integer> hms = secsToHMS(secs);
-        return hmsToFormatString(hms.get("hrs"), hms.get("mins"), hms.get("secs"));
-    }
-
-    public static String hmsToFormatString(int hrs, int mins, int secs) {
-        assert (hrs >= 0) && (mins >= 0) && (secs >= 0);
-
-        if (hrs == 0 && mins == 0 && secs == 0) {
-            return "0 seconds";
-        }
-
-        StringJoiner fmtStng = new StringJoiner(" ");
-        if (hrs == 1) {
-            fmtStng.add(hrs + " hour");
-        } else if (hrs != 0) {
-            fmtStng.add(hrs + " hours");
-        }
-
-        if (mins == 1) {
-            fmtStng.add(mins + " minute");
-        } else if (mins != 0) {
-            fmtStng.add(mins + " minutes");
-        }
-
-        if (secs == 1) {
-            fmtStng.add(secs + " second");
-        } else if (secs != 0) {
-            fmtStng.add(secs + " seconds");
-        }
-
-        return fmtStng.toString();
-    }
-
-    public static String secsToFormatString2(int secs) {
-        Map<String, Integer> hms = secsToHMS(secs);
-        return hmsToFormatString2(hms.get("hrs"), hms.get("mins"), hms.get("secs"));
-    }
-
-    public static String hmsToFormatString2(int hrs, int mins, int secs) {
-        assert hrs >= 0 && mins >= 0 && secs >= 0;
-
-        return hrs + ":" + mins + "'" + secs +"\"";
-    }
 
     public void msgManagers(String chatMessage) {
         instance.getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).filter(p -> p.hasPermission("uhc.manager")).forEach(
