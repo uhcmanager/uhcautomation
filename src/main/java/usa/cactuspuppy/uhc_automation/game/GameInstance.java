@@ -68,7 +68,7 @@ public abstract class GameInstance implements Serializable {
      */
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
-    protected Set<UUID> otherWorlds;
+    protected Set<UUID> otherWorlds = new HashSet<>();
 
     public Set<UUID> getOtherWorlds() {
         return new HashSet<>(otherWorlds);

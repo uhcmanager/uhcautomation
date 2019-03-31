@@ -75,11 +75,6 @@ public class UHC extends GameInstance {
 
     public UHC(World world) {
         super(world);
-        //TEMP
-        name = "Noteblock UHC Season 1";
-        //SUPER TEMP
-        timeToShrink = 45;
-        pvpDelay = 15;
     }
 
     // [=== MISC INFO ===]

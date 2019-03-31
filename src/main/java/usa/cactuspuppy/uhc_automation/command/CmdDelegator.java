@@ -40,7 +40,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
             commandSender.sendMessage(ChatColor.RED + "Unknown command " + subCmd);
             return true;
         }
-        String[] newArgs = new String[0];
+        String[] newArgs = new String[args.length - 1];
         System.arraycopy(args, 1, newArgs, 0, args.length - 1);
         if (!handler.hasPermission(commandSender, subCmd, newArgs)) {
             commandSender.sendMessage(ChatColor.RED + Constants.getDenyPermission());

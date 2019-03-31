@@ -92,7 +92,7 @@ public class Main extends JavaPlugin {
             try {
                 GameInstance current = GameManager.getGame(l);
                 boolean success = current.updateState(GameStateEvent.PAUSE); //Inform game of pause
-                if (!success) {
+                if (!success && current.getGameState() != GameState.LOBBY) {
                     current.getUtils().log(Logger.Level.INFO, this.getClass(), "Could not pause game, game will be reset on restart.");
                 }
                 FileOutputStream fileOS = new FileOutputStream(new File(getDataFolder() + Constants.getGamesDir(), String.format(Constants.getGameInfoFile(), l)));
