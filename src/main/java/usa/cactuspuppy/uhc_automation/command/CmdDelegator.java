@@ -5,6 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.jetbrains.annotations.NotNull;
 import usa.cactuspuppy.uhc_automation.Constants;
 import usa.cactuspuppy.uhc_automation.command.commands.*;
 
@@ -32,7 +33,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
 
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
+    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (args.length < 1) return false;
         String subCmd = args[0];
         UHCCommand handler = commandMap.get(subCmd);
@@ -53,7 +54,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] strings) {
+    public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         return null;
     }
 

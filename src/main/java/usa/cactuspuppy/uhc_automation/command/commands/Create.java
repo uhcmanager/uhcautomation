@@ -3,18 +3,28 @@ package usa.cactuspuppy.uhc_automation.command.commands;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
 import usa.cactuspuppy.uhc_automation.game.tasks.GameFactory;
+
+import java.util.List;
 
 public class Create extends UHCCommand {
 
     @Override
     public String getUsage() {
         return "/uhc create <type> [world]";
+    }
+
+    @Override
+    public String getPurpose() {
+        return "Creates a new game instance if possible";
     }
 
     @Override
@@ -64,5 +74,10 @@ public class Create extends UHCCommand {
     @Override
     public boolean hasPermission(CommandSender commandSender, String alias, String[] args) {
         return commandSender.hasPermission("uhc.manager");
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+        return null;
     }
 }

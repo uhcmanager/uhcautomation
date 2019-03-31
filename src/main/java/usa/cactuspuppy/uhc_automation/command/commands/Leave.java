@@ -1,17 +1,26 @@
 package usa.cactuspuppy.uhc_automation.command.commands;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
 import usa.cactuspuppy.uhc_automation.utils.MojangAPIHook;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Leave extends UHCCommand {
     @Override
     public String getUsage() {
         return "/uhc leave <player>";
+    }
+
+    @Override
+    public String getPurpose() {
+        return "Removes a player from the game they are in";
     }
 
     @Override
@@ -34,5 +43,10 @@ public class Leave extends UHCCommand {
     @Override
     public boolean hasPermission(CommandSender commandSender, String alias, String[] args) {
         return commandSender.hasPermission("uhc.manager");
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+        return null;
     }
 }

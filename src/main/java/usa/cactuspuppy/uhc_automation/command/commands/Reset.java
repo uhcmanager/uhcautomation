@@ -1,11 +1,26 @@
 package usa.cactuspuppy.uhc_automation.command.commands;
 
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
 import usa.cactuspuppy.uhc_automation.utils.MiscUtils;
 
+import java.util.List;
+
 public class Reset extends UHCCommand {
+    @Override
+    public String getUsage() {
+        return "/uhc reset [name/ID]";
+    }
+
+    @Override
+    public String getPurpose() {
+        return "Resets game to lobby";
+    }
+
     @Override
     public boolean onCommand(CommandSender commandSender, String alias, String[] args) {
         //Get correct game instance
@@ -24,5 +39,10 @@ public class Reset extends UHCCommand {
     @Override
     public boolean hasPermission(CommandSender commandSender, String alias, String[] args) {
         return false;
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+        return null;
     }
 }
