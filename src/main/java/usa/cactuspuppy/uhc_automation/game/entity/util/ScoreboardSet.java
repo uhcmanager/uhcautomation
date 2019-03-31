@@ -1,9 +1,9 @@
-package usa.cactuspuppy.uhc_automation.entity.util;
+package usa.cactuspuppy.uhc_automation.game.entity.util;
 
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.Scoreboard;
-import usa.cactuspuppy.uhc_automation.entity.unique.UHCTeam;
+import usa.cactuspuppy.uhc_automation.game.entity.unique.UHCTeam;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 

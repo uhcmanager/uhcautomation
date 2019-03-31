@@ -1,7 +1,7 @@
 package usa.cactuspuppy.uhc_automation.event.game.group;
 
 import org.bukkit.event.HandlerList;
-import usa.cactuspuppy.uhc_automation.entity.unique.Group;
+import usa.cactuspuppy.uhc_automation.game.entity.unique.Group;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 import java.util.Arrays;

@@ -9,7 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import usa.cactuspuppy.uhc_automation.entity.util.ScoreboardSet;
+import usa.cactuspuppy.uhc_automation.game.entity.util.ScoreboardSet;
 import usa.cactuspuppy.uhc_automation.game.tasks.timers.SuggestPack;
 import usa.cactuspuppy.uhc_automation.utils.GameUtils;
 import usa.cactuspuppy.uhc_automation.utils.Logger;

@@ -2,8 +2,8 @@ package usa.cactuspuppy.uhc_automation.event.game.group;
 
 import lombok.Getter;
 import org.bukkit.event.HandlerList;
-import usa.cactuspuppy.uhc_automation.entity.unique.Group;
-import usa.cactuspuppy.uhc_automation.entity.unique.UHCTeam;
+import usa.cactuspuppy.uhc_automation.game.entity.unique.Group;
+import usa.cactuspuppy.uhc_automation.game.entity.unique.UHCTeam;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 public class GroupSetTeamEvent extends GroupEvent {
