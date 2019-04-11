@@ -4,41 +4,32 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import usa.cactuspuppy.uhc_automation.game.GameInstance;
-import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
-import usa.cactuspuppy.uhc_automation.utils.MiscUtils;
 
 import java.util.List;
 
-public class Reset extends UHCCommand {
+public class Join extends UHCCommand {
     @Override
     public String getUsage() {
-        return "/uhc reset [name/ID]";
+        return "/uhc join <player> [ID/name]";
     }
 
     @Override
     public String getPurpose() {
-        return "Resets game to lobby";
+        return "Adds a player to the specified game";
     }
 
     @Override
     public boolean onCommand(CommandSender commandSender, String alias, String[] args) {
-        //Get correct game instance
-        MiscUtils.GetInstanceResult result = MiscUtils.getGameInstance(commandSender, args);
-        if (result == null) {
-            return true;
-        } else if (!result.isUsageCorrect()) {
+        if (args.length < 2) {
             return false;
         }
-        GameInstance instance = result.getInstance();
-
-        instance.updateState(GameStateEvent.RESET);
+        //TODO: Implement joining
         return true;
     }
 
     @Override
     public boolean hasPermission(CommandSender commandSender, String alias, String[] args) {
-        return false;
+        return commandSender.hasPermission("uhc.manager");
     }
 
     @Override

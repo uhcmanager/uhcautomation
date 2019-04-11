@@ -2,7 +2,7 @@ package usa.cactuspuppy.uhc_automation.game.types;
 
 import org.bukkit.ChatColor;
 import org.bukkit.World;
-import usa.cactuspuppy.uhc_automation.entity.unique.UHCTeam;
+import usa.cactuspuppy.uhc_automation.game.entity.unique.UHCTeam;
 
 public class PVN extends TeamGameInstance {
 

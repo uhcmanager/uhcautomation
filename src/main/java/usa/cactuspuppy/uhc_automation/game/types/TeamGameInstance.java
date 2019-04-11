@@ -1,8 +1,7 @@
 package usa.cactuspuppy.uhc_automation.game.types;
 
 import org.bukkit.World;
-import org.bukkit.scoreboard.Team;
-import usa.cactuspuppy.uhc_automation.entity.unique.UHCTeam;
+import usa.cactuspuppy.uhc_automation.game.entity.unique.UHCTeam;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 import java.util.*;

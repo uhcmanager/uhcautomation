@@ -5,9 +5,12 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import usa.cactuspuppy.uhc_automation.entity.util.ScoreboardSet;
+import usa.cactuspuppy.uhc_automation.game.entity.util.ScoreboardSet;
+import usa.cactuspuppy.uhc_automation.game.tasks.timers.SuggestPack;
 import usa.cactuspuppy.uhc_automation.utils.GameUtils;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
@@ -65,10 +68,14 @@ public abstract class GameInstance implements Serializable {
      */
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
-    protected Set<UUID> otherWorlds;
+    protected Set<UUID> otherWorlds = new HashSet<>();
 
     public Set<UUID> getOtherWorlds() {
         return new HashSet<>(otherWorlds);
+    }
+
+    public void addOtherWorld(@NotNull World world) {
+        otherWorlds.add(world.getUID());
     }
 
     @Setter(AccessLevel.NONE)
@@ -119,17 +126,40 @@ public abstract class GameInstance implements Serializable {
     public void addPlayer(UUID uuid) {
         players.add(uuid);
         GameManager.registerPlayerGame(uuid, this);
+        Player p = Bukkit.getPlayer(uuid);
+        if (p == null) {
+            return;
+        }
+        getUtils().broadcastChat(ChatColor.WHITE.toString() + ChatColor.BOLD + "[" + ChatColor.GOLD + "INFO" + ChatColor.WHITE + "] " + ChatColor.GREEN + p.getDisplayName() + ChatColor.WHITE + " has joined the game");
+        if (!getAllPlayers().contains(uuid)) {
+            new SuggestPack(this, uuid).init();
+        }
     }
 
     public void addSpectator(UUID uuid) {
         spectators.add(uuid);
         GameManager.registerPlayerGame(uuid, this);
+        Player p = Bukkit.getPlayer(uuid);
+        if (p == null) {
+            return;
+        }
+        getUtils().broadcastChat(ChatColor.WHITE.toString() + ChatColor.BOLD + "[" + ChatColor.GOLD + "INFO" + ChatColor.WHITE + "] " + ChatColor.GREEN + p.getDisplayName() + ChatColor.WHITE + " is now spectating");
+        if (!getAllPlayers().contains(uuid)) {
+            new SuggestPack(this, uuid).init();
+        }
     }
 
     public void removePlayer(UUID uuid) {
         players.remove(uuid);
         spectators.remove(uuid);
         GameManager.unregisterPlayerGame(uuid);
+    }
+
+    public void removeSpectator(UUID uuid, boolean unreg) {
+        spectators.remove(uuid);
+        if (unreg) {
+            GameManager.unregisterPlayerGame(uuid);
+        }
     }
 
     /**
@@ -275,6 +305,15 @@ public abstract class GameInstance implements Serializable {
      * @return Whether ending the game was successful
      */
     protected abstract boolean end();
+
+    /**
+     * Check if a victory condition has been met. <br>
+     * Note that this does NOT trigger the {@link #end()} function
+     * @return Whether a victory condition has been met
+     */
+    public boolean isVictory() {
+        return getAlivePlayers().size() <= 1;
+    }
 
     //Game utils
     protected GameUtils utils = new GameUtils(this);

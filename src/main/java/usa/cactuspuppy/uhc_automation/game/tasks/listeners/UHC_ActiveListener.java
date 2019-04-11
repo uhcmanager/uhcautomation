@@ -1,8 +1,6 @@
 package usa.cactuspuppy.uhc_automation.game.tasks.listeners;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
@@ -10,6 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
 import usa.cactuspuppy.uhc_automation.game.tasks.timers.UHC_BorderTask;
 import usa.cactuspuppy.uhc_automation.game.types.UHC;
@@ -68,9 +68,18 @@ public class UHC_ActiveListener extends ListenerTask {
         //Announce death
         gameInstance.getUtils().broadcastSoundTitle(Sound.ENTITY_WITHER_DEATH, 1F, e.getEntity().getDisplayName(), ChatColor.RED + "has been eliminated!", 0, 80, 40);
         //Check for win
-        if (uhc.getAlivePlayers().size() == 1) {
-            uhc.updateState(GameStateEvent.END);
-            //TODO: Add victory screech etc.
+        if (gameInstance.isVictory()) {
+            gameInstance.updateState(GameStateEvent.END);
         }
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent e) {
+        if (!respawnQueue.containsKey(e.getPlayer().getUniqueId())) {
+            return;
+        }
+        Location loc = respawnQueue.get(e.getPlayer().getUniqueId());
+        e.setRespawnLocation(loc);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> e.getPlayer().setGameMode(GameMode.SPECTATOR), 1L);
     }
 }

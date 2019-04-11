@@ -10,3 +10,8 @@ countdown:
   default: +1,+2,+3,+4,+5,+6,+7,+8,+9,+10,30,60,300,600,900,1200,1800,3600
   lobby: +1,+2,+3,+4,+5,+6,+7,+8,+9,+10,15,30,45,60,120,180,240,300,600
   chunk: +1,+2,+3,+4,+5,+6,+7,+8,+9,+10
+
+# Resource pack
+rp:
+  url: https://www.dropbox.com/s/v5mbmgpgn6ot901/uhca_rp.zip?dl=1
+  hash: E218C5A44673CCF7D4026CA82A7B5AD0F427D6C6

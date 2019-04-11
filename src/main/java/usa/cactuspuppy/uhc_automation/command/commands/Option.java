@@ -2,43 +2,33 @@ package usa.cactuspuppy.uhc_automation.command.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import usa.cactuspuppy.uhc_automation.game.GameInstance;
-import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
-import usa.cactuspuppy.uhc_automation.utils.MiscUtils;
+import usa.cactuspuppy.uhc_automation.Main;
 
 import java.util.List;
 
-public class Reset extends UHCCommand {
+public class Option extends UHCCommand {
     @Override
     public String getUsage() {
-        return "/uhc reset [name/ID]";
+        return "/uhc option <option> <value> <name/ID>";
     }
 
     @Override
     public String getPurpose() {
-        return "Resets game to lobby";
+        return "Modifies the specified option for the specified game";
     }
 
     @Override
     public boolean onCommand(CommandSender commandSender, String alias, String[] args) {
-        //Get correct game instance
-        MiscUtils.GetInstanceResult result = MiscUtils.getGameInstance(commandSender, args);
-        if (result == null) {
-            return true;
-        } else if (!result.isUsageCorrect()) {
-            return false;
-        }
-        GameInstance instance = result.getInstance();
-
-        instance.updateState(GameStateEvent.RESET);
-        return true;
+        //TODO: Implement option changing
+        return false;
     }
 
     @Override
     public boolean hasPermission(CommandSender commandSender, String alias, String[] args) {
-        return false;
+        return commandSender.hasPermission("uhc.manager");
     }
 
     @Override

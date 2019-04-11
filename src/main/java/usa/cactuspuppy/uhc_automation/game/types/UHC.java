@@ -4,11 +4,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.*;
+import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
+import usa.cactuspuppy.uhc_automation.game.GameManager;
 import usa.cactuspuppy.uhc_automation.game.tasks.GameStartAnnouncer;
 import usa.cactuspuppy.uhc_automation.game.tasks.listeners.ListenerTask;
+import usa.cactuspuppy.uhc_automation.game.tasks.listeners.PVPCanceller;
 import usa.cactuspuppy.uhc_automation.game.tasks.listeners.UHC_ActiveListener;
 import usa.cactuspuppy.uhc_automation.game.tasks.listeners.UHC_LobbyListener;
 import usa.cactuspuppy.uhc_automation.game.tasks.timers.TimerTask;
@@ -16,6 +19,7 @@ import usa.cactuspuppy.uhc_automation.game.tasks.timers.UHC_BorderTask;
 import usa.cactuspuppy.uhc_automation.game.tasks.timers.UHC_SpreadPlayers;
 import usa.cactuspuppy.uhc_automation.utils.GameUtils;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
+import usa.cactuspuppy.uhc_automation.utils.MiscUtils;
 
 import java.util.*;
 
@@ -63,12 +67,6 @@ public class UHC extends GameInstance {
     @Setter(AccessLevel.PUBLIC)
     protected int blocksAboveGround = 50;
 
-    // [=== EPISODE INFO ===]
-    /**
-     * Length of episodes, in seconds. -1 to disable.
-     */
-    protected long epLength = 1200;
-
     // [=== BORDER INFO ==]
     /**
      * Whether the border will increase speed linearly as players die
@@ -79,19 +77,33 @@ public class UHC extends GameInstance {
         super(world);
     }
 
+    // [=== MISC INFO ===]
+
+    /**
+     * Length of episodes, in seconds. -1 to disable.
+     */
+    protected long epLength = 1200;
+
+    /**
+     * Length of grace period, in second. 0 to enable PVP immediately
+     */
+    protected long pvpDelay = 1200;
+
     //TODO: Implement methods
     @Override
     protected boolean reset() {
         TimerTask.clearInstanceTimers(this);
         ListenerTask.clearInstanceListeners(this);
-        //TODO: Create lobby
-        new UHC_LobbyListener(this).init();
         World main = getMainWorld();
         if (main == null) {
             getUtils().log(Logger.Level.WARNING, this.getClass(), "Null main world, cannot resolve.");
             getUtils().msgManagers(ChatColor.RED + "RESET ERROR: No main world set, cannot reset.");
             return false;
         }
+        //Set up lobby listener
+        new UHC_LobbyListener(this).init();
+        //Disable lobby PVP
+        new PVPCanceller(this).init();
         createLobby();
         // Day/weather cancel
         main.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
@@ -206,6 +218,7 @@ public class UHC extends GameInstance {
         Set<UUID> worlds = new HashSet<>(getOtherWorlds());
         worlds.add(mainWorldUID);
         worlds.stream().map(Bukkit::getWorld).filter(Objects::nonNull).forEach(this::startWorld);
+        startTasks();
         new GameStartAnnouncer(this).init();
         return true;
     }
@@ -234,7 +247,50 @@ public class UHC extends GameInstance {
     @Override
     protected boolean end() {
         //TODO
+        long endTime = System.currentTimeMillis();
+        //Cancel all instance tasks
+        ListenerTask.clearInstanceListeners(this);
+        TimerTask.clearInstanceTimers(this);
+        //Check for early end
+        if (!isVictory()) {
+            getUtils().broadcastChatSoundTitle(ChatColor.YELLOW + "Game ended!", "uhc.victory", 1F, ChatColor.RED + "GAME OVER", "Game was ended early.", 0, 80, 40);
+            return true;
+        }
+        switch (getAlivePlayers().size()) {
+            case 0 -> getUtils().broadcastChatSoundTitle(ChatColor.AQUA + "GAME OVER: DRAW\n" + ChatColor.RESET + "[Server] Wait... what?", "uhc.victory", 1F, "DRAW", ChatColor.RED + "Game Over!", 0, 80, 40);
+            case 1 -> {
+                Player winner;
+                try {
+                    UUID uuid = getAlivePlayers().stream().findFirst().orElseThrow();
+                    winner = Bukkit.getPlayer(uuid);
+                    if (winner == null) {
+                        throw new NoSuchElementException("Bukkit::getPlayer failed to find the winner");
+                    }
+                } catch (NoSuchElementException e) {
+                    getUtils().log(Logger.Level.SEVERE, this.getClass(), "Could not getting winning UUID.", e);
+                    getUtils().broadcastChatSoundTitle(ChatColor.GREEN.toString() + ChatColor.BOLD + "\nGame over!", "uhc.victory", 1F, "GAME OVER", ChatColor.GREEN + "Server-side error in determining winner :(", 0, 80, 40);
+                    return true;
+                }
+                getUtils().broadcastChatSoundTitle(ChatColor.GREEN.toString() + ChatColor.BOLD + "\nGame over!", "uhc.victory", 1F, winner.getDisplayName(), ChatColor.GREEN + "wins!", 0, 80, 40);
+                long secsElapsed = (endTime - startTime) / 1000;
+                getUtils().broadcastChat("============\n"
+                        + ChatColor.AQUA + "Time Elapsed: " + ChatColor.RESET + MiscUtils.secsToFormatString(secsElapsed)
+                        + ChatColor.GREEN + "Initial Players: " + ChatColor.RESET + initNumPlayers);
+            }
+            default -> {
+                getUtils().log(Logger.Level.WARNING, this.getClass(), "Victory condition check failed, undefined behavior, terminating game early.");
+                getUtils().broadcastChatSoundTitle(ChatColor.YELLOW + "Game ended!", "uhc.victory", 1F, ChatColor.RED + "GAME OVER", "Game was ended early.", 0, 80, 40);
+                return true;
+            }
+        }
+        //Unregister game
+        GameManager.unregisterGame(this, false);
         return true;
+    }
+
+    @Override
+    public boolean isVictory() {
+        return getAlivePlayers().size() <= 1;
     }
 
     /**

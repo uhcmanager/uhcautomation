@@ -3,18 +3,28 @@ package usa.cactuspuppy.uhc_automation.command.commands;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
 import usa.cactuspuppy.uhc_automation.game.tasks.GameFactory;
+
+import java.util.List;
 
 public class Create extends UHCCommand {
 
     @Override
     public String getUsage() {
         return "/uhc create <type> [world]";
+    }
+
+    @Override
+    public String getPurpose() {
+        return "Creates a new game instance if possible";
     }
 
     @Override
@@ -40,17 +50,34 @@ public class Create extends UHCCommand {
         } else if (args1.length < 1) {
             commandSender.sendMessage(ChatColor.RED + "Must be a player to infer game world.");
             return true;
-
+        }
+        //Check world is overworld
+        if (!world.getEnvironment().equals(World.Environment.NORMAL)) {
+            commandSender.sendMessage(ChatColor.RED + "May only set overworld worlds as main world (for now)");
+            return true;
         }
         //Create correct type and register
         GameInstance instance = new GameFactory().getGame(type.toLowerCase(), world);
         GameManager.registerGame(instance);
         instance.updateState(GameStateEvent.RESET);
-        return false;
+        World nether = Bukkit.getWorld(world.getName() + "_nether");
+        World theEnd = Bukkit.getWorld(world.getName() + "_the_end");
+        if (nether != null) {
+            instance.addOtherWorld(nether);
+        }
+        if (theEnd != null) {
+            instance.addOtherWorld(theEnd);
+        }
+        return true;
     }
 
     @Override
     public boolean hasPermission(CommandSender commandSender, String alias, String[] args) {
         return commandSender.hasPermission("uhc.manager");
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+        return null;
     }
 }

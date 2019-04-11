@@ -5,6 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.jetbrains.annotations.NotNull;
 import usa.cactuspuppy.uhc_automation.Constants;
 import usa.cactuspuppy.uhc_automation.command.commands.*;
 
@@ -20,6 +21,9 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
         addCmd(new Start());
         addCmd(new Create());
         addCmd(new Debug());
+        addCmd(new Join());
+        addCmd(new Leave());
+        addCmd(new Option());
         //TODO: Add aliases
     }
 
@@ -29,7 +33,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
 
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
+    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (args.length < 1) return false;
         String subCmd = args[0];
         UHCCommand handler = commandMap.get(subCmd);
@@ -37,7 +41,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
             commandSender.sendMessage(ChatColor.RED + "Unknown command " + subCmd);
             return true;
         }
-        String[] newArgs = new String[0];
+        String[] newArgs = new String[args.length - 1];
         System.arraycopy(args, 1, newArgs, 0, args.length - 1);
         if (!handler.hasPermission(commandSender, subCmd, newArgs)) {
             commandSender.sendMessage(ChatColor.RED + Constants.getDenyPermission());
@@ -50,7 +54,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] strings) {
+    public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         return null;
     }
 

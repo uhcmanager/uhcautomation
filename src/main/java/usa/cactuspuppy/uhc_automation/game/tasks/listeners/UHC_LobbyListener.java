@@ -1,13 +1,21 @@
 package usa.cactuspuppy.uhc_automation.game.tasks.listeners;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import usa.cactuspuppy.uhc_automation.Main;
+import usa.cactuspuppy.uhc_automation.event.game.player.PlayerJoinEvent;
+import usa.cactuspuppy.uhc_automation.game.GameInstance;
+import usa.cactuspuppy.uhc_automation.game.GameManager;
 import usa.cactuspuppy.uhc_automation.game.types.UHC;
+
+import java.util.Objects;
 
 public class UHC_LobbyListener extends ListenerTask {
     private UHC uhc;
@@ -17,6 +25,72 @@ public class UHC_LobbyListener extends ListenerTask {
         uhc = uhcInstance;
     }
 
+    //Add joiners to the game
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent e) {
+        Player p = e.getPlayer();
+        //Check that player is joining lobby world
+        if (!Objects.equals(p.getWorld(), gameInstance.getMainWorld())) {
+            return;
+        }
+        //Add player to game
+        if (p.getGameMode().equals(GameMode.SURVIVAL)) {
+            gameInstance.addPlayer(p.getUniqueId());
+        } else {
+            gameInstance.addSpectator(p.getUniqueId());
+        }
+        //Greet player
+        p.sendTitle(ChatColor.GOLD + "Welcome", "to " + gameInstance.getName(), 10, 80, 20);
+    }
+
+    //Check for gamemode changing
+    @EventHandler
+    public void onGamemode(PlayerGameModeChangeEvent event) {
+        Player p = event.getPlayer();
+        if (!gameInstance.getAllPlayers().contains(p.getUniqueId())) {
+            return;
+        }
+        if (event.getNewGameMode().equals(GameMode.SURVIVAL)) {
+            gameInstance.removeSpectator(p.getUniqueId(), false);
+            gameInstance.addPlayer(p.getUniqueId());
+        } else if (gameInstance.getAlivePlayers().contains(p.getUniqueId())) {
+            gameInstance.moveAliveToSpec(p.getUniqueId());
+            gameInstance.getUtils().broadcastChat(ChatColor.WHITE.toString() + ChatColor.BOLD + "[" + ChatColor.GOLD + "INFO" + ChatColor.WHITE + "] " + ChatColor.GREEN + p.getDisplayName() + ChatColor.WHITE + " is now spectating");
+        }
+    }
+
+    //Check for world changing
+    @EventHandler
+    public void onWorldChange(PlayerTeleportEvent event) {
+        if (event.getTo() == null) {
+            return;
+        }
+        if (Objects.equals(event.getFrom().getWorld(), event.getTo().getWorld())) {
+            return;
+        }
+        Player p = event.getPlayer();
+        GameInstance playerGame = GameManager.getPlayerGame(p.getUniqueId());
+        World dest = event.getTo().getWorld();
+        if (playerGame != null) {
+            if (playerGame.getGameID() == gameInstance.getGameID()) {
+                if (!dest.equals(gameInstance.getMainWorld())
+                        && !gameInstance.getOtherWorlds().contains(dest.getUID())) {
+                    gameInstance.removePlayer(p.getUniqueId());
+                }
+            } else if (dest.equals(gameInstance.getMainWorld())) {
+                playerGame.removePlayer(p.getUniqueId());
+            }
+        }
+        if (dest.equals(gameInstance.getMainWorld())) {
+            if (p.getGameMode().equals(GameMode.SURVIVAL)) {
+                gameInstance.addPlayer(p.getUniqueId());
+            } else {
+                gameInstance.addSpectator(p.getUniqueId());
+            }
+        }
+    }
+
+    //Respawn fast
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         if (!uhc.getAllPlayers().contains(e.getEntity().getUniqueId())) {
@@ -32,6 +106,7 @@ public class UHC_LobbyListener extends ListenerTask {
         e.setDeathMessage("[" + ChatColor.RED + "DEATH" + ChatColor.RESET + "]" + e.getDeathMessage());
     }
 
+    //Prevent hunger
     @EventHandler
     public void onPlayerHunger(FoodLevelChangeEvent e) {
         if (!uhc.getAllPlayers().contains(e.getEntity().getUniqueId())) {

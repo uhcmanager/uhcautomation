@@ -2,6 +2,7 @@ package usa.cactuspuppy.uhc_automation.game;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.Nullable;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.util.*;
@@ -24,10 +25,12 @@ public class GameManager {
         return activeGames.get(id);
     }
 
+    @Nullable
     public static GameInstance getPlayerGame(UUID u) {
         return getGameInstance(u, playerMap);
     }
 
+    @Nullable
     public static GameInstance getWorldGame(UUID u) {
         return getGameInstance(u, worldMap);
     }

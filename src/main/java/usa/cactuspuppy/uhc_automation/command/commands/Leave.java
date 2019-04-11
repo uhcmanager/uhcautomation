@@ -1,44 +1,48 @@
 package usa.cactuspuppy.uhc_automation.command.commands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
-import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
-import usa.cactuspuppy.uhc_automation.utils.MiscUtils;
+import usa.cactuspuppy.uhc_automation.game.GameManager;
+import usa.cactuspuppy.uhc_automation.utils.MojangAPIHook;
 
 import java.util.List;
+import java.util.UUID;
 
-public class Reset extends UHCCommand {
+public class Leave extends UHCCommand {
     @Override
     public String getUsage() {
-        return "/uhc reset [name/ID]";
+        return "/uhc leave <player>";
     }
 
     @Override
     public String getPurpose() {
-        return "Resets game to lobby";
+        return "Removes a player from the game they are in";
     }
 
     @Override
     public boolean onCommand(CommandSender commandSender, String alias, String[] args) {
-        //Get correct game instance
-        MiscUtils.GetInstanceResult result = MiscUtils.getGameInstance(commandSender, args);
-        if (result == null) {
-            return true;
-        } else if (!result.isUsageCorrect()) {
+        if (args.length < 1) {
             return false;
         }
-        GameInstance instance = result.getInstance();
-
-        instance.updateState(GameStateEvent.RESET);
+        String name = args[0];
+        UUID u = MojangAPIHook.getUUID(name);
+        GameInstance game = GameManager.getPlayerGame(u);
+        if (game == null) {
+            commandSender.sendMessage(ChatColor.YELLOW + "The player specified is not registered to a game.");
+            return true;
+        }
+        game.removePlayer(u);
+        game.addSpectator(u);
         return true;
     }
 
     @Override
     public boolean hasPermission(CommandSender commandSender, String alias, String[] args) {
-        return false;
+        return commandSender.hasPermission("uhc.manager");
     }
 
     @Override

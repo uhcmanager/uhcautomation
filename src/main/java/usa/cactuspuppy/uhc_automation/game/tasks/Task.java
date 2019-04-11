@@ -1,6 +1,6 @@
 package usa.cactuspuppy.uhc_automation.game.tasks;
 
-import usa.cactuspuppy.uhc_automation.entity.Entity;
+import usa.cactuspuppy.uhc_automation.game.entity.Entity;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 /**
