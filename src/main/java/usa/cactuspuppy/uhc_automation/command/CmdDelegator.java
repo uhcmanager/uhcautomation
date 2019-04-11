@@ -10,13 +10,13 @@ import usa.cactuspuppy.uhc_automation.Constants;
 import usa.cactuspuppy.uhc_automation.command.commands.*;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @org.bukkit.plugin.java.annotation.command.Command(name = "uhc", desc = "Accesses the functionality of the UHC plugin", usage = "/uhc <subcommand> [args]")
 public class CmdDelegator implements CommandExecutor, TabCompleter {
     private static Map<String, UHCCommand> commandMap = new HashMap<>();
+    private static Map<String, UHCCommand> aliasMap = new HashMap<>();
     static {
         addCmd(new Surface());
         addCmd(new Start());
@@ -28,6 +28,8 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
         //Add aliases
         addAlias("s", Surface.class);
         addAlias("d", Debug.class);
+        addAlias("j", Join.class);
+        addAlias("l", Leave.class);
     }
 
     private static void addCmd(UHCCommand c) {
@@ -50,7 +52,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
             return;
         }
         UHCCommand handler = commandMap.get(subcommand);
-        commandMap.put(alias, handler);
+        aliasMap.put(alias, handler);
     }
 
 
@@ -60,11 +62,14 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
         String subCmd = args[0];
         UHCCommand handler = commandMap.get(subCmd);
         if (handler == null) {
-            commandSender.sendMessage(ChatColor.RED + "Unknown command " + subCmd);
-            return true;
+            //Try for alias
+            handler = aliasMap.get(subCmd);
+            if (handler == null) {
+                commandSender.sendMessage(ChatColor.RED + "Unknown command " + subCmd);
+                return true;
+            }
         }
-        String[] newArgs = new String[args.length - 1];
-        System.arraycopy(args, 1, newArgs, 0, args.length - 1);
+        String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
         if (!handler.hasPermission(commandSender, subCmd, newArgs)) {
             commandSender.sendMessage(ChatColor.RED + Constants.getDenyPermission());
             return true;
@@ -77,7 +82,32 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-        return null;
+        List<String> empty = new ArrayList<>();
+        if (args.length == 0) {
+            return empty;
+        }
+        if (args.length == 1) {
+            Set<String> subcmds = commandMap.keySet();
+            return subcmds.stream().filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
+        }
+        UHCCommand handler = getHandler(args[0]);
+        if (handler == null) {
+            return empty;
+        }
+        return handler.onTabComplete(commandSender, command, args[0], Arrays.copyOfRange(args, 1, args.length));
+    }
+
+    /**
+     * Gets the handler for this subcommand or alias, or null if there is none
+     * @param arg Name of subcommand or alias thereof
+     * @return Handler for the argument
+     */
+    public UHCCommand getHandler(String arg) {
+        UHCCommand handler = commandMap.get(arg);
+        if (handler == null) {
+            handler = aliasMap.get(arg);
+        }
+        return handler;
     }
 
     //TODO: Add help function
