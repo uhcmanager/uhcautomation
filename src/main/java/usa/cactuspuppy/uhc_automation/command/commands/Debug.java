@@ -9,7 +9,7 @@ import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.util.List;
 
-public class Debug extends UHCCommand {
+public class Debug implements UHCCommand {
     @Override
     public String getUsage() {
         return "/uhc debug [on/off]";

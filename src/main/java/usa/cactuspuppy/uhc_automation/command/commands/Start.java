@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Start extends UHCCommand {
+public class Start implements UHCCommand {
     private static Map<Long, Integer> starters = new HashMap<>();
 
     public static void startComplete(GameInstance instance) {

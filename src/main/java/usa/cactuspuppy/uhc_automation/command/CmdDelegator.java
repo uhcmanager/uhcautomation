@@ -8,6 +8,7 @@ import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 import usa.cactuspuppy.uhc_automation.Constants;
 import usa.cactuspuppy.uhc_automation.command.commands.*;
+import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,11 +25,32 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
         addCmd(new Join());
         addCmd(new Leave());
         addCmd(new Option());
-        //TODO: Add aliases
+        //Add aliases
+        addAlias("s", Surface.class);
+        addAlias("d", Debug.class);
     }
 
     private static void addCmd(UHCCommand c) {
-        commandMap.put(c.getClass().getSimpleName().toLowerCase(), c);
+        String subcommand = c.getClass().getSimpleName().toLowerCase();
+        if (commandMap.containsKey(subcommand)) {
+            Logger.logSevere(CmdDelegator.class, "Attempt to register two handlers to the same subcommand");
+            return;
+        }
+        commandMap.put(subcommand, c);
+    }
+
+    private static void addAlias(String alias, Class<? extends UHCCommand> command) {
+        if (commandMap.containsKey(alias)) {
+            Logger.logSevere(CmdDelegator.class, "Alias  " + alias + " already registered as alias or subcommand, please choose a different alias.");
+            return;
+        }
+        String subcommand = command.getSimpleName().toLowerCase();
+        if (!commandMap.containsKey(subcommand)) {
+            Logger.logSevere(CmdDelegator.class, "Attempt to register alias " + alias + " for unregistered subcommand " + subcommand);
+            return;
+        }
+        UHCCommand handler = commandMap.get(subcommand);
+        commandMap.put(alias, handler);
     }
 
 

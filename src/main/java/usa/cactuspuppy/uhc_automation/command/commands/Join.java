@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class Join extends UHCCommand {
+public class Join implements UHCCommand {
     @Override
     public String getUsage() {
         return "/uhc join <player> [ID/name]";

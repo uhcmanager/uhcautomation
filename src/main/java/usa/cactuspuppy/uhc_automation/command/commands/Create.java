@@ -15,7 +15,7 @@ import usa.cactuspuppy.uhc_automation.game.tasks.GameFactory;
 
 import java.util.List;
 
-public class Create extends UHCCommand {
+public class Create implements UHCCommand {
 
     @Override
     public String getUsage() {

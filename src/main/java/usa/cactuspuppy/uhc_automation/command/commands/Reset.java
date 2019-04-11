@@ -10,7 +10,7 @@ import usa.cactuspuppy.uhc_automation.utils.MiscUtils;
 
 import java.util.List;
 
-public class Reset extends UHCCommand {
+public class Reset implements UHCCommand {
     @Override
     public String getUsage() {
         return "/uhc reset [name/ID]";

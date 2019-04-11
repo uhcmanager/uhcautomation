@@ -12,7 +12,7 @@ import usa.cactuspuppy.uhc_automation.utils.MojangAPIHook;
 import java.util.List;
 import java.util.UUID;
 
-public class Leave extends UHCCommand {
+public class Leave implements UHCCommand {
     @Override
     public String getUsage() {
         return "/uhc leave <player>";
