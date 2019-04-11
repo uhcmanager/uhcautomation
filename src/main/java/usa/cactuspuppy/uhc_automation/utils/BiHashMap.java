@@ -137,6 +137,14 @@ public class BiHashMap<K, V> implements Map<K, V> {
      */
     @Override
     public V put(K key, V value) {
+        if (containsValue(value)) {
+            K oldKey = valueToKey.get(value);
+            keyToValue.remove(oldKey);
+        }
+        if (containsKey(key)) {
+            V oldValue = keyToValue.get(key);
+            valueToKey.remove(oldValue);
+        }
         keyToValue.put(key, value);
         valueToKey.put(value, key);
         return value;
@@ -178,6 +186,13 @@ public class BiHashMap<K, V> implements Map<K, V> {
         keyToValue.remove(key);
         valueToKey.remove(value);
         return value;
+    }
+
+    public K removeValue(V value) {
+        K key = valueToKey.get(value);
+        keyToValue.remove(key);
+        valueToKey.remove(value);
+        return key;
     }
 
     /**
