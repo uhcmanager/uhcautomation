@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import usa.cactuspuppy.uhc_automation.game.entity.util.ScoreboardSet;
 import usa.cactuspuppy.uhc_automation.game.tasks.timers.SuggestPack;
 import usa.cactuspuppy.uhc_automation.utils.GameUtils;
@@ -74,7 +73,7 @@ public abstract class GameInstance implements Serializable {
         return new HashSet<>(otherWorlds);
     }
 
-    public void addOtherWorld(@NotNull World world) {
+    public void addOtherWorld(World world) {
         otherWorlds.add(world.getUID());
     }
 
@@ -94,6 +93,7 @@ public abstract class GameInstance implements Serializable {
 
     /**
      * Gets the set of players in the game who are not spectating
+     *
      * @return A copy of the set of active players
      */
     public Set<UUID> getAlivePlayers() {
@@ -165,6 +165,7 @@ public abstract class GameInstance implements Serializable {
     /**
      * Moves an alive player to spectators. <br></br>
      * Will do nothing if the UUID is not an alive player
+     *
      * @param uuid UUID of player to move
      */
     public void moveAliveToSpec(UUID uuid) {
@@ -175,7 +176,7 @@ public abstract class GameInstance implements Serializable {
         spectators.add(uuid);
     }
 
-    public GameInstance(@NotNull World world) {
+    public GameInstance(World world) {
         gameID = 0;
         gameID = GameManager.registerGame(this);
         name = "Game " + gameID;
@@ -186,11 +187,12 @@ public abstract class GameInstance implements Serializable {
 
     /**
      * Sets the given world to be the new main world. Game must be in lobby mode for success.
-     * @param world World to set as the new main world
+     *
+     * @param world        World to set as the new main world
      * @param keepOldWorld Whether to set the old main world as a linked world or drop it all together
      * @return False if main world was not set, otherwise true to indicate success.
      */
-    public boolean setMainWorldUID(@NotNull World world, boolean keepOldWorld) {
+    public boolean setMainWorldUID(World world, boolean keepOldWorld) {
         if (gameState != GameState.LOBBY) {
             getUtils().log(Logger.Level.INFO, this.getClass(), "Call to set main world for game " + name + " (ID " + gameID + ") while not in lobby mode, rejecting");
             return false;
@@ -209,6 +211,7 @@ public abstract class GameInstance implements Serializable {
     /**
      * Updates the state of the game, calling the appropriate handlers.
      * Note that any RESET call should succeed regardless of GameState
+     *
      * @param e The game state event being requested
      * @return Whether any update to the game state occurred
      */
@@ -271,6 +274,7 @@ public abstract class GameInstance implements Serializable {
 
     /**
      * Reset the game worlds back to lobby, whether that be a clean generated world set or from any point within the game
+     *
      * @return Whether the reset was successful
      */
     protected abstract boolean reset();
@@ -278,30 +282,35 @@ public abstract class GameInstance implements Serializable {
     /**
      * Initiate the game, bringing the game out of lobby mode and doing pre-game tasks such as spreading players around the map and beginning the pregame countdown.
      * If desired, this method can directly call start if all game-start tasks can be called in the same tick.
+     *
      * @return Whether initiation was successful
      */
     protected abstract boolean init();
 
     /**
      * Start the game. This is the point at which players have full control.
+     *
      * @return Whether the start was successful
      */
     protected abstract boolean start();
 
     /**
      * Called if the game is interrupted by a server or plugin restart.
+     *
      * @return Whether the pause was successful
      */
     protected abstract boolean pause();
 
     /**
      * Called once the game is reactivated after a server or plugin restart.
+     *
      * @return Whether resuming was successful
      */
     protected abstract boolean resume();
 
     /**
      * Called when the game reaches a victory or game-end condition. Resets to lobby SHOULD NOT call this method.
+     *
      * @return Whether ending the game was successful
      */
     protected abstract boolean end();
@@ -309,6 +318,7 @@ public abstract class GameInstance implements Serializable {
     /**
      * Check if a victory condition has been met. <br>
      * Note that this does NOT trigger the {@link #end()} function
+     *
      * @return Whether a victory condition has been met
      */
     public boolean isVictory() {

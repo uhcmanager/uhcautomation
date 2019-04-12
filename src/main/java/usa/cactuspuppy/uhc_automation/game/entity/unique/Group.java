@@ -15,8 +15,11 @@ import java.util.stream.Collectors;
 
 public class Group extends UniqueEntity {
     private Set<UUID> players = new HashSet<>();
-    @Getter private UHCTeam team;
-    @Getter @Setter private int num;
+    @Getter
+    private UHCTeam team;
+    @Getter
+    @Setter
+    private int num;
 
     public Group(GameInstance gameInstance, UUID... initPlayers) {
         super(gameInstance);
@@ -57,7 +60,9 @@ public class Group extends UniqueEntity {
         Bukkit.getServer().getPluginManager().callEvent(new GroupRemovePlayersEvent(getGameInstance(), this, players));
     }
 
-    public void removeAllPlayers() { removePlayers(players.toArray(new UUID[0])); }
+    public void removeAllPlayers() {
+        removePlayers(players.toArray(new UUID[0]));
+    }
 
     public void setTeam(UHCTeam t) {
         team.removeGroups(this);

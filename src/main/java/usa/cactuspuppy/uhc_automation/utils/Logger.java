@@ -8,22 +8,28 @@ import lombok.Setter;
  * No other class should report directly to terminal; instead, report messages to this class first to ensure template consistency.
  */
 public final class Logger {
-    @Setter private static boolean printStackTraces = false;
-    @Setter private static Level level = Level.INFO;
-    @Getter @Setter private static boolean debug = false;
-    @Setter private static java.util.logging.Logger output = java.util.logging.Logger.getLogger("UHC");
+    @Setter
+    private static boolean printStackTraces = false;
+    @Setter
+    private static Level level = Level.INFO;
+    @Getter
+    @Setter
+    private static boolean debug = false;
+    @Setter
+    private static java.util.logging.Logger output = java.util.logging.Logger.getLogger("UHC");
 
 
     public enum Level {
-        SEVERE (5),
-        WARNING (4),
-        INFO (3),
-        FINE (2),
-        FINER (1),
-        FINEST (0);
+        SEVERE(5),
+        WARNING(4),
+        INFO(3),
+        FINE(2),
+        FINER(1),
+        FINEST(0);
 
         private int tier;
-        Level (int t) {
+
+        Level(int t) {
             tier = t;
         }
 
@@ -34,6 +40,7 @@ public final class Logger {
 
     /**
      * Relay message to appropriate output logger
+     *
      * @param msg message to relay
      * @param lvl to relay at
      */
@@ -50,9 +57,10 @@ public final class Logger {
 
     /**
      * Logs a message at level SEVERE.
-     * @param c Class reporting error
+     *
+     * @param c      Class reporting error
      * @param reason Reason for error. If exception thrown, do not repeat info in exception
-     * @param e Exception if one was thrown, else {@code null}
+     * @param e      Exception if one was thrown, else {@code null}
      */
     public static void logSevere(Class c, String reason, Exception e) {
         if (Level.insufficientLevel(Level.SEVERE, level)) return;
@@ -66,7 +74,8 @@ public final class Logger {
 
     /**
      * Logs a message at level SEVERE.
-     * @param c Class reporting error
+     *
+     * @param c      Class reporting error
      * @param reason Reason for error.
      */
     public static void logSevere(Class c, String reason) {
@@ -75,9 +84,10 @@ public final class Logger {
 
     /**
      * Logs a message at level WARNING.
-     * @param c Class reporting warning
+     *
+     * @param c      Class reporting warning
      * @param reason Reason for warning. If exception thrown, do not repeat info in exception
-     * @param e Exception, if thrown, else {@code null}
+     * @param e      Exception, if thrown, else {@code null}
      */
     public static void logWarning(Class c, String reason, Exception e) {
         if (Level.insufficientLevel(Level.WARNING, level)) return;
@@ -88,9 +98,11 @@ public final class Logger {
         relayMessage(message, Level.WARNING);
         if (printStackTraces && e != null) e.printStackTrace();
     }
+
     /**
      * Logs a message at level WARNING.
-     * @param c Class reporting warning
+     *
+     * @param c      Class reporting warning
      * @param reason Reason for warning.
      */
     public static void logWarning(Class c, String reason) {
@@ -99,7 +111,8 @@ public final class Logger {
 
     /**
      * Logs a message at level INFO.
-     * @param c Class reporting info
+     *
+     * @param c      Class reporting info
      * @param reason Reason/message
      */
     public static void logInfo(Class c, String reason) {
@@ -115,8 +128,9 @@ public final class Logger {
 
     /**
      * Logs a message from FINE to FINEST.
-     * @param c class reporting fine info
-     * @param info Info being reported
+     *
+     * @param c         class reporting fine info
+     * @param info      Info being reported
      * @param fineLevel Level of fineness
      *                  0 - FINE
      *                  1 - FINER

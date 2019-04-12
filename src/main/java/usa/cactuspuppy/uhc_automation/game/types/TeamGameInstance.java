@@ -1,10 +1,11 @@
 package usa.cactuspuppy.uhc_automation.game.types;
 
 import org.bukkit.World;
-import usa.cactuspuppy.uhc_automation.game.entity.unique.UHCTeam;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
+import usa.cactuspuppy.uhc_automation.game.entity.unique.UHCTeam;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class TeamGameInstance extends GameInstance {
 
@@ -21,13 +22,16 @@ public abstract class TeamGameInstance extends GameInstance {
 
     /**
      * Adds a team to this GameInstance
-     * @param team Team to add
+     *
+     * @param team      Team to add
      * @param overwrite Whether the GameInstance should overwrite the team previously under this name, if any.
      * @return Whether the team was successfully added. Always true if overwrite is true.
      */
     public boolean addTeam(UHCTeam team, boolean overwrite) {
         String name = team.getName();
-        if (teams.containsKey(name) && !overwrite) { return false; }
+        if (teams.containsKey(name) && !overwrite) {
+            return false;
+        }
         teams.put(name, team);
 
         return true;

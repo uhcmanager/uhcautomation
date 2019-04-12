@@ -4,8 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import usa.cactuspuppy.uhc_automation.Main;
-import usa.cactuspuppy.uhc_automation.game.tasks.Task;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
+import usa.cactuspuppy.uhc_automation.game.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +34,7 @@ public abstract class ListenerTask extends Task implements Listener {
 
     /**
      * Get a copy of the list of listeners associated with an instance
+     *
      * @param instance GameInstance whose listeners are fetched
      * @return A list of listeners associated with the GameInstance
      */
@@ -43,6 +44,7 @@ public abstract class ListenerTask extends Task implements Listener {
 
     /**
      * Unregister and remove all listeners associated with an instance
+     *
      * @param instance GameInstance whose listeners should be removed
      */
     public static void clearInstanceListeners(GameInstance instance) {

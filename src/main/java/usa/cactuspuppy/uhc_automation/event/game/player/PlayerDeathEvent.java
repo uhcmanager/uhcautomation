@@ -11,7 +11,8 @@ public class PlayerDeathEvent extends PlayerEvent {
     /**
      * Whether or not this death removes the player from the game
      */
-    @Getter private boolean isFinal;
+    @Getter
+    private boolean isFinal;
 
     public PlayerDeathEvent(GameInstance gameInstance, UUID u) {
         super(gameInstance, u);

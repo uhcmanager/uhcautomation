@@ -2,12 +2,13 @@ package usa.cactuspuppy.uhc_automation.event.game.group;
 
 import lombok.Getter;
 import org.bukkit.event.HandlerList;
-import usa.cactuspuppy.uhc_automation.game.entity.unique.Group;
 import usa.cactuspuppy.uhc_automation.event.game.GameEvent;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
+import usa.cactuspuppy.uhc_automation.game.entity.unique.Group;
 
 public abstract class GroupEvent extends GameEvent {
-    @Getter private Group group;
+    @Getter
+    private Group group;
 
     public GroupEvent(GameInstance gameInstance, Group group) {
         super(gameInstance);

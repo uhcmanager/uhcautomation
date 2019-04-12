@@ -1,12 +1,13 @@
 package usa.cactuspuppy.uhc_automation.command;
 
 import com.google.common.base.Strings;
+import net.md_5.bungee.api.chat.*;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.jetbrains.annotations.NotNull;
 import usa.cactuspuppy.uhc_automation.Constants;
 import usa.cactuspuppy.uhc_automation.command.commands.*;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 public class CmdDelegator implements CommandExecutor, TabCompleter {
     private static Map<String, UHCCommand> commandMap = new HashMap<>();
     private static Map<String, UHCCommand> aliasMap = new HashMap<>();
+
     static {
         addCmd(new Create());
         addCmd(new Debug());
@@ -60,7 +62,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
 
 
     @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+    public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
         if (args.length < 1) return false;
         String subCmd = args[0];
         if (subCmd.equalsIgnoreCase("help")) {
@@ -87,7 +89,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+    public List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] args) {
         List<String> empty = new ArrayList<>();
         if (args.length == 0) {
             return empty;
@@ -105,6 +107,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
 
     /**
      * Gets the handler for this subcommand or alias, or null if there is none
+     *
      * @param arg Name of subcommand or alias thereof
      * @return Handler for the argument
      */
@@ -120,15 +123,35 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
         //Constants
         int maxHelpLineLength = 40; //Max characters per line in hover help
         //TODO
-        StringBuilder helpMsg = new StringBuilder();
+        ComponentBuilder helpMsg = new ComponentBuilder("");
+
         String separator = ChatColor.YELLOW + "<" + ChatColor.WHITE + Strings.repeat("=", 7) + ChatColor.GOLD + "UHC Help" + ChatColor.WHITE + Strings.repeat("=", 7) + ChatColor.YELLOW + ">";
         String help = ChatColor.GRAY + "Hover over a command to see more information, click to insert it into chat.";
-        helpMsg.append(helpMsg).append("\n").append(help).append("\n");
-        for (UHCCommand command : commandMap.values()) {
-            String bullet = ChatColor.GREEN + "-";
-            String usage = command.getUsage();
-            String purpose = command.getPurpose();
+        helpMsg.append(separator).append("\n").append(help).append("\n");
+        for (String subcommand : commandMap.keySet()) {
+            UHCCommand command = commandMap.get(subcommand);
+            if (!command.hasPermission(sender, subcommand, new String[0])) {
+                continue;
+            }
+            String bullet = ChatColor.WHITE + "-";
+            String usage = ChatColor.AQUA + command.getUsage();
+            String purpose = ChatColor.GREEN + command.getPurpose();
             String info = command.getMoreInfo();
+            info = WordUtils.wrap(info, maxHelpLineLength);
+
+            BaseComponent interact = new TextComponent(usage);
+            interact.setHoverEvent(new HoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    new ComponentBuilder(usage).append("\n").append(info).create()
+            ));
+            interact.setClickEvent(new ClickEvent(
+                    ClickEvent.Action.SUGGEST_COMMAND,
+                    "/uhc " + subcommand
+            ));
+
+            helpMsg.append(bullet).append(" ").append(interact).retain(ComponentBuilder.FormatRetention.NONE).append(" ").append(purpose).append("\n");
         }
+
+        sender.spigot().sendMessage(helpMsg.create());
     }
 }

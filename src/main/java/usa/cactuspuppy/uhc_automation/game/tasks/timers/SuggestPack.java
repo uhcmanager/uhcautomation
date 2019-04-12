@@ -31,6 +31,7 @@ public class SuggestPack extends TimerTask {
             } else {
                 p.setResourcePack(pack, hash.getBytes());
             }
-        } catch (IllegalArgumentException ignored) { }
+        } catch (IllegalArgumentException ignored) {
+        }
     }
 }

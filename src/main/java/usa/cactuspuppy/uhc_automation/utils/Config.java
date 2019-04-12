@@ -11,10 +11,12 @@ import java.util.regex.Pattern;
 
 /**
  * Custom YML parser supporting #comments and indented key-value pairs
+ *
  * @author CactusPuppy
  */
 public final class Config {
-    @Getter private File configFile;
+    @Getter
+    private File configFile;
     /**
      * Pattern to match against potential config values
      */
@@ -126,6 +128,7 @@ public final class Config {
 
     /**
      * Saves the current config to the specified file, formatting to YML standards in the process
+     *
      * @param overwrite whether to overwrite {@code save} if it exists
      * @return whether saving was successful
      */
@@ -151,7 +154,9 @@ public final class Config {
                     builder.append(line); //Pad left with appropriate indents
                 }
                 if (nonKeyLocs.containsKey(currLine)) {
-                    if (kvLocs.containsKey(currLine)) { builder.append(" "); }
+                    if (kvLocs.containsKey(currLine)) {
+                        builder.append(" ");
+                    }
                     builder.append(nonKeyLocs.get(currLine));
                 }
                 writer.write(builder.toString());

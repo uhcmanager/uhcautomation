@@ -3,8 +3,8 @@ package usa.cactuspuppy.uhc_automation.game.tasks.timers;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import usa.cactuspuppy.uhc_automation.Main;
-import usa.cactuspuppy.uhc_automation.game.tasks.Task;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
+import usa.cactuspuppy.uhc_automation.game.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +41,7 @@ public abstract class TimerTask extends Task implements Runnable {
 
     /**
      * Get a copy of the list of timers associated with an instance
+     *
      * @param instance GameInstance whose timers are fetched
      * @return A list of taskIDs associated with the GameInstance
      */
@@ -50,6 +51,7 @@ public abstract class TimerTask extends Task implements Runnable {
 
     /**
      * Cancel and clear all timers associated with an instance
+     *
      * @param instance GameInstance whose timers should be cleared
      */
     public static void clearInstanceTimers(GameInstance instance) {

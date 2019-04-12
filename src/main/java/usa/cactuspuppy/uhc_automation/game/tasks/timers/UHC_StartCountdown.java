@@ -36,17 +36,20 @@ public class UHC_StartCountdown extends TimerTask {
      */
     private long startTime = -1;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private int ticksPerCycle = 1;
-    @Getter @Setter
+    @Getter
+    @Setter
     private double maxTickDeviance = 0.1;
 
     /**
      * Full constructor for start-game countdown
-     * @param gameInstance game to countdown for
-     * @param delay Seconds to countdown after all players land and ticks stabilize
-     * @param ticksPerCycle Number of ticks between each run of this task.
-     *                      Higher values increase precision, but may introduce more load onto the server
+     *
+     * @param gameInstance    game to countdown for
+     * @param delay           Seconds to countdown after all players land and ticks stabilize
+     * @param ticksPerCycle   Number of ticks between each run of this task.
+     *                        Higher values increase precision, but may introduce more load onto the server
      * @param maxTickDeviance Maximum allowable variation from 20 ticks per second as a proportion of tick time.
      *                        Higher values may be needed on servers that do not achieve 20 TPS, but this may result in
      *                        the countdown starting before teleport lag has cleared.

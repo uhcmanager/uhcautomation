@@ -4,13 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.game.types.UHC;
-import usa.cactuspuppy.uhc_automation.utils.Logger;
 import usa.cactuspuppy.uhc_automation.utils.MiscUtils;
 
-import java.math.BigInteger;
-import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,7 +29,6 @@ public class UHC_BorderTask extends AlertTimer {
      * Number of players remaining at shrink
      */
     private int playersAtShrink;
-
 
 
     private static double baseSpeed = 0.3;

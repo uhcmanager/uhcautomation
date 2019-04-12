@@ -13,11 +13,11 @@ import org.bukkit.plugin.java.annotation.plugin.LogPrefix;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import usa.cactuspuppy.uhc_automation.command.CmdDelegator;
-import usa.cactuspuppy.uhc_automation.game.tasks.MainListener;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
 import usa.cactuspuppy.uhc_automation.game.GameState;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
+import usa.cactuspuppy.uhc_automation.game.tasks.MainListener;
 import usa.cactuspuppy.uhc_automation.utils.Config;
 import usa.cactuspuppy.uhc_automation.utils.FileIO;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
@@ -32,13 +32,21 @@ import java.util.Scanner;
 @Permission(name = "uhc.*", desc = "Wildcard permission", children = {@ChildPermission(name = "uhc.manager")})
 @Permission(name = "uhc.manager", desc = "Allows game management", defaultValue = PermissionDefault.OP)
 public class Main extends JavaPlugin {
-    @Getter private static Main instance;
-    /** Time at which the plugin was last disabled, used to restart in-progress games */
-    @Getter private static long lastDisable;
-    /** Time at which this plugin was enabled, used to restart in-progress games */
-    @Getter private static long enabled;
+    @Getter
+    private static Main instance;
+    /**
+     * Time at which the plugin was last disabled, used to restart in-progress games
+     */
+    @Getter
+    private static long lastDisable;
+    /**
+     * Time at which this plugin was enabled, used to restart in-progress games
+     */
+    @Getter
+    private static long enabled;
 
-    @Getter private static Config mainConfig;
+    @Getter
+    private static Config mainConfig;
 
     //TODO: Implement version check
     /**
@@ -161,7 +169,7 @@ public class Main extends JavaPlugin {
 
         if (!gamesDir.isDirectory() && !gamesDir.mkdirs()) {
             Logger.logWarning(this.getClass(), "Could not find or create game info saving directory, game loading/saving impossible!");
-        } else  {
+        } else {
             File[] files = gamesDir.listFiles();
             if (files == null) return;
             for (File f : files) {

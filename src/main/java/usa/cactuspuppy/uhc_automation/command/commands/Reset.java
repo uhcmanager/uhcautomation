@@ -2,7 +2,6 @@ package usa.cactuspuppy.uhc_automation.command.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
@@ -47,7 +46,7 @@ public class Reset implements UHCCommand {
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+    public @Nullable List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
         return null;
     }
 }

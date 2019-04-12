@@ -5,7 +5,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
@@ -15,10 +14,11 @@ import java.util.*;
 public final class MiscUtils {
     /**
      * Teleport specified player(s) to the specified location while maintaining the player's orientation
-     * @param players Player(s) to teleport relatively
+     *
+     * @param players     Player(s) to teleport relatively
      * @param destination Location to teleport to
      */
-    public static void relativeTeleport(@NotNull Location destination, Player... players) {
+    public static void relativeTeleport(Location destination, Player... players) {
         for (Player p : players) {
             destination.setYaw(p.getLocation().getYaw());
             destination.setPitch(p.getLocation().getPitch());
@@ -79,7 +79,7 @@ public final class MiscUtils {
     public static String hmsToFormatString2(int hrs, int mins, int secs) {
         assert hrs >= 0 && mins >= 0 && secs >= 0;
 
-        return hrs + ":" + mins + "'" + secs +"\"";
+        return hrs + ":" + mins + "'" + secs + "\"";
     }
 
     @Getter
@@ -108,7 +108,8 @@ public final class MiscUtils {
             if (args[1].matches("-?[0-9]+")) { // Find ID
                 try {
                     instance = GameManager.getGame(Long.valueOf(args[0]));
-                } catch (NumberFormatException ignored) { }
+                } catch (NumberFormatException ignored) {
+                }
             }
             if (instance == null) { // Found no instance with ID check
                 String[] nameArr = new String[args.length - 1];

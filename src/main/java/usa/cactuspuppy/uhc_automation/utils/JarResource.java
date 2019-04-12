@@ -9,9 +9,10 @@ import java.io.InputStream;
 public final class JarResource {
     /**
      * Extracts a jar resource to the specified relative output path.
-     * @param inputStream inputStream to copy
+     *
+     * @param inputStream    inputStream to copy
      * @param relativeOutput file path to extract to
-     * @param overwrite whether to overwrite the output file if it exists
+     * @param overwrite      whether to overwrite the output file if it exists
      * @return update code for success or failure
      * -1 - Illegal args
      * 0 - OK/Success

@@ -17,15 +17,26 @@ public class UHCTeam extends UniqueEntity {
     private static Map<Integer, UHCTeam> teamNumMap = new LinkedHashMap<>();
     private static int nextTeamNum = 0;
 
-    @Getter private int teamNumber;
-    @Getter private List<Group> groups;
-    @Getter private String name;
-    @Getter @Setter private ChatColor color = ChatColor.WHITE;
+    @Getter
+    private int teamNumber;
+    @Getter
+    private List<Group> groups;
+    @Getter
+    private String name;
+    @Getter
+    @Setter
+    private ChatColor color = ChatColor.WHITE;
 
     //Additional options
-    @Getter @Setter private String displayName;
-    @Getter @Setter private boolean allowFriendlyFire = true;
-    @Getter @Setter private boolean canSeeFriendlyInvisibles = true;
+    @Getter
+    @Setter
+    private String displayName;
+    @Getter
+    @Setter
+    private boolean allowFriendlyFire = true;
+    @Getter
+    @Setter
+    private boolean canSeeFriendlyInvisibles = true;
     private EnumMap<Team.Option, Team.OptionStatus> optionsMap = new EnumMap<>(Team.Option.class);
 
     private void initOptionsMap() {

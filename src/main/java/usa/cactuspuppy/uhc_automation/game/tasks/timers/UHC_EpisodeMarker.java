@@ -26,8 +26,8 @@ public class UHC_EpisodeMarker extends TimerTask {
             long epCount = timeElapsed / epLength;
             gameInstance.getUtils().broadcastChatSound(
                     String.format(ChatColor.GOLD + "\nMARK: " + ChatColor.WHITE + "End of Episode " + ChatColor.GREEN + "%d\n"
-                            + ChatColor.AQUA + "Time Elapsed: " + ChatColor.WHITE + "%s\n"
-                            + ChatColor.GREEN + "=================="
+                                    + ChatColor.AQUA + "Time Elapsed: " + ChatColor.WHITE + "%s\n"
+                                    + ChatColor.GREEN + "=================="
                             , epCount, WordUtils.capitalize(MiscUtils.secsToFormatString(timeElapsed)))
                     , Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 1F);
             nextEpMark = nextEpMark + epLength * 1000;

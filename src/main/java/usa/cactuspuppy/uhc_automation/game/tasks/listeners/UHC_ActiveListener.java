@@ -41,7 +41,7 @@ public class UHC_ActiveListener extends ListenerTask {
             try {
                 EntityDamageByEntityEvent e1 = (EntityDamageByEntityEvent) e.getEntity().getLastDamageCause();
                 if (e1.getDamager().getType().equals(EntityType.WOLF) && ((Wolf) e1.getDamager()).getOwner() != null) {
-                    Player owner = (Player) ((Wolf)e1.getDamager()).getOwner();
+                    Player owner = (Player) ((Wolf) e1.getDamager()).getOwner();
                     if (owner != null) {
                         currMsg = e.getEntity().getDisplayName() + " was slain by " + owner.getDisplayName() + "'s Dog";
                     }

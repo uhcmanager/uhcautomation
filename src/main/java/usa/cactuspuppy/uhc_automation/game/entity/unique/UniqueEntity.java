@@ -1,11 +1,12 @@
 package usa.cactuspuppy.uhc_automation.game.entity.unique;
 
 import lombok.Getter;
-import usa.cactuspuppy.uhc_automation.game.entity.Entity;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
+import usa.cactuspuppy.uhc_automation.game.entity.Entity;
 
 public abstract class UniqueEntity extends Entity {
-    @Getter protected long id;
+    @Getter
+    protected long id;
 
     public UniqueEntity(GameInstance gameInstance) {
         super(gameInstance);

@@ -1,7 +1,7 @@
 package usa.cactuspuppy.uhc_automation.game.tasks;
 
-import usa.cactuspuppy.uhc_automation.game.entity.Entity;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
+import usa.cactuspuppy.uhc_automation.game.entity.Entity;
 
 /**
  * Wrapper for spinoff tasks that must be executed over multiple ticks.
@@ -14,6 +14,7 @@ public abstract class Task extends Entity {
 
     /**
      * Execute everything that must be done when initiating this task
+     *
      * @return Whether the task was successfully initiated.
      */
     public abstract boolean init();

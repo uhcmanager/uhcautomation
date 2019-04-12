@@ -31,7 +31,7 @@ public final class Messaging {
         return START_MSGS[index];
     }
 
-    public static void sendActionBar(Player player, String message){
+    public static void sendActionBar(Player player, String message) {
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message));
     }
 

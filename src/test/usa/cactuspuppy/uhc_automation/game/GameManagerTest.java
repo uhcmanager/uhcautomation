@@ -4,13 +4,18 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import usa.cactuspuppy.uhc_automation.game.types.UHC;
 
 import java.util.UUID;
 
 import static org.junit.Assert.*;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(World.class)
 public class GameManagerTest {
     private static World world = Mockito.mock(World.class);
     private static Player player = Mockito.mock(Player.class);

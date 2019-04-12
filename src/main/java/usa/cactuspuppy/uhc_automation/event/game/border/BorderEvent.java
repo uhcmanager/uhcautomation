@@ -5,7 +5,8 @@ import usa.cactuspuppy.uhc_automation.event.game.GameEvent;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 
 public abstract class BorderEvent extends GameEvent {
-    @Getter private BorderStatus borderStatus;
+    @Getter
+    private BorderStatus borderStatus;
 
     public BorderEvent(GameInstance gameInstance, BorderStatus status) {
         super(gameInstance);

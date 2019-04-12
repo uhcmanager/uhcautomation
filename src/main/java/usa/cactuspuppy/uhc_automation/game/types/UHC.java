@@ -125,7 +125,7 @@ public class UHC extends GameInstance {
     private void resetWorld(World world) {
         world.setGameRule(GameRule.NATURAL_REGENERATION, false);
         if (world.getEnvironment().equals(World.Environment.NETHER)) {
-            world.getWorldBorder().setCenter(centerX/8D + 0.5, centerZ/8D + 0.5);
+            world.getWorldBorder().setCenter(centerX / 8D + 0.5, centerZ / 8D + 0.5);
         } else {
             world.getWorldBorder().setCenter(centerX + 0.5, centerZ + 0.5);
         }
@@ -164,14 +164,16 @@ public class UHC extends GameInstance {
             return;
         }
         int y = main.getHighestBlockYAt(getCenterX(), getCenterZ()) + blocksAboveGround;
-        if (y > 253) { y = 253; }
+        if (y > 253) {
+            y = 253;
+        }
         Material material = (destroy ? Material.AIR : Material.BARRIER);
         for (int x = centerX - lobbyRadius; x <= centerX + lobbyRadius; x++) {
             for (int z = centerZ - lobbyRadius; z <= centerZ + lobbyRadius; z++) {
                 main.getBlockAt(x, y, z).setType(material, true);
                 if (Math.abs(x - centerX) == lobbyRadius || Math.abs(z - centerZ) == lobbyRadius) {
-                    main.getBlockAt(x, y+1, z).setType(material, true);
-                    main.getBlockAt(x, y+2, z).setType(material, true);
+                    main.getBlockAt(x, y + 1, z).setType(material, true);
+                    main.getBlockAt(x, y + 2, z).setType(material, true);
                 }
             }
         }
@@ -295,6 +297,7 @@ public class UHC extends GameInstance {
 
     /**
      * Calculates random places to spread players and sets initial number of players
+     *
      * @throws SpreadPlayersException if the players could not be spread
      */
     protected void spreadPlayers() throws SpreadPlayersException {
@@ -306,8 +309,8 @@ public class UHC extends GameInstance {
 
         new GameUtils(this).log(Logger.Level.INFO, this.getClass(),
                 String.format("Successfully spread %d players around %s,%s | " +
-                        "(Average distance between players is %s blocks)",
-                locations.size(), getCenterX(), getCenterZ(), avgDistance));
+                                "(Average distance between players is %s blocks)",
+                        locations.size(), getCenterX(), getCenterZ(), avgDistance));
 
         //TODO: Create new Runnable and schedule for countdown
         new UHC_SpreadPlayers(this, locations).init();
@@ -315,6 +318,7 @@ public class UHC extends GameInstance {
 
     /**
      * Generate spread locations with the following parameters. The input list will be emptied to ensure that all locations meet the parameters.
+     *
      * @param locations List of locations to put locations in
      * @return Average distance between locations
      */

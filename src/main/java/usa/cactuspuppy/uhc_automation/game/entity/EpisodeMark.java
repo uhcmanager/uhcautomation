@@ -12,9 +12,13 @@ import java.util.concurrent.TimeUnit;
  */
 @Getter
 public class EpisodeMark extends Entity {
-    /** Index of completed episode */
+    /**
+     * Index of completed episode
+     */
     private int epNum;
-    /** Seconds elapsed since start of game */
+    /**
+     * Seconds elapsed since start of game
+     */
     private long secsElapsed;
 
     public EpisodeMark(GameInstance gameInstance, int epNum, long secsElapsed) {
@@ -25,10 +29,11 @@ public class EpisodeMark extends Entity {
 
     /**
      * Alternative constructor for EpisodeMark
+     *
      * @param gameInstance GameInstance which triggered this episode mark
-     * @param epNum Index of complete episode
-     * @param quantities Ordered list of quantities. {@code quantities.get(i)} will be matched with {@code units.get(i)} if both exist to add to {@code secsElapsed}.
-     * @param units Ordered list of {@code TimeUnit}s. See {@code quantities}.
+     * @param epNum        Index of complete episode
+     * @param quantities   Ordered list of quantities. {@code quantities.get(i)} will be matched with {@code units.get(i)} if both exist to add to {@code secsElapsed}.
+     * @param units        Ordered list of {@code TimeUnit}s. See {@code quantities}.
      */
     public EpisodeMark(GameInstance gameInstance, int epNum, List<Long> quantities, List<TimeUnit> units) {
         super(gameInstance);
@@ -46,6 +51,7 @@ public class EpisodeMark extends Entity {
 
     /**
      * Add a to b, checking for overflow
+     *
      * @return the sum, or {@code Long.MAX_VALUE} if addition would overflow
      */
     long safeAdd(long a, long b) {

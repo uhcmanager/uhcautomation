@@ -3,12 +3,10 @@ package usa.cactuspuppy.uhc_automation.utils;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.commons.io.FileDeleteStrategy;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,9 +16,10 @@ public final class FileIO {
     /**
      * Returns token from the first line
      * <p>
-     *     Note: Assumes the token is on the first line, and that the line is formatted as:
-     *     "{@literal <word>}: {@literal <token>}"
+     * Note: Assumes the token is on the first line, and that the line is formatted as:
+     * "{@literal <word>}: {@literal <token>}"
      * </p>
+     *
      * @param iS input stream to read from
      * @return token
      */
@@ -34,10 +33,11 @@ public final class FileIO {
 
     /**
      * Saves an input stream to a file
-     * @param path path to file
+     *
+     * @param path     path to file
      * @param fileName name of file to save to
-     * @param stream Data stream to read from
-     * @param append Whether to append to the file, if it exists
+     * @param stream   Data stream to read from
+     * @param append   Whether to append to the file, if it exists
      */
     public static void saveToFile(String path, String fileName, InputStream stream, boolean append) {
         File file = new File(path, fileName);

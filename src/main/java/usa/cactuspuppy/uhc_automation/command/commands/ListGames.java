@@ -2,7 +2,6 @@ package usa.cactuspuppy.uhc_automation.command.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ListGames implements UHCCommand {
@@ -33,7 +32,7 @@ public class ListGames implements UHCCommand {
     }
 
     @Override
-    public java.util.@Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+    public java.util.@Nullable List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
         return null;
     }
 }

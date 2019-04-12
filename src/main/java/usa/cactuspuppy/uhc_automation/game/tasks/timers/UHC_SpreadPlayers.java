@@ -16,6 +16,7 @@ import java.util.*;
 
 /**
  * Inspired by Reddit user Iron_Zealot's Random TP Plugin:
+ *
  * @see <a href="https://www.reddit.com/r/Minecraft/comments/a47koc/random_tp_plugins_are_boring_lets_spice_it_up/">Original Reddit post</a>
  */
 public class UHC_SpreadPlayers extends TimerTask {
@@ -31,6 +32,7 @@ public class UHC_SpreadPlayers extends TimerTask {
 
     //BLOCKLISTS
     public static final List<Material> noStand = new ArrayList<>();
+
     static {
         noStand.add(Material.CACTUS);
         noStand.add(Material.MAGMA_BLOCK);
@@ -55,7 +57,9 @@ public class UHC_SpreadPlayers extends TimerTask {
 
     @Override
     public void cancel() {
-        if (taskID == null) { return; }
+        if (taskID == null) {
+            return;
+        }
         Bukkit.getScheduler().cancelTask(taskID);
     }
 
@@ -76,13 +80,17 @@ public class UHC_SpreadPlayers extends TimerTask {
         int index = 0;
         for (UUID u : gameInstance.getSpectators()) {
             Player p = Bukkit.getPlayer(u); //Get player
-            if (p == null) { continue; }
+            if (p == null) {
+                continue;
+            }
 
             p.sendTitle(ChatColor.GOLD + "Starting game...", ChatColor.WHITE + "Spreading players...", 0, 20, 10);
         }
         for (UUID u : gameInstance.getAlivePlayers()) {
             Player p = Bukkit.getPlayer(u); //Get player
-            if (p == null) { continue; }
+            if (p == null) {
+                continue;
+            }
 
             //Get location
             if (index >= locations.size()) {
@@ -140,6 +148,7 @@ public class UHC_SpreadPlayers extends TimerTask {
 
     /**
      * Helper method to safely teleport player to 74 blocks above spread location (74 for 10 sec drop)
+     *
      * @param p Player to teleport
      * @param l Location to teleport to
      */

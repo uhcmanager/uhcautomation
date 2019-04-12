@@ -63,7 +63,8 @@ public class GameManager {
 
     /**
      * Registers player to game if game is registered
-     * @param u UUID of player to register
+     *
+     * @param u        UUID of player to register
      * @param instance Instance to register player to
      * @return Whether the player was registered to the game instance
      */
@@ -75,7 +76,8 @@ public class GameManager {
 
     /**
      * Registers world to game if the game is registered
-     * @param u UUID of world to register
+     *
+     * @param u        UUID of world to register
      * @param instance Instance to register world to
      * @return Whether the world was registered to the game instance
      */
@@ -87,6 +89,7 @@ public class GameManager {
 
     /**
      * Unregisters a player from the specified game instance
+     *
      * @param u UUID of player
      * @return Whether the player was unregistered successfully
      */
@@ -96,6 +99,7 @@ public class GameManager {
 
     /**
      * Unregisters a world from the specified game instance
+     *
      * @param u UUID of world
      * @return Whether the world was unregistered successfully
      */
@@ -110,8 +114,9 @@ public class GameManager {
 
     /**
      * Unregister the game listed, optionally removing all players from the game
+     *
      * @param instance Instance to unregsiter
-     * @param shed Whether to shed all players
+     * @param shed     Whether to shed all players
      * @return
      */
     public static boolean unregisterGame(GameInstance instance, boolean shed) {
@@ -126,7 +131,8 @@ public class GameManager {
 
     /**
      * Helper function to pull GameInstance from appropriate map
-     * @param u UUID of player/world to pull
+     *
+     * @param u   UUID of player/world to pull
      * @param map Corresponding map of world/players
      * @return GameInstance of active game, or null if no active game instance exists
      */
