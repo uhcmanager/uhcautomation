@@ -20,7 +20,12 @@ public class Leave implements UHCCommand {
 
     @Override
     public String getPurpose() {
-        return "Removes a player from the game they are in";
+        return "Removes a player from a game";
+    }
+
+    @Override
+    public String getMoreInfo() {
+        return "Removes a player from all games they are in.";
     }
 
     @Override

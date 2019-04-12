@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ListGames extends UHCCommand {
+public class ListGames implements UHCCommand {
     @Override
     public String getUsage() {
         return "/uhc list";
@@ -14,6 +14,11 @@ public class ListGames extends UHCCommand {
     @Override
     public String getPurpose() {
         return "Lists all registered game instances";
+    }
+
+    @Override
+    public String getMoreInfo() {
+        return "Displays information on all the currently active games.";
     }
 
     @Override

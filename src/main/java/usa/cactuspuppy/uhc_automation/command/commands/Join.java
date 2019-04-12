@@ -19,6 +19,11 @@ public class Join implements UHCCommand {
     }
 
     @Override
+    public String getMoreInfo() {
+        return "Adds a player to the specified game, or if unspecified the game whose lobby world the executor is in.";
+    }
+
+    @Override
     public boolean onCommand(CommandSender commandSender, String alias, String[] args) {
         if (args.length < 2) {
             return false;

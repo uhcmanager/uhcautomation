@@ -24,7 +24,12 @@ public class Create implements UHCCommand {
 
     @Override
     public String getPurpose() {
-        return "Creates a new game instance if possible";
+        return "Creates a new game instance";
+    }
+
+    @Override
+    public String getMoreInfo() {
+        return "Creates a new game instance, setting the lobby world to be the world specified or the world of the command executor. Will fail if world is already the lobby of another game.";
     }
 
     @Override

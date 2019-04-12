@@ -8,6 +8,8 @@ public interface UHCCommand extends TabCompleter {
 
     String getPurpose();
 
+    String getMoreInfo();
+
     boolean onCommand(CommandSender commandSender, String alias, String[] args);
 
     boolean hasPermission(CommandSender commandSender, String alias, String[] args);

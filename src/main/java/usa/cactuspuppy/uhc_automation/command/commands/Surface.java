@@ -4,13 +4,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Surface implements UHCCommand {
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
@@ -20,7 +21,12 @@ public class Surface implements UHCCommand {
 
     @Override
     public String getPurpose() {
-        return "Teleports the user to the surface if allowed";
+        return "Teleport to the surface.";
+    }
+
+    @Override
+    public String getMoreInfo() {
+        return "Allows the user to teleport safely to the surface after a brief delay. Will cancel if the player moves or takes damage.";
     }
 
     @Override

@@ -21,6 +21,11 @@ public class Debug implements UHCCommand {
     }
 
     @Override
+    public String getMoreInfo() {
+        return "Controls debug mode, which when active will output highly verbose information to the server logs.";
+    }
+
+    @Override
     public boolean onCommand(CommandSender commandSender, String alias, String[] args) {
         boolean debug = Logger.isDebug();
         if (debug) {

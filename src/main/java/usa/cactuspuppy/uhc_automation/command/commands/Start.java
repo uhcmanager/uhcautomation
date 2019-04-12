@@ -30,7 +30,12 @@ public class Start implements UHCCommand {
 
     @Override
     public String getPurpose() {
-        return null;
+        return "Start or count down to start of game";
+    }
+
+    @Override
+    public String getMoreInfo() {
+        return "Initiate a game, optionally with a countdown beforehand of n seconds. Will only work if the game is in lobby mode.";
     }
 
     @Override

@@ -22,6 +22,11 @@ public class Reset implements UHCCommand {
     }
 
     @Override
+    public String getMoreInfo() {
+        return "Resets the specified game (or game whose lobby world the executor is in) to lobby mode. This command will reset the game no matter the current state of the game.";
+    }
+
+    @Override
     public boolean onCommand(CommandSender commandSender, String alias, String[] args) {
         //Get correct game instance
         MiscUtils.GetInstanceResult result = MiscUtils.getGameInstance(commandSender, args);

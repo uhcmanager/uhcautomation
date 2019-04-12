@@ -12,12 +12,17 @@ import java.util.List;
 public class Option implements UHCCommand {
     @Override
     public String getUsage() {
-        return "/uhc option <option> <value> <name/ID>";
+        return "/uhc option <option> [value] [name/ID]";
     }
 
     @Override
     public String getPurpose() {
-        return "Modifies the specified option for the specified game";
+        return "View and edit game options";
+    }
+
+    @Override
+    public String getMoreInfo() {
+        return "Displays or modifies the specified game option for the specified game, or the game whose lobby world the executor is in.";
     }
 
     @Override

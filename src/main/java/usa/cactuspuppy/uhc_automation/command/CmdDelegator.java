@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.command;
 
+import com.google.common.base.Strings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -116,6 +117,18 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
     }
 
     private void help(CommandSender sender) {
+        //Constants
+        int maxHelpLineLength = 40; //Max characters per line in hover help
         //TODO
+        StringBuilder helpMsg = new StringBuilder();
+        String separator = ChatColor.YELLOW + "<" + ChatColor.WHITE + Strings.repeat("=", 7) + ChatColor.GOLD + "UHC Help" + ChatColor.WHITE + Strings.repeat("=", 7) + ChatColor.YELLOW + ">";
+        String help = ChatColor.GRAY + "Hover over a command to see more information, click to insert it into chat.";
+        helpMsg.append(helpMsg).append("\n").append(help).append("\n");
+        for (UHCCommand command : commandMap.values()) {
+            String bullet = ChatColor.GREEN + "-";
+            String usage = command.getUsage();
+            String purpose = command.getPurpose();
+            String info = command.getMoreInfo();
+        }
     }
 }
