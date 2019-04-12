@@ -18,13 +18,15 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
     private static Map<String, UHCCommand> commandMap = new HashMap<>();
     private static Map<String, UHCCommand> aliasMap = new HashMap<>();
     static {
-        addCmd(new Surface());
-        addCmd(new Start());
         addCmd(new Create());
         addCmd(new Debug());
         addCmd(new Join());
         addCmd(new Leave());
+        addCmd(new ListGames());
         addCmd(new Option());
+        addCmd(new Reset());
+        addCmd(new Start());
+        addCmd(new Surface());
         //Add aliases
         addAlias("s", Surface.class);
         addAlias("d", Debug.class);
@@ -60,6 +62,9 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (args.length < 1) return false;
         String subCmd = args[0];
+        if (subCmd.equalsIgnoreCase("help")) {
+            help(commandSender);
+        }
         UHCCommand handler = commandMap.get(subCmd);
         if (handler == null) {
             //Try for alias
@@ -110,5 +115,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
         return handler;
     }
 
-    //TODO: Add help function
+    private void help(CommandSender sender) {
+        //TODO
+    }
 }
