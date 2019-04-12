@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 public class ListGames implements UHCCommand {
     @Override
     public String getUsage() {
-        return "/uhc list";
+        return "/uhc listgames";
     }
 
     @Override

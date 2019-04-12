@@ -173,8 +173,17 @@ public class Main extends JavaPlugin {
             File[] files = gamesDir.listFiles();
             if (files == null) return;
             for (File f : files) {
+                FileInputStream fileStream;
+                ObjectInputStream objStream;
                 try {
-                    GameInstance instance = (GameInstance) new ObjectInputStream(new FileInputStream(f)).readObject();
+                    fileStream = new FileInputStream(f);
+                    objStream = new ObjectInputStream(fileStream);
+                } catch (IOException e) {
+                    Logger.logWarning(this.getClass(), "Failed to initiate reading streams for file " + f.getName());
+                    return;
+                }
+                try {
+                    GameInstance instance = (GameInstance) objStream.readObject();
                     GameManager.registerGame(instance);
                     //Resume game
                     GameState state = instance.getGameState();
@@ -190,6 +199,12 @@ public class Main extends JavaPlugin {
                     if (!f.delete()) Logger.logWarning(this.getClass(), "Unable to remove " + f.getName());
                 } catch (IOException | ClassNotFoundException e) {
                     Logger.logWarning(this.getClass(), "Problem restoring game information from file " + f.getName() + ", deleting it...", e);
+                    try {
+                        objStream.close();
+                    } catch (IOException ex) {
+                        Logger.logWarning(this.getClass(), "Failed to close object stream");
+                        return;
+                    }
                     if (!f.delete()) Logger.logWarning(this.getClass(), "Unable to remove " + f.getName());
                 }
             }
