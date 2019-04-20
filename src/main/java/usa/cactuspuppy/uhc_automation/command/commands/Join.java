@@ -27,7 +27,7 @@ public class Join implements UHCCommand {
         if (args.length < 2) {
             return false;
         }
-        //TODO: Implement joining
+
         return true;
     }
 
