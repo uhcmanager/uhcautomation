@@ -110,7 +110,7 @@ public class Main extends JavaPlugin {
                 fileOS.close();
                 Logger.logInfo(this.getClass(), "Game " + l + " saved");
             } catch (IOException e) {
-                Logger.logWarning(this.getClass(), "Problem saving game (ID: " + l + ")");
+                Logger.logWarning(this.getClass(), "Problem saving game (ID: " + l + ")", e);
             }
         }
     }

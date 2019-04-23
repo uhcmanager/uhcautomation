@@ -114,6 +114,7 @@ public final class MiscUtils {
                 instance = GameManager.getGame(Long.valueOf(args[0]));
             } catch (NumberFormatException ignored) { }
             if (instance == null) {// Found no instance with ID check
+                //TODO: Fix finding game code
                 String gameName = String.join(" ", args);
                 List<GameInstance> instances = new LinkedList<>();
                 for (GameInstance g : GameManager.getActiveGames().values()) {
@@ -148,8 +149,8 @@ public final class MiscUtils {
 
         //Check that we actually found a game instance
         if (instance == null) {
-            commandSender.sendMessage(ChatColor.RED + "Must be in a game or specify a game name/ID.");
-            return null;
+            commandSender.sendMessage(ChatColor.RED + "Could not find that game instance!");
+            return new GetInstanceResult().setUsageCorrect(true);
         }
         return new GetInstanceResult().setInstance(instance).setUsageCorrect(true);
     }

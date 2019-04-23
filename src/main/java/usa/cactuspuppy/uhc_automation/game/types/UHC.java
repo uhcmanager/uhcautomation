@@ -21,10 +21,11 @@ import usa.cactuspuppy.uhc_automation.utils.GameUtils;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 import usa.cactuspuppy.uhc_automation.utils.MiscUtils;
 
+import java.io.Serializable;
 import java.util.*;
 
 @Getter
-public class UHC extends GameInstance {
+public class UHC extends GameInstance implements Serializable {
     //[=== PLAY AREA INFO ===]
     /**
      * Time to delay border shrinking, in seconds.

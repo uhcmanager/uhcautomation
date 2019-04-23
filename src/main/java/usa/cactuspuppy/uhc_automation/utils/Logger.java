@@ -8,8 +8,10 @@ import lombok.Setter;
  * No other class should report directly to terminal; instead, report messages to this class first to ensure template consistency.
  */
 public final class Logger {
+    @Getter
     @Setter
-    private static boolean printStackTraces = false;
+    private static boolean printStackTraces = true;
+    @Getter
     @Setter
     private static Level level = Level.INFO;
     @Getter

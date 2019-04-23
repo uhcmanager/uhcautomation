@@ -47,6 +47,8 @@ public class Join implements UHCCommand {
             return false;
         }
         GameInstance addTo = result.getInstance();
+        addTo.addPlayer(player);
+        commandSender.sendMessage(ChatColor.GREEN + "Added " + ChatColor.WHITE + args[0] + ChatColor.GREEN + " to " + ChatColor.WHITE + addTo.getName());
         return true;
     }
 

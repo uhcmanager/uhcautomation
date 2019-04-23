@@ -62,7 +62,10 @@ public class Create implements UHCCommand {
             return true;
         }
         //Create correct type and register
-        GameInstance instance = new GameFactory().getGame(type.toLowerCase(), world);
+        GameInstance instance = new GameFactory().getGame(commandSender, type.toLowerCase(), world);
+        if (instance == null) {
+            return true;
+        }
         GameManager.registerGame(instance);
         instance.updateState(GameStateEvent.RESET);
         World nether = Bukkit.getWorld(world.getName() + "_nether");
@@ -83,6 +86,9 @@ public class Create implements UHCCommand {
 
     @Override
     public @Nullable List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] args) {
+        if (args.length == 1) {
+            return
+        }
         return new ArrayList<>();
     }
 }

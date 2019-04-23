@@ -31,6 +31,9 @@ public class ListGames implements UHCCommand {
         finalMsg.append(ChatColor.GOLD).append("Currently active games:").append("\n").append(ChatColor.RESET);
 
         boolean altColor = false;
+        if (GameManager.getActiveGames().isEmpty()) {
+            finalMsg.append(ChatColor.RED).append("NONE");
+        }
         for (GameInstance g : GameManager.getActiveGames().values()) {
             if (altColor) {
                 finalMsg.append(ChatColor.AQUA);
@@ -39,8 +42,8 @@ public class ListGames implements UHCCommand {
             }
             altColor = !altColor;
             finalMsg.append(
-                    String.format("GID: %d | Main World: %s | Players: %d | Spectators: %d",
-                            g.getGameID(), (g.getMainWorld() == null
+                    String.format("GID: %d | Name: %s | Main World: %s | Players: %d | Spectators: %d",
+                            g.getGameID(), g.getName(), (g.getMainWorld() == null
                                     ? "NULL"
                                     : g.getMainWorld().getName()),
                             g.getAlivePlayers().size(), g.getSpectators().size())
