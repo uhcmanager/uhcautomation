@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 public class ConfigTest {
     private String input;
@@ -23,7 +24,7 @@ public class ConfigTest {
     @Before
     public void setup() {
         testDir = new File("test");
-        if (!testDir.isDirectory()) assertTrue(testDir.mkdirs());
+        if (!testDir.isDirectory()) assumeTrue(testDir.mkdirs());
         input = "label:\n  label1:  asdf";
         testConfig = new File("test", "config.yml");
         if (!testConfig.isFile()) {

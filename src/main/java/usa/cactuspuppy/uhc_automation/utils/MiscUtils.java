@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
@@ -98,23 +99,22 @@ public final class MiscUtils {
         }
     }
 
-    @Nullable
+    @NotNull
     public static GetInstanceResult getGameInstance(CommandSender commandSender, String[] args) {
         GameInstance instance = null;
-        if (!(commandSender instanceof Player)) {
-            if (args.length < 2) {
+
+        if (args.length < 1) {
+            if (!(commandSender instanceof Player)) {
+                commandSender.sendMessage(ChatColor.RED + "Must be a player to infer game.");
                 return new GetInstanceResult().setUsageCorrect(false);
             }
-            if (args[1].matches("-?[0-9]+")) { // Find ID
-                try {
-                    instance = GameManager.getGame(Long.valueOf(args[0]));
-                } catch (NumberFormatException ignored) {
-                }
-            }
-            if (instance == null) { // Found no instance with ID check
-                String[] nameArr = new String[args.length - 1];
-                System.arraycopy(args, 1, nameArr, 0, args.length - 1);
-                String gameName = String.join(" ", nameArr);
+            instance = GameManager.getPlayerGame(((Player) commandSender).getUniqueId());
+        } else if (args[0].matches("-?[0-9]+")) { // Find ID
+            try {
+                instance = GameManager.getGame(Long.valueOf(args[0]));
+            } catch (NumberFormatException ignored) { }
+            if (instance == null) {// Found no instance with ID check
+                String gameName = String.join(" ", args);
                 List<GameInstance> instances = new LinkedList<>();
                 for (GameInstance g : GameManager.getActiveGames().values()) {
                     if (g.getName().equalsIgnoreCase(gameName)) {
@@ -144,9 +144,8 @@ public final class MiscUtils {
                     }
                 }
             }
-        } else {
-            instance = GameManager.getPlayerGame(((Player) commandSender).getUniqueId());
         }
+
         //Check that we actually found a game instance
         if (instance == null) {
             commandSender.sendMessage(ChatColor.RED + "Must be in a game or specify a game name/ID.");

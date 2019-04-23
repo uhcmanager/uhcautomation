@@ -124,26 +124,21 @@ public abstract class GameInstance implements Serializable {
     }
 
     public void addPlayer(UUID uuid) {
-        players.add(uuid);
-        GameManager.registerPlayerGame(uuid, this);
-        Player p = Bukkit.getPlayer(uuid);
-        if (p == null) {
-            return;
-        }
-        getUtils().broadcastChat(ChatColor.WHITE.toString() + ChatColor.BOLD + "[" + ChatColor.GOLD + "INFO" + ChatColor.WHITE + "] " + ChatColor.GREEN + p.getDisplayName() + ChatColor.WHITE + " has joined the game");
-        if (!getAllPlayers().contains(uuid)) {
-            new SuggestPack(this, uuid).init();
-        }
+        setupPlayer(uuid, players, "has joined the game");
     }
 
     public void addSpectator(UUID uuid) {
-        spectators.add(uuid);
+        setupPlayer(uuid, spectators, "is now spectating");
+    }
+
+    private void setupPlayer(UUID uuid, Set<UUID> playerSet, String messageSuffix) {
+        playerSet.add(uuid);
         GameManager.registerPlayerGame(uuid, this);
         Player p = Bukkit.getPlayer(uuid);
         if (p == null) {
             return;
         }
-        getUtils().broadcastChat(ChatColor.WHITE.toString() + ChatColor.BOLD + "[" + ChatColor.GOLD + "INFO" + ChatColor.WHITE + "] " + ChatColor.GREEN + p.getDisplayName() + ChatColor.WHITE + " is now spectating");
+        getUtils().broadcastChat(ChatColor.WHITE.toString() + ChatColor.BOLD + "[" + ChatColor.GOLD + "INFO" + ChatColor.WHITE + "] " + ChatColor.GREEN + p.getDisplayName() + ChatColor.WHITE + " " + messageSuffix);
         if (!getAllPlayers().contains(uuid)) {
             new SuggestPack(this, uuid).init();
         }
@@ -179,7 +174,7 @@ public abstract class GameInstance implements Serializable {
     public GameInstance(World world) {
         gameID = 0;
         gameID = GameManager.registerGame(this);
-        name = "Game " + gameID;
+        name = "Game " + world.getName();
         mainWorldUID = world.getUID();
         GameManager.registerWorldGame(world.getUID(), this);
         //TODO: Set defaults

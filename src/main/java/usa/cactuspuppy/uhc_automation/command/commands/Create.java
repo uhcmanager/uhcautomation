@@ -12,6 +12,7 @@ import usa.cactuspuppy.uhc_automation.game.GameManager;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
 import usa.cactuspuppy.uhc_automation.game.tasks.GameFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Create implements UHCCommand {
@@ -81,7 +82,7 @@ public class Create implements UHCCommand {
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-        return null;
+    public @Nullable List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] args) {
+        return new ArrayList<>();
     }
 }

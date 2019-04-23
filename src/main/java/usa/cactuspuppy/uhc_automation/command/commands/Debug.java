@@ -6,12 +6,13 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.Nullable;
 import usa.cactuspuppy.uhc_automation.utils.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Debug implements UHCCommand {
     @Override
     public String getUsage() {
-        return "/uhc debug [on/off]";
+        return "/uhc debug [true/false]";
     }
 
     @Override
@@ -26,15 +27,25 @@ public class Debug implements UHCCommand {
 
     @Override
     public boolean onCommand(CommandSender commandSender, String alias, String[] args) {
-        boolean debug = Logger.isDebug();
-        if (debug) {
-            Logger.setDebug(false);
-            Logger.setLevel(Logger.Level.INFO);
-            commandSender.sendMessage(ChatColor.GREEN + "Debug mode is now " + ChatColor.RESET + "OFF");
+        if (args.length < 1) {
+            boolean debug = Logger.isDebug();
+            Logger.setDebug(debug);
+            Logger.setLevel((debug ? Logger.Level.FINEST : Logger.Level.INFO));
+            commandSender.sendMessage(ChatColor.GREEN + "Debug mode is now " + ChatColor.RESET + (debug ? "ON" : "OFF"));
         } else {
-            Logger.setDebug(true);
-            Logger.setLevel(Logger.Level.FINEST);
-            commandSender.sendMessage(ChatColor.GREEN + "Debug mode is now " + ChatColor.RESET + "ON");
+            String arg = args[0];
+            if (!arg.equalsIgnoreCase("true") && !arg.equalsIgnoreCase("false")) {
+                return false;
+            }
+            boolean val = Boolean.getBoolean(arg);
+            boolean debug = Logger.isDebug();
+            if (val == debug) {
+                commandSender.sendMessage(ChatColor.YELLOW + "Debug mode is already " + ChatColor.RESET + (debug ? "ON" : "OFF"));
+                return true;
+            }
+            Logger.setDebug(val);
+            Logger.setLevel((val ? Logger.Level.FINEST : Logger.Level.INFO));
+            commandSender.sendMessage(ChatColor.GREEN + "Debug mode is now " + ChatColor.RESET + (val ? "ON" : "OFF"));
         }
         return true;
     }
@@ -45,7 +56,7 @@ public class Debug implements UHCCommand {
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-        return null;
+    public @Nullable List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] args) {
+        return new ArrayList<>();
     }
 }

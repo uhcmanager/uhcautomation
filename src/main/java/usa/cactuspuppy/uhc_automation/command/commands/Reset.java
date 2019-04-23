@@ -1,13 +1,16 @@
 package usa.cactuspuppy.uhc_automation.command.commands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.Nullable;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
+import usa.cactuspuppy.uhc_automation.game.GameManager;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
 import usa.cactuspuppy.uhc_automation.utils.MiscUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Reset implements UHCCommand {
     @Override
@@ -29,13 +32,13 @@ public class Reset implements UHCCommand {
     public boolean onCommand(CommandSender commandSender, String alias, String[] args) {
         //Get correct game instance
         MiscUtils.GetInstanceResult result = MiscUtils.getGameInstance(commandSender, args);
-        if (result == null) {
-            return true;
-        } else if (!result.isUsageCorrect()) {
+        if (!result.isUsageCorrect()) {
             return false;
         }
         GameInstance instance = result.getInstance();
-
+        if (instance == null) { //Handle multiple instance w/ same name
+            return true;
+        }
         instance.updateState(GameStateEvent.RESET);
         return true;
     }
@@ -46,7 +49,8 @@ public class Reset implements UHCCommand {
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-        return null;
+    public @Nullable List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] args) {
+        String name = String.join(" ", args);
+        return GameManager.getActiveGames().values().stream().map(GameInstance::getName).distinct().filter(n -> n.startsWith(name)).sorted().collect(Collectors.toList());
     }
 }

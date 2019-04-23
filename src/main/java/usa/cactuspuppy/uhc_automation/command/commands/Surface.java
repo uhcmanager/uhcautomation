@@ -9,7 +9,7 @@ import java.util.List;
 public class Surface implements UHCCommand {
 
     @Override
-    public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
+    public List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] args) {
         return new ArrayList<>();
     }
 

@@ -4,6 +4,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Option implements UHCCommand {
@@ -34,7 +35,7 @@ public class Option implements UHCCommand {
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-        return null;
+    public @Nullable List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] args) {
+        return new ArrayList<>();
     }
 }
