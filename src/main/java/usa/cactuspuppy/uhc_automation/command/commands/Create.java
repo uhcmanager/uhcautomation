@@ -12,8 +12,9 @@ import usa.cactuspuppy.uhc_automation.game.GameManager;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
 import usa.cactuspuppy.uhc_automation.game.tasks.GameFactory;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Create implements UHCCommand {
 
@@ -87,8 +88,10 @@ public class Create implements UHCCommand {
     @Override
     public @Nullable List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return
+            return GameFactory.getGameTypes().keySet().stream().filter(s -> s.startsWith(args[0])).sorted().collect(Collectors.toList());
+        } else {
+            String partial = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+            return Bukkit.getWorlds().stream().map(World::getName).filter(s -> s.startsWith(partial)).sorted().collect(Collectors.toList());
         }
-        return new ArrayList<>();
     }
 }

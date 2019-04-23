@@ -12,7 +12,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class GameFactory {
     private static Map<String, Class<? extends GameInstance>> gameTypeMap = new HashMap<>();
@@ -49,7 +48,11 @@ public class GameFactory {
         return instance;
     }
 
-    public Set<Class<? extends GameInstance>> getGameTypes() {
-        //TODO:
+
+    /**
+     * @return a copy of all available game types
+     */
+    public static Map<String, Class<? extends GameInstance>> getGameTypes() {
+        return new HashMap<>(gameTypeMap);
     }
 }

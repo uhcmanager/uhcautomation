@@ -321,7 +321,7 @@ public abstract class GameInstance implements Serializable {
     }
 
     //Game utils
-    protected GameUtils utils = new GameUtils(this);
+    protected transient GameUtils utils = new GameUtils(this);
 
     public GameUtils getUtils() {
         if (utils == null) {
