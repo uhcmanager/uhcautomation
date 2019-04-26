@@ -6,7 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
 
@@ -103,19 +102,24 @@ public final class MiscUtils {
     public static GetInstanceResult getGameInstance(CommandSender commandSender, String[] args) {
         GameInstance instance = null;
 
+        Logger.logFineMsg(MiscUtils.class, "Trying to find game with args" + Arrays.toString(args), 0);
+
         if (args.length < 1) {
             if (!(commandSender instanceof Player)) {
                 commandSender.sendMessage(ChatColor.RED + "Must be a player to infer game.");
                 return new GetInstanceResult().setUsageCorrect(false);
             }
             instance = GameManager.getPlayerGame(((Player) commandSender).getUniqueId());
-        } else if (args[0].matches("-?[0-9]+")) { // Find ID
-            try {
-                instance = GameManager.getGame(Long.valueOf(args[0]));
-            } catch (NumberFormatException ignored) { }
+        } else {
+            if (args.length == 1 && args[0].matches("-?[0-9]+")) { // Find ID
+                try {
+                    instance = GameManager.getGame(Long.valueOf(args[0]));
+                } catch (NumberFormatException ignored) { }
+            }
             if (instance == null) {// Found no instance with ID check
                 //TODO: Fix finding game code
                 String gameName = String.join(" ", args);
+                Logger.logFineMsg(MiscUtils.class, "Finding game with name " + gameName, 0);
                 List<GameInstance> instances = new LinkedList<>();
                 for (GameInstance g : GameManager.getActiveGames().values()) {
                     if (g.getName().equalsIgnoreCase(gameName)) {

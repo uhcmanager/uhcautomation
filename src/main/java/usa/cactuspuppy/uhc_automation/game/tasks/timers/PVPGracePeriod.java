@@ -29,7 +29,7 @@ public class PVPGracePeriod extends AlertTimer {
         //If time has come, enable PVP
         if (currTime >= pvpEnableTime) {
             canceller.cancel();
-            gameInstance.getUtils().broadcastChatSoundTitle(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nPVP ENABLED!", Sound.ENTITY_ENDER_DRAGON_GROWL, 1F, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "PVP", "enabled", 0, 40, 20);
+            getGameInstance().getUtils().broadcastChatSoundTitle(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "\nPVP ENABLED!", Sound.ENTITY_ENDER_DRAGON_GROWL, 1F, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "PVP", "enabled", 0, 40, 20);
             cancel();
         }
         //Check for chat mark

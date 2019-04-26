@@ -23,7 +23,7 @@ public class UHC_PreStartFreeze extends ListenerTask implements Listener {
         if (!Objects.equals(e.getFrom().getWorld(), e.getTo().getWorld())) {
             return;
         }
-        if (!gameInstance.getAlivePlayers().contains(e.getPlayer().getUniqueId())) {
+        if (!getGameInstance().getAlivePlayers().contains(e.getPlayer().getUniqueId())) {
             return;
         }
         if (e.getPlayer().getVelocity().getY() > 0) { //Jumping

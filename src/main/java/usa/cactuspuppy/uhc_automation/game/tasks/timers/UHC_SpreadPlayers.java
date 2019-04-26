@@ -78,7 +78,7 @@ public class UHC_SpreadPlayers extends TimerTask {
         }
 
         int index = 0;
-        for (UUID u : gameInstance.getSpectators()) {
+        for (UUID u : getGameInstance().getSpectators()) {
             Player p = Bukkit.getPlayer(u); //Get player
             if (p == null) {
                 continue;
@@ -86,7 +86,7 @@ public class UHC_SpreadPlayers extends TimerTask {
 
             p.sendTitle(ChatColor.GOLD + "Starting game...", ChatColor.WHITE + "Spreading players...", 0, 20, 10);
         }
-        for (UUID u : gameInstance.getAlivePlayers()) {
+        for (UUID u : getGameInstance().getAlivePlayers()) {
             Player p = Bukkit.getPlayer(u); //Get player
             if (p == null) {
                 continue;
@@ -94,7 +94,7 @@ public class UHC_SpreadPlayers extends TimerTask {
 
             //Get location
             if (index >= locations.size()) {
-                gameInstance.getUtils().log(Logger.Level.WARNING, this.getClass(), "Exceeded locations size during spreadplayers");
+                getGameInstance().getUtils().log(Logger.Level.WARNING, this.getClass(), "Exceeded locations size during spreadplayers");
                 cancel();
                 return;
             }
@@ -137,8 +137,8 @@ public class UHC_SpreadPlayers extends TimerTask {
         }
 
         if (shouldTeleport) { //Initiate pre-game countdown
-            new UHC_PreStartFreeze(gameInstance).init();
-            new UHC_StartCountdown(gameInstance, 10).init();
+            new UHC_PreStartFreeze(getGameInstance()).init();
+            new UHC_StartCountdown(getGameInstance(), 10).init();
             cancel();
             return;
         }
@@ -158,10 +158,10 @@ public class UHC_SpreadPlayers extends TimerTask {
         int z = l.getBlockZ();
         World world = l.getWorld();
         if (world == null) {
-            world = Bukkit.getWorld(gameInstance.getMainWorldUID());
+            world = Bukkit.getWorld(getGameInstance().getMainWorldUID());
             if (world == null) {
-                gameInstance.getUtils().log(Logger.Level.SEVERE, this.getClass(), "Unable to find world to teleport in, reseting game...");
-                gameInstance.updateState(GameStateEvent.RESET);
+                getGameInstance().getUtils().log(Logger.Level.SEVERE, this.getClass(), "Unable to find world to teleport in, reseting game...");
+                getGameInstance().updateState(GameStateEvent.RESET);
                 return;
             }
         }

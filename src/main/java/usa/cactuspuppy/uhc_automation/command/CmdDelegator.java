@@ -67,6 +67,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
         String subCmd = args[0];
         if (subCmd.equalsIgnoreCase("help")) {
             help(commandSender);
+            return true;
         }
         UHCCommand handler = commandMap.get(subCmd);
         if (handler == null) {
@@ -96,6 +97,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
         }
         if (args.length == 1) {
             Set<String> subcmds = commandMap.keySet();
+            subcmds.add("help");
             return subcmds.stream().filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
         }
         UHCCommand handler = getHandler(args[0]);
@@ -128,7 +130,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
         String separator = ChatColor.YELLOW + "<" + ChatColor.WHITE + Strings.repeat("=", 7) + ChatColor.GOLD + "UHC Help" + ChatColor.WHITE + Strings.repeat("=", 7) + ChatColor.YELLOW + ">";
         String help = ChatColor.GRAY + "Hover over a command to see more information, click to insert it into chat.";
         helpMsg.append(separator).append("\n").append(help).append("\n");
-        for (String subcommand : commandMap.keySet()) {
+        for (String subcommand : commandMap.keySet().stream().sorted().collect(Collectors.toList())) {
             UHCCommand command = commandMap.get(subcommand);
             if (!command.hasPermission(sender, subcommand, new String[0])) {
                 continue;

@@ -22,14 +22,14 @@ public abstract class ListenerTask extends Task implements Listener {
     @Override
     public boolean init() {
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
-        listeners.computeIfAbsent(gameInstance.getGameID(), k -> new ArrayList<>()).add(this);
+        listeners.computeIfAbsent(gameInstance, k -> new ArrayList<>()).add(this);
         return true;
     }
 
     @Override
     public void cancel() {
         HandlerList.unregisterAll(this);
-        listeners.computeIfAbsent(gameInstance.getGameID(), v -> new ArrayList<>()).remove(this);
+        listeners.computeIfAbsent(gameInstance, v -> new ArrayList<>()).remove(this);
     }
 
     /**

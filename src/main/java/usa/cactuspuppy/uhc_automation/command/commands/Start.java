@@ -50,7 +50,7 @@ public class Start implements UHCCommand {
     @Override
     public boolean onCommand(CommandSender commandSender, String alias, String[] args) {
         //Get correct game instance
-        MiscUtils.GetInstanceResult result = MiscUtils.getGameInstance(commandSender, args);
+        MiscUtils.GetInstanceResult result = MiscUtils.getGameInstance(commandSender, Arrays.copyOfRange(args, 1, args.length));
         if (!result.isUsageCorrect()) {
             return false;
         }

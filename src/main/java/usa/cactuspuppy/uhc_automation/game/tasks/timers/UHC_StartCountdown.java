@@ -57,7 +57,7 @@ public class UHC_StartCountdown extends TimerTask {
     public UHC_StartCountdown(GameInstance gameInstance, int delay, int ticksPerCycle, double maxTickDeviance) {
         super(gameInstance, true, 0L, ticksPerCycle);
         countdown = false;
-        gameInstance.getUtils().log(Logger.Level.INFO, this.getClass(), "Initiating final game start countdown...");
+        getGameInstance().getUtils().log(Logger.Level.INFO, this.getClass(), "Initiating final game start countdown...");
         this.maxTickDeviance = maxTickDeviance;
         this.ticksPerCycle = ticksPerCycle;
         lastTick = System.currentTimeMillis();
@@ -70,7 +70,7 @@ public class UHC_StartCountdown extends TimerTask {
     public UHC_StartCountdown(GameInstance gameInstance, int delay) {
         super(gameInstance, true, 0L, 1L);
         countdown = false;
-        gameInstance.getUtils().log(Logger.Level.INFO, this.getClass(), "Initiating final game start countdown...");
+        getGameInstance().getUtils().log(Logger.Level.INFO, this.getClass(), "Initiating final game start countdown...");
         lastTick = System.currentTimeMillis();
         secsToCountdown = delay;
     }
@@ -81,18 +81,18 @@ public class UHC_StartCountdown extends TimerTask {
         if (!countdown) { //Wait for ticks to stabilize + players to land
             //Check current tick delay
             if (Math.abs(currTick - lastTick - ticksPerCycle * 50) > maxTickDeviance * ticksPerCycle * 50) {
-                gameInstance.getUtils().log(Logger.Level.FINE, this.getClass(),
+                getGameInstance().getUtils().log(Logger.Level.FINE, this.getClass(),
                         String.format("Current run: %d | Last run: %d (%d ticks ago) | Avg Tick Time: %d (need %f)",
                                 currTick, lastTick, ticksPerCycle, (currTick - lastTick) / ticksPerCycle, maxTickDeviance * 50));
                 lastTick = currTick;
-                gameInstance.getUtils().broadcastTitle(ChatColor.GOLD + "Initiating Match", "Loading chunks...", 0, 20, 10);
+                getGameInstance().getUtils().broadcastTitle(ChatColor.GOLD + "Initiating Match", "Loading chunks...", 0, 20, 10);
             } else {
                 //Check that all players are on the ground
-                boolean allOnGround = gameInstance.getAlivePlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).allMatch(Player::isOnGround);
+                boolean allOnGround = getGameInstance().getAlivePlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).allMatch(Player::isOnGround);
                 if (allOnGround) {
                     countdown = true;
                 } else {
-                    gameInstance.getUtils().broadcastTitle(ChatColor.GOLD + "Initiating Match", "Waiting for all players to land...", 0, 20, 10);
+                    getGameInstance().getUtils().broadcastTitle(ChatColor.GOLD + "Initiating Match", "Waiting for all players to land...", 0, 20, 10);
                 }
             }
         }
@@ -111,15 +111,15 @@ public class UHC_StartCountdown extends TimerTask {
         long secs = timeTo / 1000 + (timeTo % 1000 == 0 ? 0 : 1);
         if (timeTo <= 0) {
             cancel();
-            gameInstance.updateState(GameStateEvent.START);
+            getGameInstance().updateState(GameStateEvent.START);
             return;
         }
         actionBar = String.format("Game starts in %.2f", timeTo / 1000D);
         title = String.format("Game starts in %d", secs);
         if (lastSecs != secs) {
-            gameInstance.getUtils().broadcastSoundTitle(Sound.BLOCK_NOTE_BLOCK_PLING, 0.594604F, title, subtitle, 0, 20, 10);
+            getGameInstance().getUtils().broadcastSoundTitle(Sound.BLOCK_NOTE_BLOCK_PLING, 0.594604F, title, subtitle, 0, 20, 10);
         }
-        gameInstance.getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.spigot().sendMessage(
+        getGameInstance().getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.spigot().sendMessage(
                 ChatMessageType.ACTION_BAR, new TextComponent(actionBar)
         ));
         lastSecs = secs;

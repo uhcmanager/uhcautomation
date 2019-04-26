@@ -25,10 +25,10 @@ public class PVPCanceller extends ListenerTask {
             victim = (Player) e.getEntity();
             damager = (Player) e.getDamager();
         } catch (ClassCastException ex) {
-            gameInstance.getUtils().log(Logger.Level.SEVERE, this.getClass(), "Class cast exception under assumption of players", ex);
+            getGameInstance().getUtils().log(Logger.Level.SEVERE, this.getClass(), "Class cast exception under assumption of players", ex);
             return;
         }
-        if (!gameInstance.getAlivePlayers().contains(victim.getUniqueId()) || !gameInstance.getAlivePlayers().contains(damager.getUniqueId())) {
+        if (!getGameInstance().getAlivePlayers().contains(victim.getUniqueId()) || !getGameInstance().getAlivePlayers().contains(damager.getUniqueId())) {
             return;
         }
         //Cancel

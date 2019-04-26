@@ -4,7 +4,9 @@ import lombok.Getter;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.entity.Entity;
 
-public abstract class UniqueEntity extends Entity {
+import java.io.Serializable;
+
+public abstract class UniqueEntity extends Entity implements Serializable {
     @Getter
     protected long id;
 

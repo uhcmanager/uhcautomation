@@ -32,7 +32,7 @@ public class UHC_ActiveListener extends ListenerTask {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
-        if (!gameInstance.getAlivePlayers().contains(e.getEntity().getUniqueId())) {
+        if (!getGameInstance().getAlivePlayers().contains(e.getEntity().getUniqueId())) {
             return;
         }
         String currMsg = e.getDeathMessage();
@@ -47,7 +47,7 @@ public class UHC_ActiveListener extends ListenerTask {
                     }
                 }
             } catch (ClassCastException ex) {
-                gameInstance.getUtils().log(Logger.Level.WARNING, this.getClass(), "Dog detection class cast exception");
+                getGameInstance().getUtils().log(Logger.Level.WARNING, this.getClass(), "Dog detection class cast exception");
             }
         }
         //Speed up border if should do so
@@ -62,14 +62,14 @@ public class UHC_ActiveListener extends ListenerTask {
         Location died = e.getEntity().getLocation();
         respawnQueue.put(e.getEntity().getUniqueId(), died);
         //Log death
-        gameInstance.getUtils().log(Logger.Level.INFO, this.getClass(), e.getEntity().getName() + " died at " + died.toString());
+        getGameInstance().getUtils().log(Logger.Level.INFO, this.getClass(), e.getEntity().getName() + " died at " + died.toString());
         //Move to spectators
-        gameInstance.moveAliveToSpec(e.getEntity().getUniqueId());
+        getGameInstance().moveAliveToSpec(e.getEntity().getUniqueId());
         //Announce death
-        gameInstance.getUtils().broadcastSoundTitle(Sound.ENTITY_WITHER_DEATH, 1F, e.getEntity().getDisplayName(), ChatColor.RED + "has been eliminated!", 0, 80, 40);
+        getGameInstance().getUtils().broadcastSoundTitle(Sound.ENTITY_WITHER_DEATH, 1F, e.getEntity().getDisplayName(), ChatColor.RED + "has been eliminated!", 0, 80, 40);
         //Check for win
-        if (gameInstance.isVictory()) {
-            gameInstance.updateState(GameStateEvent.END);
+        if (getGameInstance().isVictory()) {
+            getGameInstance().updateState(GameStateEvent.END);
         }
     }
 

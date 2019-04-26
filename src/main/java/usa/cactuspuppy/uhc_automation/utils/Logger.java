@@ -153,8 +153,8 @@ public final class Logger {
         if (debug) {
             message = "<" + level.name() + " | " + c.getCanonicalName() + "> " + info;
         } else {
-            message = info;
+            message = "<" + level.name() + ">" + info;
         }
-        relayMessage(message, level);
+        relayMessage(message, Level.INFO);
     }
 }

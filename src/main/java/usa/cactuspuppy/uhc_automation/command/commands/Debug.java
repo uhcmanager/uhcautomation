@@ -28,7 +28,7 @@ public class Debug implements UHCCommand {
     @Override
     public boolean onCommand(CommandSender commandSender, String alias, String[] args) {
         if (args.length < 1) {
-            boolean debug = Logger.isDebug();
+            boolean debug = !Logger.isDebug();
             Logger.setDebug(debug);
             Logger.setLevel((debug ? Logger.Level.FINEST : Logger.Level.INFO));
             commandSender.sendMessage(ChatColor.GREEN + "Debug mode is now " + ChatColor.RESET + (debug ? "ON" : "OFF"));
@@ -37,7 +37,7 @@ public class Debug implements UHCCommand {
             if (!arg.equalsIgnoreCase("true") && !arg.equalsIgnoreCase("false")) {
                 return false;
             }
-            boolean val = Boolean.getBoolean(arg);
+            boolean val = Boolean.valueOf(args[0]);
             boolean debug = Logger.isDebug();
             if (val == debug) {
                 commandSender.sendMessage(ChatColor.YELLOW + "Debug mode is already " + ChatColor.RESET + (debug ? "ON" : "OFF"));

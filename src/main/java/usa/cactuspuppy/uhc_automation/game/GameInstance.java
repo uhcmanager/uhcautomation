@@ -312,7 +312,7 @@ public abstract class GameInstance implements Serializable {
 
     /**
      * Check if a victory condition has been met. <br>
-     * Note that this does NOT trigger the {@link #end()} function
+     * Note that this should <b>NOT</b> inherently trigger the {@link #end()} function
      *
      * @return Whether a victory condition has been met
      */

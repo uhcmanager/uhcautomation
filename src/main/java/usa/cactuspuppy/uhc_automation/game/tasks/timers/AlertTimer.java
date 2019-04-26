@@ -46,7 +46,7 @@ public abstract class AlertTimer extends TimerTask {
         if (border == null) {
             border = Main.getMainConfig().get("countdown.default");
             if (border == null) {
-                gameInstance.getUtils().log(Logger.Level.SEVERE, this.getClass(), "No countdown marks found, cannot set up countdown");
+                getGameInstance().getUtils().log(Logger.Level.SEVERE, this.getClass(), "No countdown marks found, cannot set up countdown");
                 return;
             }
         }
@@ -64,10 +64,10 @@ public abstract class AlertTimer extends TimerTask {
                 try { //Distinguish if overflow
                     new BigInteger(s);
                 } catch (NumberFormatException e1) {
-                    gameInstance.getUtils().log(Logger.Level.WARNING, this.getClass(), "Could not parse " + s + " in countdown list, skipping...");
+                    getGameInstance().getUtils().log(Logger.Level.WARNING, this.getClass(), "Could not parse " + s + " in countdown list, skipping...");
                     continue;
                 }
-                gameInstance.getUtils().log(Logger.Level.WARNING, this.getClass(), s + " is too large of a value, skipping...");
+                getGameInstance().getUtils().log(Logger.Level.WARNING, this.getClass(), s + " is too large of a value, skipping...");
                 continue;
             }
             if (title) {

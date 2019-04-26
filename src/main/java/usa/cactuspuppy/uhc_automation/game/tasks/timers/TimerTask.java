@@ -70,7 +70,7 @@ public abstract class TimerTask extends Task implements Runnable {
             taskID = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), this, initDelay);
         }
         if (taskID != -1) {
-            timers.computeIfAbsent(gameInstance.getGameID(), k -> new ArrayList<>()).add(taskID);
+            timers.computeIfAbsent(gameInstance, k -> new ArrayList<>()).add(taskID);
             return true;
         }
         return false;
@@ -79,6 +79,6 @@ public abstract class TimerTask extends Task implements Runnable {
     @Override
     public void cancel() {
         Bukkit.getScheduler().cancelTask(taskID);
-        timers.computeIfAbsent(gameInstance.getGameID(), v -> new ArrayList<>()).remove(taskID);
+        timers.computeIfAbsent(gameInstance, v -> new ArrayList<>()).remove(taskID);
     }
 }

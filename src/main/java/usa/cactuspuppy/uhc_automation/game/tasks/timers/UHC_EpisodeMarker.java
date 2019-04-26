@@ -22,9 +22,9 @@ public class UHC_EpisodeMarker extends TimerTask {
     public void run() {
         long currTime = System.currentTimeMillis();
         if (currTime >= nextEpMark) {
-            long timeElapsed = (nextEpMark - gameInstance.getStartTime()) / 1000;
+            long timeElapsed = (nextEpMark - getGameInstance().getStartTime()) / 1000;
             long epCount = timeElapsed / epLength;
-            gameInstance.getUtils().broadcastChatSound(
+            getGameInstance().getUtils().broadcastChatSound(
                     String.format(ChatColor.GOLD + "\nMARK: " + ChatColor.WHITE + "End of Episode " + ChatColor.GREEN + "%d\n"
                                     + ChatColor.AQUA + "Time Elapsed: " + ChatColor.WHITE + "%s\n"
                                     + ChatColor.GREEN + "=================="

@@ -1,6 +1,5 @@
 package usa.cactuspuppy.uhc_automation.command.commands;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.Nullable;
@@ -45,7 +44,7 @@ public class Reset implements UHCCommand {
 
     @Override
     public boolean hasPermission(CommandSender commandSender, String alias, String[] args) {
-        return false;
+        return commandSender.hasPermission("uhc.manager");
     }
 
     @Override
