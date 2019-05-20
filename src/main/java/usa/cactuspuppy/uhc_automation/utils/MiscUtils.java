@@ -113,7 +113,7 @@ public final class MiscUtils {
         } else {
             if (args.length == 1 && args[0].matches("-?[0-9]+")) { // Find ID
                 try {
-                    instance = GameManager.getGame(Long.valueOf(args[0]));
+                    instance = GameManager.getGame(UUID.fromString(args[0]));
                 } catch (NumberFormatException ignored) { }
             }
             if (instance == null) {// Found no instance with ID check

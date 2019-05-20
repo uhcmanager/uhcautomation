@@ -24,6 +24,7 @@ import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.io.*;
 import java.util.Scanner;
+import java.util.UUID;
 
 @Plugin(name = "UHCAutomation", version = "2.0")
 @Description("Provides the ability to create multiple concurrent game instances in different worlds with different configurations")
@@ -96,7 +97,7 @@ public class Main extends JavaPlugin {
     private void saveGames() {
         if (GameManager.getActiveGames().isEmpty()) return;
         Logger.logInfo(this.getClass(), "Detected active game(s), saving...");
-        for (long l : GameManager.getActiveGames().keySet()) {
+        for (UUID l : GameManager.getActiveGames().keySet()) {
             try {
                 GameInstance current = GameManager.getGame(l);
                 boolean success = current.updateState(GameStateEvent.PAUSE); //Inform game of pause

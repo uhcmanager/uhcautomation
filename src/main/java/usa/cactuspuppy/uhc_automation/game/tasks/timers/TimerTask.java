@@ -6,13 +6,10 @@ import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.tasks.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class TimerTask extends Task implements Runnable {
-    private static Map<Long, List<Integer>> timers = new HashMap<>();
+    private static Map<UUID, List<Integer>> timers = new HashMap<>();
 
     /**
      * The task ID assigned to this task by the Bukkit scheduler

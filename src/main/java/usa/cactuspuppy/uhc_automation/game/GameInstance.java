@@ -27,7 +27,7 @@ public abstract class GameInstance implements Serializable {
      * Unique identifier for this game instance. This should be set once upon game creation and never changed until the game ends and/or is deleted.
      */
     @Setter(AccessLevel.PROTECTED)
-    protected long gameID;
+    protected UUID gameID;
 
     /**
      * Marker of when the game is initiated (i.e. when players are spread) as given by {@code System.currentTimeMillis()}
@@ -172,7 +172,7 @@ public abstract class GameInstance implements Serializable {
     }
 
     public GameInstance(World world) {
-        gameID = 0;
+        gameID = new UUID(0, 0);
         gameID = GameManager.registerGame(this);
         name = "Game " + world.getName();
         mainWorldUID = world.getUID();

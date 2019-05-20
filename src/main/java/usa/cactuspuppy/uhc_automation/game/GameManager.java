@@ -1,27 +1,23 @@
 package usa.cactuspuppy.uhc_automation.game;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.Nullable;
-import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class GameManager {
-    private static HashMap<Long, GameInstance> activeGames = new HashMap<>();
-    private static HashMap<UUID, Long> playerMap = new HashMap<>();
-    private static HashMap<UUID, Long> worldMap = new HashMap<>();
-    private static final int MAX_ID_ATTEMPTS = 10000;
+    private static HashMap<UUID, GameInstance> activeGames = new HashMap<>();
+    private static HashMap<UUID, UUID> playerMap = new HashMap<>();
+    private static HashMap<UUID, UUID> worldMap = new HashMap<>();
 
     /**
      * @return a copy of the current list of active games
      */
-    public static HashMap<Long, GameInstance> getActiveGames() {
+    public static HashMap<UUID, GameInstance> getActiveGames() {
         return new HashMap<>(activeGames);
     }
 
-    public static GameInstance getGame(long id) {
+    public static GameInstance getGame(UUID id) {
         return activeGames.get(id);
     }
 
@@ -47,14 +43,10 @@ public class GameManager {
         worldMap.clear();
     }
 
-    public static long registerGame(GameInstance instance) {
-        long id = instance.getGameID();
-        if (id == 0) { //Not registered, get new ID
-            id = new IDGenerator().nextID();
-        }
-        if (id == -1) { //Couldn't get a new ID
-            Logger.logSevere(GameManager.class, "Could not obtain an ID for Game: " + instance.getName());
-            return 0;
+    public static UUID registerGame(GameInstance instance) {
+        UUID id = instance.getGameID();
+        if (id.equals(new UUID(0, 0))) {
+            id = UUID.randomUUID();
         }
         instance.setGameID(id);
         activeGames.put(id, instance);
@@ -69,7 +61,7 @@ public class GameManager {
      * @return Whether the player was registered to the game instance
      */
     static boolean registerPlayerGame(UUID u, GameInstance instance) {
-        if (instance.getGameID() == 0) return false; //Game not registered
+        if (instance.getGameID().equals(new UUID(0, 0))) return false; //Game not registered
         playerMap.put(u, instance.getGameID());
         return true;
     }
@@ -82,7 +74,7 @@ public class GameManager {
      * @return Whether the world was registered to the game instance
      */
     static boolean registerWorldGame(UUID u, GameInstance instance) {
-        if (instance.getGameID() == 0) return false; //Game not registered
+        if (instance.getGameID().equals(new UUID(0, 0))) return false; //Game not registered
         worldMap.put(u, instance.getGameID());
         return true;
     }
@@ -121,7 +113,7 @@ public class GameManager {
      */
     public static boolean unregisterGame(GameInstance instance, boolean shed) {
         if (!activeGames.values().contains(instance)) return false;
-        long gameID = instance.getGameID();
+        UUID gameID = instance.getGameID();
         activeGames.remove(gameID);
         if (shed) {
             playerMap.keySet().removeAll(instance.getAllPlayers());
@@ -136,29 +128,13 @@ public class GameManager {
      * @param map Corresponding map of world/players
      * @return GameInstance of active game, or null if no active game instance exists
      */
-    private static GameInstance getGameInstance(UUID u, Map<UUID, Long> map) {
+    private static GameInstance getGameInstance(UUID u, Map<UUID, UUID> map) {
         if (!map.containsKey(u)) return null;
-        long gameID = map.get(u);
+        UUID gameID = map.get(u);
         if (!activeGames.containsKey(gameID)) {
             map.remove(u);
             return null;
         }
         return activeGames.get(gameID);
-    }
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class IDGenerator {
-        private Random rng = new Random();
-
-        long nextID() {
-            for (int i = 0; i < MAX_ID_ATTEMPTS; i++) {
-                long attempt = rng.nextLong();
-                if (activeGames.keySet().contains(attempt)) continue;
-                return attempt;
-            }
-            Logger.logWarning(this.getClass(), "Exceeded max generation attempts while generating new game ID");
-            return -1;
-        }
     }
 }

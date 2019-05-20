@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Start implements UHCCommand {
-    private static Map<Long, Integer> starters = new HashMap<>();
+    private static Map<UUID, Integer> starters = new HashMap<>();
 
     public static void startComplete(GameInstance instance) {
         starters.remove(instance.getGameID());

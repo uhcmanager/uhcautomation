@@ -7,13 +7,10 @@ import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.tasks.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class ListenerTask extends Task implements Listener {
-    private static Map<Long, List<ListenerTask>> listeners = new HashMap<>();
+    private static Map<UUID, List<ListenerTask>> listeners = new HashMap<>();
 
     public ListenerTask(GameInstance gameInstance) {
         super(gameInstance);

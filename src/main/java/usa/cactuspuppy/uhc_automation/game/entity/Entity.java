@@ -4,12 +4,13 @@ import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameManager;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * Represents objects that a gameInstance can produce
  */
 public abstract class Entity implements Serializable {
-    protected long gameInstance;
+    protected UUID gameInstance;
 
     public Entity(GameInstance gameInstance) {
         this.gameInstance = gameInstance.getGameID();

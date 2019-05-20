@@ -103,6 +103,8 @@ public final class GameUtils {
         }
     }
 
+
+
     //LOGGING
     public void log(Logger.Level level, Class c, String msg, Exception e) {
         Logger.log(level, c, " [" + instance.getName() + "](GID: " + instance.getGameID() + ") " + msg, e);
