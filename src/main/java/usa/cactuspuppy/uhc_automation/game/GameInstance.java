@@ -172,12 +172,16 @@ public abstract class GameInstance implements Serializable {
     }
 
     public GameInstance(World world) {
+        if (GameManager.getWorldGame(world.getUID()) != null) {
+            getUtils().log(Logger.Level.INFO, this.getClass(),
+                    "Call to create Game Instance with main world that is already in use. Stop the existing game or choose a different world.");
+            return;
+        }
         gameID = new UUID(0, 0);
         gameID = GameManager.registerGame(this);
         name = "Game " + world.getName();
         mainWorldUID = world.getUID();
         GameManager.registerWorldGame(world.getUID(), this);
-        //TODO: Set defaults
     }
 
     /**
