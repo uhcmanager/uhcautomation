@@ -34,8 +34,8 @@ public class GameManagerTest {
     @Test
     public void registerTest() {
         GameManager.registerGame(test);
-        long id = test.getGameID();
-        assertNotEquals(0, id);
+        UUID id = test.getGameID();
+        assertNotEquals(new UUID(0, 0), id);
         assertNotNull(GameManager.getGame(id));
     }
 
