@@ -6,7 +6,6 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import usa.cactuspuppy.uhc_automation.GameInstance;
 import usa.cactuspuppy.uhc_automation.Main;
 
 public class MobSpawningListener implements Listener {

@@ -1,91 +1,17 @@
-world: GameWorld
-event-name: Event Name
+### IMPORTANT: DO NOT CHANGE THE FOLLOWING LINE UNLESS YOU KNOW WHAT YOU ARE DOING ###
+version-hash: D84BDB34D4EEEF4034D77E5403F850E35BC4A51B1143E3A83510E1AAAD839748
 
-# Whether /surface can be used
-surface: false
+game-defaults:
+  nether: true
+  end: true
 
-### Game Options ###
-game:
-  # Initial size of world border, in total width
-  init-size: 4001
-  # Final size of world border, in total width
-  final-size: 101
-  # Minutes per episode marker. Set to 0 to disable.
-  episode-length: 20
-  # Minutes from start until border shrinks from init-size to final-size.
-  # Set to 0 to make border shrink instantly, set to -1 to disable border shrinking
-  mins-to-shrink: 120
-  # Seconds from start until PVP is enabled.
-  secs-to-pvp: 1200
-  # Whether or not teams are taken into consideration
-  team-mode: false
-  # Whether or not to keep team members together at the start of the game.
-  respect-teams: true
-  # Whether or not players should naturally regenerate health
-  uhc-mode: true
-  # Minimum distance between spawn locations at the start of the game.
-  # Note that the game will fail to start if it cannot fit everyone into the map.
-  spread-distance: 150
-# Mob disabling options
-mob-disable:
-  # Replaces all baby zombie spawns with normal zombies.
-  baby-zombie: false
-  # Prevents phantoms from spawning, full stop.
-  phantom: false
+# Countdown marks are in seconds, marks prefixed with + are broadcast to title instead of to chat
+countdown:
+  default: +1,+2,+3,+4,+5,+6,+7,+8,+9,+10,30,60,300,600,900,1200,1800,3600
+  lobby: +1,+2,+3,+4,+5,+6,+7,+8,+9,+10,15,30,45,60,120,180,240,300,600
+  chunk: +1,+2,+3,+4,+5,+6,+7,+8,+9,+10
 
-### Warnings ###
-warnings:
-  border: true
-  pvp: true
-# Times should be listed in seconds, comma-separated (spaces ok), in ascending order.
-# If the times are not numbers or not comma separated, loading of warning
-# times will default to the following values:
-#
-# 1,2,3,4,5,6,7,8,9,10,30,60,300,600,900,1200,1800,3600
-warning-times:
-  border: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 60, 300, 600, 900, 1200, 1800, 3600
-  pvp: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 60, 300, 600, 900, 1200, 1800, 3600
-  one-shot: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 60, 300, 600, 900, 1200, 1800, 3600
-
-### (Optional) Database Information ###
-db:
-  method: sqlite
-  file: uhc.db
-  host: localhost
-  port: 3306
-  database: OverwatchLeague
-  username: Krusher99
-  password: password_is_not_a_good_password
-
-# Whether command can be run from a command block
-allow-command-blocks: false
-
-# Where to store game data
-data-location: data/<worldname>
-
-# Optional victory sound resource pack. Default is excerpt from "We are Overwatch" by Neal Acree and Derek Duke
-# If adding own resource pack, simply put the victory sound as 'victory.ogg' under 'assets/minecraft/sounds'
-rp-url: https://www.dropbox.com/s/v5mbmgpgn6ot901/uhca_rp.zip?dl=1
-# Optional hash for rp-url (SHA-1)
-rp-hash: E218C5A44673CCF7D4026CA82A7B5AD0F427D6C6
-
-# The plugin will also consider players in the game world's Nether and End by looking at suffixes if this is true. This is best explained by an example.
-# EXAMPLE:
-# Game World: world001
-# Plugin will also include players in world001_nether and world001_the_end
-extended-world-detection: true
-# By default, the plugin prevents games from being held in Nether or End Worlds.
-# Change this value to false to disable. Note that this should **NOT** be used if players are going to be changing dimensions.
-nether-end-exclusion: true
-
-### One-Shot Module ###
-# This module adds a sword that will instantly one-shot the target player, while dealing no damage to any other players
-one-shot:
-  # Whether the one-shot sword will be enabled
-  enabled: false
-  # Seconds until the one-shot sword is spawned
-  delay: 1500
-  # Player name to target. This person will be one-shot by any strike from the one-shot sword.
-  target: REPLACE+THIS+STRING
-  # Whether the sword should deal any damage to other players besides the target
-  other-damage: true
+# Resource pack
+rp:
+  url: https://www.dropbox.com/s/v5mbmgpgn6ot901/uhca_rp.zip?dl=1
+  hash: E218C5A44673CCF7D4026CA82A7B5AD0F427D6C6

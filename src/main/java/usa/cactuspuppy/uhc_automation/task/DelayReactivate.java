@@ -2,11 +2,8 @@ package usa.cactuspuppy.uhc_automation.task;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.GameRule;
 import org.bukkit.World;
 import org.bukkit.event.HandlerList;
-import usa.cactuspuppy.uhc_automation.commands.CommandSurface;
-import usa.cactuspuppy.uhc_automation.GameInstance;
 import usa.cactuspuppy.uhc_automation.listeners.PlayerDeathListener;
 import usa.cactuspuppy.uhc_automation.listeners.WorldChangeListener;
 import usa.cactuspuppy.uhc_automation.Main;

@@ -1,11 +1,10 @@
 .idea/*
 out/*
 target/
-*/META-INF/*
-src/test/
-temptests/
+*/META-INF/
+src/temptests/
 dependency-reduced-pom.xml
 *.iml
-
-/hs_err_pid20164.log
-hs_err_pid20164.log
+bash.exe.stackdump
+gource.mp4
+/hs_err_*.log

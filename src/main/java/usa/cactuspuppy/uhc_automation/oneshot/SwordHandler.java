@@ -16,7 +16,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scoreboard.Team;
-import usa.cactuspuppy.uhc_automation.GameInstance;
 import usa.cactuspuppy.uhc_automation.Main;
 import usa.cactuspuppy.uhc_automation.UHCUtils;
 
