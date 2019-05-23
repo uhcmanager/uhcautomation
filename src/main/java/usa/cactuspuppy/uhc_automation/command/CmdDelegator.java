@@ -96,7 +96,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
             return empty;
         }
         if (args.length == 1) {
-            Set<String> subcmds = commandMap.keySet();
+            Set<String> subcmds = new HashSet<>(commandMap.keySet());
             subcmds.add("help");
             return subcmds.stream().filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
         }
@@ -132,7 +132,7 @@ public class CmdDelegator implements CommandExecutor, TabCompleter {
         helpMsg.append(separator).append("\n").append(help).append("\n");
         for (String subcommand : commandMap.keySet().stream().sorted().collect(Collectors.toList())) {
             UHCCommand command = commandMap.get(subcommand);
-            if (!command.hasPermission(sender, subcommand, new String[0])) {
+            if (command == null || !command.hasPermission(sender, subcommand, new String[0])) {
                 continue;
             }
             String bullet = ChatColor.WHITE + "-";
