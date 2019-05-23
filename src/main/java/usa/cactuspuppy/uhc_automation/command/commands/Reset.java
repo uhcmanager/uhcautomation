@@ -35,7 +35,7 @@ public class Reset implements UHCCommand {
             return false;
         }
         GameInstance instance = result.getInstance();
-        if (instance == null) { //Handle multiple instance w/ same name
+        if (instance == null) { //Handle graceful failure
             return true;
         }
         instance.updateState(GameStateEvent.RESET);
