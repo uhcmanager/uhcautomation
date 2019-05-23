@@ -137,8 +137,8 @@ public final class MiscUtils {
                         StringBuilder builder = new StringBuilder();
                         builder.append("\n");
                         for (GameInstance g : instances) {
-                            builder.append(String.format("GID: %d | Main World: %s | Players: %d | Spectators: %d",
-                                    g.getGameID(), (g.getMainWorld() == null
+                            builder.append(String.format("GID: %s | Main World: %s | Players: %d | Spectators: %d",
+                                    g.getGameID().toString(), (g.getMainWorld() == null
                                             ? "NULL"
                                             : g.getMainWorld().getName()),
                                     g.getAlivePlayers().size(), g.getSpectators().size()));

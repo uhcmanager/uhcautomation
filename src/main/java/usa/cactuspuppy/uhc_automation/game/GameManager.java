@@ -21,6 +21,15 @@ public class GameManager {
         return activeGames.get(id);
     }
 
+    /**
+     * Returns the set of all active games with a certain name
+     * @param name to search for
+     * @return Set of game instances with this name
+     */
+    public static Set<GameInstance> getGame(String name) {
+        return activeGames.values().stream().filter(i -> i.getName().equals(name)).collect(Collectors.toSet());
+    }
+
     @Nullable
     public static GameInstance getPlayerGame(UUID u) {
         return getGameInstance(u, playerMap);
