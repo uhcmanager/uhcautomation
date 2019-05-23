@@ -27,7 +27,7 @@ import java.util.Scanner;
 import java.util.UUID;
 
 @Plugin(name = "UHCAutomation", version = "2.0")
-@Description("Provides the ability to create multiple concurrent game instances in different worlds with different configurations")
+@Description("Provides the ability to create multiple concurrent game instances in different worlds with individual configurations")
 @Author("CactusPuppy")
 @LogPrefix("UHCAuto")
 @Permission(name = "uhc.*", desc = "Wildcard permission", children = {@ChildPermission(name = "uhc.manager")})
@@ -101,8 +101,8 @@ public class Main extends JavaPlugin {
             try {
                 GameInstance current = GameManager.getGame(l);
                 boolean success = current.updateState(GameStateEvent.PAUSE); //Inform game of pause
-                if (!success && current.getGameState() != GameState.LOBBY) {
-                    current.getUtils().log(Logger.Level.INFO, this.getClass(), "Could not pause game, game will be reset on restart.");
+                if (!success && (current.getGameState() != GameState.LOBBY || current.getGameState() != GameState.PAUSED)) {
+                    current.getUtils().log(Logger.Level.INFO, this.getClass(), "Could not pause game, game may be reset on restart.");
                 }
                 FileOutputStream fileOS = new FileOutputStream(new File(getDataFolder() + Constants.getGamesDir(), String.format(Constants.getGameInfoFile(), l)));
                 ObjectOutputStream out = new ObjectOutputStream(fileOS);
@@ -122,7 +122,6 @@ public class Main extends JavaPlugin {
     }
 
     private boolean initBase() {
-        //TODO: Initiate base plugin
         //Get/create main config
         File dataFolder = Main.getInstance().getDataFolder();
         if (!dataFolder.isDirectory() && !dataFolder.mkdirs()) {
@@ -146,6 +145,11 @@ public class Main extends JavaPlugin {
         }
         //Set mainConfig
         mainConfig = new Config();
+        //Check version hash
+        if (!Main.VERSION_HASH.equals(mainConfig.get("version-hash"))) {
+            Logger.logWarning(this.getClass(), "Your config is outdated, consider deleting it and letting the plugin regenerate your config file.");
+            //TODO: non-destructive config update
+        }
         //Register command
         PluginCommand uhc = getCommand("uhc");
         if (uhc == null) {
