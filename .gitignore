@@ -1,5 +1,5 @@
-.idea/
-out/
+.idea/*
+out/*
 target/
 */META-INF/
 src/temptests/
