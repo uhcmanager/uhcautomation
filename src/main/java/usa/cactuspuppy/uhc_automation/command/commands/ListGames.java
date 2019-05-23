@@ -42,8 +42,8 @@ public class ListGames implements UHCCommand {
             }
             altColor = !altColor;
             finalMsg.append(
-                    String.format("GID: %d | Name: %s | Main World: %s | Players: %d | Spectators: %d",
-                            g.getGameID(), g.getName(), (g.getMainWorld() == null
+                    String.format("GID: %s | Name: %s | Main World: %s | Players: %d | Spectators: %d",
+                            g.getGameID().toString(), g.getName(), (g.getMainWorld() == null
                                     ? "NULL"
                                     : g.getMainWorld().getName()),
                             g.getAlivePlayers().size(), g.getSpectators().size())
