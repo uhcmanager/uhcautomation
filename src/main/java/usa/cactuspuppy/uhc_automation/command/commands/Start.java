@@ -1,6 +1,6 @@
 package usa.cactuspuppy.uhc_automation.command.commands;
 
-import org.bukkit.Bukkit;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -13,10 +13,13 @@ import usa.cactuspuppy.uhc_automation.game.tasks.timers.UHC_InitCountdown;
 import usa.cactuspuppy.uhc_automation.utils.MiscUtils;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Start implements UHCCommand {
-    private static Map<UUID, Integer> starters = new HashMap<>();
+    private static Map<UUID, UHC_InitCountdown> starters = new HashMap<>();
+    private static Pattern argsParser = Pattern.compile("^(\\d+)(?: .*)?");
 
     public static void startComplete(GameInstance instance) {
         starters.remove(instance.getGameID());
@@ -49,13 +52,21 @@ public class Start implements UHCCommand {
 
     @Override
     public boolean onCommand(CommandSender commandSender, String alias, String[] args) {
+        //Extract seconds, if there are any
+        String seconds = "";
+        String test = StringUtils.join(args, " ");
+        Matcher matcher = argsParser.matcher(test);
+        if (matcher.matches()) {
+            seconds = matcher.group(1);
+            args = Arrays.copyOfRange(args, 1, args.length);
+        }
         //Get correct game instance
-        MiscUtils.GetInstanceResult result = MiscUtils.getGameInstance(commandSender, Arrays.copyOfRange(args, 1, args.length));
+        MiscUtils.GetInstanceResult result = MiscUtils.getGameInstance(commandSender, args);
         if (!result.isUsageCorrect()) {
             return false;
         }
         GameInstance instance = result.getInstance();
-        if (instance == null) { //Handle multiple instance w/ same name
+        if (instance == null) { //Handle graceful failure
             return true;
         }
         //Check that we can actually start the game
@@ -63,18 +74,19 @@ public class Start implements UHCCommand {
             commandSender.sendMessage(ChatColor.RED + "Game is starting or in progress");
             return true;
         }
-        if (args.length > 0) {
+        if (!seconds.equals("")) {
             if (starters.containsKey(instance.getGameID())) {
-                Bukkit.getScheduler().cancelTask(starters.get(instance.getGameID()));
+                starters.get(instance.getGameID()).cancel();
                 starters.remove(instance.getGameID());
             }
             try {
-                int delay = Integer.valueOf(args[0]);
+                int delay = Integer.valueOf(seconds);
                 UHC_InitCountdown task = new UHC_InitCountdown(instance, delay);
-                starters.put(instance.getGameID(), task.getTaskID());
+                starters.put(instance.getGameID(), task);
                 return true;
             } catch (NumberFormatException e) {
-                commandSender.sendMessage(ChatColor.RED + "Problem parsing for integer here: " + args[0]);
+                commandSender.sendMessage(ChatColor.RED + "Problem parsing for integer here: " + args[0] +
+                        "\nIssue: " + e.getCause());
                 return true;
             }
         } else {
