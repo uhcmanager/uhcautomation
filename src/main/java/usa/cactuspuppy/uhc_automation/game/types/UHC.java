@@ -368,7 +368,7 @@ public class UHC extends GameInstance {
                 //Add this location to the list
                 World mainWorld = Bukkit.getWorld(this.getMainWorldUID());
                 assert mainWorld != null;
-                loc = new Location(mainWorld, x, mainWorld.getHighestBlockYAt(x, z), z);
+                loc = new Location(mainWorld, x, 255, z);
                 locations.addLast(loc);
                 success = true;
             }

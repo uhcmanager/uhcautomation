@@ -22,11 +22,16 @@ public final class MiscUtils {
         for (Player p : players) {
             destination.setYaw(p.getLocation().getYaw());
             destination.setPitch(p.getLocation().getPitch());
-            p.teleport(destination);
+            p.teleport(destination); //TODO: PaperLib async?
         }
     }
 
     public static Map<String, Integer> secsToHMS(long secs) {
+        return getHMSMap(secs);
+    }
+
+    @NotNull
+    public static Map<String, Integer> getHMSMap(long secs) {
         Map<String, Integer> hms = new HashMap<>();
 
         hms.put("hrs", (int) (secs / 3600));
@@ -37,12 +42,12 @@ public final class MiscUtils {
     }
 
 
-    public static String secsToFormatString(long secs) {
-        Map<String, Integer> hms = secsToHMS(secs);
-        return hmsToFormatString(hms.get("hrs"), hms.get("mins"), hms.get("secs"));
-    }
+    public static String secsToFormatString(long seconds) {
+        Map<String, Integer> hms = secsToHMS(seconds);
+        int hrs = hms.get("hrs");
+        int mins = hms.get("mins");
+        int secs = hms.get("secs");
 
-    public static String hmsToFormatString(int hrs, int mins, int secs) {
         assert (hrs >= 0) && (mins >= 0) && (secs >= 0);
 
         if (hrs == 0 && mins == 0 && secs == 0) {
@@ -71,7 +76,7 @@ public final class MiscUtils {
         return fmtStng.toString();
     }
 
-    public static String secsToFormatString2(int secs) {
+    public static String secsToFormatString2(long secs) {
         Map<String, Integer> hms = secsToHMS(secs);
         return hmsToFormatString2(hms.get("hrs"), hms.get("mins"), hms.get("secs"));
     }
