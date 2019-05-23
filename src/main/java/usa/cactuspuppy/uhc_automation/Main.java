@@ -8,10 +8,7 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.permission.ChildPermission;
 import org.bukkit.plugin.java.annotation.permission.Permission;
-import org.bukkit.plugin.java.annotation.plugin.ApiVersion;
-import org.bukkit.plugin.java.annotation.plugin.Description;
-import org.bukkit.plugin.java.annotation.plugin.LogPrefix;
-import org.bukkit.plugin.java.annotation.plugin.Plugin;
+import org.bukkit.plugin.java.annotation.plugin.*;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import usa.cactuspuppy.uhc_automation.command.CmdDelegator;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
@@ -28,6 +25,7 @@ import java.util.Scanner;
 import java.util.UUID;
 
 @Plugin(name = "UHCAutomation", version = "2.0")
+@Website("www.crashtc.com")
 @Description("Provides the ability to create multiple concurrent game instances in different worlds with individual configurations")
 @Author("CactusPuppy")
 @LogPrefix("UHCAuto")
@@ -99,21 +97,21 @@ public class Main extends JavaPlugin {
     private void saveGames() {
         if (GameManager.getActiveGames().isEmpty()) return;
         Logger.logInfo(this.getClass(), "Detected active game(s), saving...");
-        for (UUID l : GameManager.getActiveGames().keySet()) {
+        for (UUID uuid : GameManager.getActiveGames().keySet()) {
             try {
-                GameInstance current = GameManager.getGame(l);
+                GameInstance current = GameManager.getGame(uuid);
                 boolean success = current.updateState(GameStateEvent.PAUSE); //Inform game of pause
                 if (!success && (current.getGameState() != GameState.LOBBY || current.getGameState() != GameState.PAUSED)) {
                     current.getUtils().log(Logger.Level.INFO, this.getClass(), "Could not pause game, game may be reset on restart.");
                 }
-                FileOutputStream fileOS = new FileOutputStream(new File(getDataFolder() + Constants.getGamesDir(), String.format(Constants.getGameInfoFile(), l)));
+                FileOutputStream fileOS = new FileOutputStream(new File(getDataFolder() + Constants.getGamesDir(), String.format(Constants.getGameInfoFile(), uuid.toString())));
                 ObjectOutputStream out = new ObjectOutputStream(fileOS);
                 out.writeObject(current);
                 out.close();
                 fileOS.close();
-                Logger.logInfo(this.getClass(), "Game " + l + " saved");
+                Logger.logInfo(this.getClass(), "Game " + uuid + " saved");
             } catch (IOException e) {
-                Logger.logWarning(this.getClass(), "Problem saving game (ID: " + l + ")", e);
+                Logger.logWarning(this.getClass(), "Problem saving game (ID: " + uuid + ")", e);
             }
         }
     }

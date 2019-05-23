@@ -10,7 +10,7 @@ public class Constants {
     @Getter
     private static String gamesDir = "/games";
     @Getter
-    private static String gameInfoFile = "Game%dInfo.dat";
+    private static String gameInfoFile = "Game%sInfo.dat";
     @Getter
     private static Pattern gameInfoFilePattern = Pattern.compile("^Game(\\d+)Info\\.dat");
     @Getter
