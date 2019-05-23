@@ -8,6 +8,7 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.permission.ChildPermission;
 import org.bukkit.plugin.java.annotation.permission.Permission;
+import org.bukkit.plugin.java.annotation.plugin.ApiVersion;
 import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.LogPrefix;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
@@ -30,6 +31,7 @@ import java.util.UUID;
 @Description("Provides the ability to create multiple concurrent game instances in different worlds with individual configurations")
 @Author("CactusPuppy")
 @LogPrefix("UHCAuto")
+@ApiVersion(ApiVersion.Target.v1_13)
 @Permission(name = "uhc.*", desc = "Wildcard permission", children = {@ChildPermission(name = "uhc.manager")})
 @Permission(name = "uhc.manager", desc = "Allows game management", defaultValue = PermissionDefault.OP)
 public class Main extends JavaPlugin {

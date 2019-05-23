@@ -200,6 +200,13 @@ public class UHC extends GameInstance {
             return false;
         }
         clearLobby();
+        //Push all offline active players to spectator
+        for (UUID u : getAlivePlayers()) {
+            Player p = Bukkit.getPlayer(u);
+            if (p == null || !p.isOnline()) {
+                moveAliveToSpec(u);
+            }
+        }
         getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.addPotionEffect(
                 new PotionEffect(PotionEffectType.LEVITATION, 1, 255, true, false, false), true
         ));
@@ -221,6 +228,7 @@ public class UHC extends GameInstance {
         worlds.add(mainWorldUID);
         worlds.stream().map(Bukkit::getWorld).filter(Objects::nonNull).forEach(this::startWorld);
         startTasks();
+        initNumPlayers = getAlivePlayers().size();
         new GameStartAnnouncer(this).init();
         return true;
     }
@@ -325,7 +333,7 @@ public class UHC extends GameInstance {
     protected double setLocations(LinkedList<Location> locations) {
         locations.clear();
 
-        int numLocations = getAlivePlayers().size();
+        long numLocations = getAlivePlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).filter(OfflinePlayer::isOnline).count();
         int maxDistance = getInitRadius();
         int minDistance = getMinDistance();
         int minSeparation = getMinSeparation();
@@ -359,6 +367,7 @@ public class UHC extends GameInstance {
 
                 //Add this location to the list
                 World mainWorld = Bukkit.getWorld(this.getMainWorldUID());
+                assert mainWorld != null;
                 loc = new Location(mainWorld, x, mainWorld.getHighestBlockYAt(x, z), z);
                 locations.addLast(loc);
                 success = true;
