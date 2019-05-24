@@ -1,4 +1,4 @@
-package usa.cactuspuppy.uhc_automation.Database;
+package usa.cactuspuppy.uhc_automation.database;
 
 import org.bukkit.Bukkit;
 import usa.cactuspuppy.uhc_automation.InfoDisplayMode;

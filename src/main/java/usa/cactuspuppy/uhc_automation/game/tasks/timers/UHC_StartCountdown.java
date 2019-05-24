@@ -16,6 +16,10 @@ import java.util.Objects;
 
 public class UHC_StartCountdown extends TimerTask {
     /**
+     * Whether the ticks have stabilized for this countdown
+     */
+    private boolean tickStable = false;
+    /**
      * Whether or not this timer has started counting down
      */
     private boolean countdown;
@@ -80,13 +84,14 @@ public class UHC_StartCountdown extends TimerTask {
         long currTick = System.currentTimeMillis();
         if (!countdown) { //Wait for ticks to stabilize + players to land
             //Check current tick delay
-            if (Math.abs(currTick - lastTick - ticksPerCycle * 50) > maxTickDeviance * ticksPerCycle * 50) {
+            if (!tickStable && Math.abs(currTick - lastTick - ticksPerCycle * 50) > maxTickDeviance * ticksPerCycle * 50) {
                 getGameInstance().getUtils().log(Logger.Level.FINE, this.getClass(),
-                        String.format("Current run: %d | Last run: %d (%d ticks ago) | Avg Tick Time: %d (need %f)",
+                        String.format("Current run: %d | Last run: %d (%d ticks ago) | Avg Tick Time: %d (need 50±%f)",
                                 currTick, lastTick, ticksPerCycle, (currTick - lastTick) / ticksPerCycle, maxTickDeviance * 50));
                 lastTick = currTick;
                 getGameInstance().getUtils().broadcastTitle(ChatColor.GOLD + "Initiating Match", "Loading chunks...", 0, 20, 10);
             } else {
+                tickStable = true;
                 //Check that all players are on the ground
                 boolean allOnGround = getGameInstance().getAlivePlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).allMatch(Player::isOnGround);
                 if (allOnGround) {
@@ -110,12 +115,15 @@ public class UHC_StartCountdown extends TimerTask {
         long timeTo = startTime - currTick;
         long secs = timeTo / 1000 + (timeTo % 1000 == 0 ? 0 : 1);
         if (timeTo <= 0) {
+            getGameInstance().getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(p -> p.spigot().sendMessage(
+                    ChatMessageType.ACTION_BAR, new TextComponent("Game starts in 0.00")
+            ));
             cancel();
             getGameInstance().updateState(GameStateEvent.START);
             return;
         }
         actionBar = String.format("Game starts in %.2f", timeTo / 1000D);
-        title = String.format("Game starts in %d", secs);
+        title = String.format("%d", secs);
         if (lastSecs != secs) {
             getGameInstance().getUtils().broadcastSoundTitle(Sound.BLOCK_NOTE_BLOCK_PLING, 0.594604F, title, subtitle, 0, 20, 10);
         }

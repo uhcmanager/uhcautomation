@@ -1,6 +1,7 @@
 package usa.cactuspuppy.uhc_automation.utils;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -14,6 +15,7 @@ public class MojangAPIHookTest {
     }
 
     @Test
+    @Ignore
     public void getUUID() {
         long start = System.nanoTime();
         UUID u = MojangAPIHook.getUUID("CactusPuppy");
@@ -34,6 +36,7 @@ public class MojangAPIHookTest {
     }
 
     @Test
+    @Ignore
     public void nameFromUUID() {
         long start = System.nanoTime();
         String name = MojangAPIHook.nameFromUUID(UUID.fromString("c0681344-b5a8-428f-a57c-98704e760170"));

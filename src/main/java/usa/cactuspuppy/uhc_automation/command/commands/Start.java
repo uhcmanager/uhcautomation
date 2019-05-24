@@ -10,6 +10,7 @@ import usa.cactuspuppy.uhc_automation.game.GameManager;
 import usa.cactuspuppy.uhc_automation.game.GameState;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
 import usa.cactuspuppy.uhc_automation.game.tasks.timers.UHC_InitCountdown;
+import usa.cactuspuppy.uhc_automation.utils.Logger;
 import usa.cactuspuppy.uhc_automation.utils.MiscUtils;
 
 import java.util.*;
@@ -57,6 +58,7 @@ public class Start implements UHCCommand {
         String test = StringUtils.join(args, " ");
         Matcher matcher = argsParser.matcher(test);
         if (matcher.matches()) {
+            Logger.logFineMsg(this.getClass(), "Found seconds in args", 0);
             seconds = matcher.group(1);
             args = Arrays.copyOfRange(args, 1, args.length);
         }
@@ -83,6 +85,8 @@ public class Start implements UHCCommand {
                 int delay = Integer.valueOf(seconds);
                 UHC_InitCountdown task = new UHC_InitCountdown(instance, delay);
                 starters.put(instance.getGameID(), task);
+                task.init();
+                Logger.logFineMsg(this.getClass(), "Started init countdown", 0);
                 return true;
             } catch (NumberFormatException e) {
                 commandSender.sendMessage(ChatColor.RED + "Problem parsing for integer here: " + args[0] +

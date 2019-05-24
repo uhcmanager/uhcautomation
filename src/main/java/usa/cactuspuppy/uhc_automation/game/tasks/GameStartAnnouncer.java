@@ -21,7 +21,7 @@ public class GameStartAnnouncer extends Task {
     }
 
     private void readStartMsgs() {
-        InputStream stream = Main.getInstance().getResource("");
+        InputStream stream = Main.getInstance().getResource("start_msgs.txt");
         if (stream == null) {
             getGameInstance().getUtils().log(Logger.Level.WARNING, this.getClass(), "No start messages found, defaulting to no start msg");
             startMsgs.add("");

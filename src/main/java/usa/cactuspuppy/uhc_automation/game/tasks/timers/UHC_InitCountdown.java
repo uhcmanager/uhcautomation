@@ -5,13 +5,17 @@ import org.bukkit.Sound;
 import usa.cactuspuppy.uhc_automation.command.commands.Start;
 import usa.cactuspuppy.uhc_automation.game.GameInstance;
 import usa.cactuspuppy.uhc_automation.game.GameStateEvent;
+import usa.cactuspuppy.uhc_automation.utils.Logger;
 
 public class UHC_InitCountdown extends TimerTask {
     private long initTime;
     private long lastSecs;
 
+    private GameInstance instance;
+
     public UHC_InitCountdown(GameInstance gameInstance, int secsDelay) {
         super(gameInstance, true, 0L, 2L);
+        instance = gameInstance;
         long currTime = System.currentTimeMillis();
         initTime = currTime + secsDelay * 1000;
     }
@@ -31,6 +35,7 @@ public class UHC_InitCountdown extends TimerTask {
     public void run() {
         //TODO: init countdown
         long currTime = System.currentTimeMillis();
+        instance.getUtils().log(Logger.Level.FINE, this.getClass(), "Running init countdown");
         if (currTime >= initTime) {
             Start.startComplete(getGameInstance());
             getGameInstance().updateState(GameStateEvent.INIT);

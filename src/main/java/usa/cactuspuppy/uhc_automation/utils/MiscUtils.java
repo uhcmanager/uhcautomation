@@ -116,7 +116,7 @@ public final class MiscUtils {
             }
             instance = GameManager.getPlayerGame(((Player) commandSender).getUniqueId());
         } else {
-            if (args.length == 1 && args[0].matches("-?[0-9]+")) { // Find ID
+            if (args.length == 1 && args[0].matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")) { // Find ID
                 try {
                     instance = GameManager.getGame(UUID.fromString(args[0]));
                 } catch (NumberFormatException ignored) { }

@@ -1,6 +1,6 @@
 package usa.cactuspuppy.uhc_automation;
 
-import usa.cactuspuppy.uhc_automation.Database.SQLAPI;
+import usa.cactuspuppy.uhc_automation.database.SQLAPI;
 
 import java.util.HashMap;
 import java.util.Map;

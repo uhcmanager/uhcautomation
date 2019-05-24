@@ -105,6 +105,8 @@ public class UHC extends GameInstance {
         //Disable lobby PVP
         new PVPCanceller(this).init();
         createLobby();
+        getAllPlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull)
+                .forEach(p -> p.teleport(new Location(main, centerX + 0.5, main.getHighestBlockYAt(centerX, centerZ) + getBlocksAboveGround() + 1, centerZ + 0.5)));
         // Day/weather cancel
         main.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         main.setTime(1000);
@@ -154,7 +156,7 @@ public class UHC extends GameInstance {
         setLobby(false);
     }
 
-    private void clearLobby() {
+    public void clearLobby() {
         setLobby(true);
     }
 
@@ -199,7 +201,6 @@ public class UHC extends GameInstance {
             getUtils().msgManagers(ChatColor.RED + "INIT ERR: No main world set");
             return false;
         }
-        clearLobby();
         //Push all offline active players to spectator
         for (UUID u : getAlivePlayers()) {
             Player p = Bukkit.getPlayer(u);
@@ -230,6 +231,13 @@ public class UHC extends GameInstance {
         startTasks();
         initNumPlayers = getAlivePlayers().size();
         new GameStartAnnouncer(this).init();
+        getAlivePlayers().stream().map(Bukkit::getPlayer).filter(Objects::nonNull)
+                .forEach(p -> {
+                    for (PotionEffect e : p.getActivePotionEffects()) {
+                        p.removePotionEffect(e.getType());
+                    }
+                    p.setGameMode(GameMode.SURVIVAL);
+                });
         return true;
     }
 

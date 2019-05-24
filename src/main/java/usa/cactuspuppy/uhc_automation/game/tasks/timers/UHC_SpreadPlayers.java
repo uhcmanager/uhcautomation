@@ -1,5 +1,6 @@
 package usa.cactuspuppy.uhc_automation.game.tasks.timers;
 
+import io.papermc.lib.PaperLib;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -13,6 +14,9 @@ import usa.cactuspuppy.uhc_automation.utils.Logger;
 import usa.cactuspuppy.uhc_automation.utils.MiscUtils;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Inspired by Reddit user Iron_Zealot's Random TP Plugin:
@@ -43,7 +47,7 @@ public class UHC_SpreadPlayers extends TimerTask {
     private int trans1 = 40; //One coord to two coords
     private int trans2 = 60; //Two coords to launch
 
-    private int tpDelay = 2000; //milliseconds to wait after launch to tp
+    private int tpDelay = 3000; //milliseconds to wait after launch to tp
 
     private Random rng = new Random();
     private int runs = 0;
@@ -123,11 +127,11 @@ public class UHC_SpreadPlayers extends TimerTask {
             //Levitation
             if (runs < trans2) {
                 p.addPotionEffect(
-                        new PotionEffect(PotionEffectType.LEVITATION, 1, 0, true, false, false), true
+                        new PotionEffect(PotionEffectType.LEVITATION, 1000000, 0, true, false, false), true
                 );
             } else {
                 p.addPotionEffect(
-                        new PotionEffect(PotionEffectType.LEVITATION, 1, 100, true, false, false), true
+                        new PotionEffect(PotionEffectType.LEVITATION, 1000000, 100, true, false, false), true
                 );
             }
 
@@ -139,6 +143,7 @@ public class UHC_SpreadPlayers extends TimerTask {
         if (shouldTeleport) { //Initiate pre-game countdown
             new UHC_PreStartFreeze(getGameInstance()).init();
             new UHC_StartCountdown(getGameInstance(), 10).init();
+            uhcInstance.clearLobby();
             cancel();
             return;
         }
@@ -154,7 +159,6 @@ public class UHC_SpreadPlayers extends TimerTask {
      */
     private void teleport(Player p, Location l) {
         int x = l.getBlockX();
-        int y = l.getBlockY();
         int z = l.getBlockZ();
         World world = l.getWorld();
         if (world == null) {
@@ -166,6 +170,17 @@ public class UHC_SpreadPlayers extends TimerTask {
             }
         }
 
+        if (PaperLib.isChunkGenerated(l)) {
+            try {
+                PaperLib.getChunkAtAsync(l).get(20, TimeUnit.SECONDS);
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                uhcInstance.getUtils().log(Logger.Level.WARNING, this.getClass(), "Exception while waiting for chunk generation", e);
+                return;
+            }
+        }
+
+        int y = world.getHighestBlockYAt(x, z);
+
         Block feet = world.getBlockAt(x, y, z);
         while (!feet.isPassable() || !world.getBlockAt(feet.getLocation().add(0, 1, 0)).isPassable()) { //Get actual highest block
             y++;
@@ -173,11 +188,11 @@ public class UHC_SpreadPlayers extends TimerTask {
         }
         Block belowFeet = world.getBlockAt(feet.getLocation().add(0, -1, 0));
         if (belowFeet.isPassable() || belowFeet.isLiquid() || noStand.contains(belowFeet.getType())) {
-            belowFeet.setBlockData(Bukkit.createBlockData(Material.STONE_SLAB, "type=top"));
+            belowFeet.setBlockData(Bukkit.createBlockData(Material.STONE_SLAB, "[type=top]"));
         }
         p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 10, true, false, false), true);
         p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 1000000, 0, true, false, false), true);
         p.setGameMode(GameMode.ADVENTURE);
-        MiscUtils.relativeTeleport(feet.getLocation().add(0, 74, 0), p);
+        MiscUtils.relativeTeleport(feet.getLocation().add(0.5, 74, 0.5), p);
     }
 }

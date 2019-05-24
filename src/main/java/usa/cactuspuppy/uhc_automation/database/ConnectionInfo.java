@@ -1,4 +1,4 @@
-package usa.cactuspuppy.uhc_automation.Database;
+package usa.cactuspuppy.uhc_automation.database;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,7 +1,6 @@
-package usa.cactuspuppy.uhc_automation.Database;
+package usa.cactuspuppy.uhc_automation.database;
 
 import lombok.Getter;
-import lombok.Setter;
 import usa.cactuspuppy.uhc_automation.Main;
 
 import java.sql.Connection;

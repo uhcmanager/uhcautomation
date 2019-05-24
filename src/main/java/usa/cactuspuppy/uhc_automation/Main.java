@@ -78,7 +78,7 @@ public class Main extends JavaPlugin {
         } else lastDisable = -1;
         enabled = System.currentTimeMillis();
         long elapsed = System.nanoTime() - start;
-        Logger.logInfo(this.getClass(), String.format("UHC Automation startup complete in %1$.2fms (%2$dns).", elapsed / 1000.0, elapsed));
+        Logger.logInfo(this.getClass(), String.format("UHC Automation startup complete in %1$.2fms (%2$dns).", elapsed / 10e6, elapsed));
     }
 
     public void onRestart() {
